@@ -14,7 +14,11 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "JavaScript Interview Lab",
-  description: "Randomized JavaScript practice with output, concept, and implementation questions.",
+  description:
+    "Randomized JavaScript practice with output, concept, and implementation questions.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -26,7 +30,10 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
         <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 backdrop-blur">
           <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-            <Link href="/" className="text-sm font-black tracking-[0.25em] text-white">
+            <Link
+              href="/"
+              className="text-sm font-black tracking-[0.25em] text-white"
+            >
               JS LAB
             </Link>
             <nav className="flex flex-wrap gap-2 text-sm font-semibold">
