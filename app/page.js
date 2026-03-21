@@ -1,65 +1,86 @@
-import Image from "next/image";
+import Link from "next/link";
+
+const sections = [
+  {
+    href: "/output",
+    title: "Output Questions",
+    description:
+      "Practice hoisting, scope, closures, async timing, and this-binding by predicting console output.",
+    accent: "from-cyan-500/20 to-sky-500/10",
+  },
+  {
+    href: "/implementation",
+    title: "Implementation Questions",
+    description:
+      "Work through array helpers, closures, debounce, grouping, and other code-writing tasks.",
+    accent: "from-amber-500/20 to-orange-500/10",
+  },
+  {
+    href: "/theory",
+    title: "Theory Questions",
+    description:
+      "Read concise JavaScript concept questions with direct answers and examples.",
+    accent: "from-emerald-500/20 to-teal-500/10",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.16),_transparent_28%),linear-gradient(180deg,_#07111f_0%,_#050816_100%)] text-slate-100">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        <header className="rounded-[2rem] border border-white/10 bg-white/5 px-6 py-8 shadow-2xl backdrop-blur">
+          <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
+            JavaScript interview lab
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl">
+            Pick a practice mode
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+            The questions are separated now, so output prediction, theory
+            review, and implementation drills each live on their own page.
+          </p>
+        </header>
+
+        <section className="mt-6 grid gap-5 md:grid-cols-3">
+          {sections.map((section) => (
+            <Link
+              key={section.href}
+              href={section.href}
+              className={`group rounded-[2rem] border border-white/10 bg-gradient-to-br ${section.accent} p-5 transition hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl`}
+            >
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-300">
+                Mode
+              </p>
+              <h2 className="mt-4 text-2xl font-bold text-white">
+                {section.title}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                {section.description}
+              </p>
+              <p className="mt-6 text-sm font-semibold text-cyan-100">
+                Enter practice mode →
+              </p>
+            </Link>
+          ))}
+        </section>
+
+        <section className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="rounded-[2rem] border border-white/10 bg-slate-950/50 p-5">
+            <h2 className="text-xl font-bold text-white">Why it is split</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              Mixing theory, output, and implementation in one stream makes the
+              practice feel noisy. Separate modes keep the mental model clean.
+            </p>
+          </div>
+          <div className="rounded-[2rem] border border-white/10 bg-slate-950/50 p-5">
+            <h2 className="text-xl font-bold text-white">How to use it</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              Use output mode for execution order, theory mode for concepts, and
+              implementation mode to practice writing code from scratch.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
