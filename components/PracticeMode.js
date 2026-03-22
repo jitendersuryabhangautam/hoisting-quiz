@@ -48,9 +48,15 @@ export default function PracticeMode({
     return seededShuffleQuestions(available, shuffleSeed);
   }, [questions, storedAttempted, shuffleSeed]);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState(() => createBlankState(questions.length));
-  const [checked, setChecked] = useState(() => createFlagState(questions.length));
-  const [revealed, setRevealed] = useState(() => createFlagState(questions.length));
+  const [answers, setAnswers] = useState(() =>
+    createBlankState(questions.length)
+  );
+  const [checked, setChecked] = useState(() =>
+    createFlagState(questions.length)
+  );
+  const [revealed, setRevealed] = useState(() =>
+    createFlagState(questions.length)
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem(`attempted-${storageKey}`);
@@ -79,7 +85,10 @@ export default function PracticeMode({
     if (!attemptedHydrated) {
       return;
     }
-    localStorage.setItem(`attempted-${storageKey}`, JSON.stringify([...attempted]));
+    localStorage.setItem(
+      `attempted-${storageKey}`,
+      JSON.stringify([...attempted])
+    );
   }, [attempted, storageKey, attemptedHydrated]);
 
   useEffect(() => {
@@ -91,23 +100,23 @@ export default function PracticeMode({
 
   const currentQuestion = deck[currentIdx];
   const reviewQuestion = reviewQuestionId
-    ? questions.find((question) => question.id === reviewQuestionId) ?? null
+    ? (questions.find((question) => question.id === reviewQuestionId) ?? null)
     : null;
   const displayQuestion = reviewQuestion ?? currentQuestion;
   const currentAnswer = answers[currentIdx];
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
-  const attemptedIds = new Set([
-    ...storedAttempted,
-    ...attempted,
-  ]);
+  const attemptedIds = new Set([...storedAttempted, ...attempted]);
   const attemptedQuestions = questions.filter((question) =>
     attemptedIds.has(question.id)
   );
   const attemptedCount = attemptedQuestions.length;
+  const featuredAttemptedQuestion = attemptedQuestions[0] ?? null;
   const isReviewingAttempted = Boolean(reviewQuestion);
   const currentReviewIndex = reviewQuestion
-    ? attemptedQuestions.findIndex((question) => question.id === reviewQuestion.id)
+    ? attemptedQuestions.findIndex(
+        (question) => question.id === reviewQuestion.id
+      )
     : -1;
 
   const resetSession = () => {
@@ -162,7 +171,9 @@ export default function PracticeMode({
   const goNext = () => {
     setCurrentIdx((idx) => {
       if (idx + 1 < deck.length) return idx + 1;
-      setNotice("You have reached the end of this shuffled deck. Shuffle again to get a new order.");
+      setNotice(
+        "You have reached the end of this shuffled deck. Shuffle again to get a new order."
+      );
       return idx;
     });
   };
@@ -415,7 +426,7 @@ export default function PracticeMode({
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_30%),linear-gradient(180deg,#07111f_0%,#0b1324_45%,#050816_100%)] text-slate-100">
       {resetModalOpen ? (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[1.75rem] border border-cyan-400/50 bg-slate-950 p-6 shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_0_40px_rgba(34,211,238,0.15)]">
             <p className="text-xs uppercase tracking-[0.28em] text-rose-300">
               Confirm reset
@@ -445,7 +456,7 @@ export default function PracticeMode({
         </div>
       ) : null}
       {notice ? (
-        <div className="fixed bottom-4 right-4 z-[60] w-[min(92vw,360px)] rounded-2xl border border-emerald-400/50 bg-slate-950/95 p-4 shadow-[0_0_0_1px_rgba(74,222,128,0.35),0_0_30px_rgba(74,222,128,0.12)] backdrop-blur">
+        <div className="fixed bottom-4 right-4 z-60 w-[min(92vw,360px)] rounded-2xl border border-emerald-400/50 bg-slate-950/95 p-4 shadow-[0_0_0_1px_rgba(74,222,128,0.35),0_0_30px_rgba(74,222,128,0.12)] backdrop-blur">
           <p className="text-sm leading-6 text-slate-100">{notice}</p>
           <button
             onClick={closeNotice}
@@ -455,23 +466,97 @@ export default function PracticeMode({
           </button>
         </div>
       ) : null}
-      <div className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-3 py-6 sm:px-4 lg:px-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-384 flex-col px-3 py-6 sm:px-4 lg:px-5">
         {deck.length === 0 && !reviewQuestion ? (
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="flex flex-col items-center justify-center min-h-[60vh] rounded-4xl border border-white/10 bg-white/5 px-4 py-6 text-center backdrop-blur sm:px-5">
-              <h1 className="text-3xl font-black text-white mb-4">
-                All Questions Attempted
-              </h1>
-              <p className="text-slate-300 mb-8 max-w-md">
-                You&apos;ve attempted all questions in this category. Click
-                &quot;Reset attempted&quot; to start over with all questions.
-              </p>
-              <button
-                onClick={openResetModal}
-                className="rounded-full bg-linear-r from-rose-500 to-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition hover:brightness-110"
-              >
-                Reset Attempted Questions
-              </button>
+            <div className="flex min-h-[60vh] flex-col rounded-4xl border border-white/10 bg-white/5 px-4 py-6 backdrop-blur sm:px-5">
+              <div className="rounded-3xl border border-cyan-400/15 bg-slate-950/50 p-5">
+                <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
+                  All Questions Attempted
+                </p>
+                <h1 className="mt-3 text-3xl font-black text-white">
+                  Nothing left in the active deck
+                </h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+                  You&apos;ve already attempted every question in this category.
+                  Use the attempted list on the right to review answers, or
+                  reset the browser history to reshuffle everything.
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button
+                    onClick={openResetModal}
+                    className="rounded-full border border-rose-400/40 bg-rose-400/10 px-5 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+                  >
+                    Reset Attempted Questions
+                  </button>
+                  {featuredAttemptedQuestion ? (
+                    <button
+                      onClick={() => {
+                        setReviewQuestionId(featuredAttemptedQuestion.id);
+                        setSidebarTab("answers");
+                      }}
+                      className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
+                    >
+                      Review first attempted
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+
+              {featuredAttemptedQuestion ? (
+                <div className="mt-5 rounded-3xl border border-white/10 bg-slate-950/50 p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.28em] text-slate-400">
+                        Featured review
+                      </p>
+                      <h2 className="mt-2 text-2xl font-bold text-white">
+                        {featuredAttemptedQuestion.title}
+                      </h2>
+                    </div>
+                    <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-100">
+                      Attempted
+                    </span>
+                  </div>
+                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                    {featuredAttemptedQuestion.prompt}
+                  </p>
+                  {featuredAttemptedQuestion.code ||
+                  featuredAttemptedQuestion.starter ? (
+                    <pre className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-xs leading-5 text-slate-200">
+                      {normalizeCodeBlock(
+                        featuredAttemptedQuestion.code ??
+                          featuredAttemptedQuestion.starter ??
+                          ""
+                      )}
+                    </pre>
+                  ) : null}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-200">
+                      {featuredAttemptedQuestion.topic}
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-200">
+                      {featuredAttemptedQuestion.type}
+                    </span>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="mt-5 rounded-3xl border border-white/10 bg-slate-950/50 p-5">
+                <p className="text-xs uppercase tracking-[0.28em] text-slate-400">
+                  Review status
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  {attemptedQuestions.length
+                    ? `${attemptedQuestions.length} question${attemptedQuestions.length === 1 ? "" : "s"} saved in this browser.`
+                    : "No attempted questions saved yet."}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  Use the sidebar to move through the attempted queue one card at
+                  a time.
+                </p>
+              </div>
             </div>
 
             <aside className="rounded-4xl border border-white/10 bg-white/5 px-4 py-5 backdrop-blur sm:px-5">
@@ -593,7 +678,7 @@ export default function PracticeMode({
 
               <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-900">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-amber-300 transition-all duration-500"
+                  className="h-full rounded-full bg-linear-to-r from-cyan-400 via-sky-400 to-amber-300 transition-all duration-500"
                   style={{
                     width: `${progressValue(attemptedCount, questions.length)}%`,
                   }}
@@ -704,8 +789,7 @@ export default function PracticeMode({
                           ) : null}
                           {displayQuestion.type === "implementation" ? (
                             <span>
-                              Compare your approach with the reference
-                              solution.
+                              Compare your approach with the reference solution.
                             </span>
                           ) : null}
                         </div>
@@ -714,7 +798,7 @@ export default function PracticeMode({
                       <div className="flex flex-wrap gap-3">
                         <button
                           onClick={actionHandler}
-                          className="rounded-full border border-cyan-400/30 bg-gradient-to-r from-cyan-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+                          className="rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
                         >
                           {actionLabel}
                         </button>
@@ -886,9 +970,7 @@ export default function PracticeMode({
                         Reference solution
                       </p>
                       <pre className="mt-3 overflow-x-auto rounded-2xl border border-amber-400/10 bg-slate-950/70 p-4 text-sm leading-6 text-amber-50">
-                        {normalizeCodeBlock(
-                          displayQuestion.referenceSolution
-                        )}
+                        {normalizeCodeBlock(displayQuestion.referenceSolution)}
                       </pre>
                       {displayQuestion.hint ? (
                         <p className="mt-4 text-sm leading-6 text-slate-300">
@@ -910,7 +992,9 @@ export default function PracticeMode({
                           onClick={() => {
                             if (tab.id === "back") {
                               setReviewQuestionId(null);
-                              setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
+                              setSidebarTab(
+                                sidebarMode === "answers" ? "answers" : "help"
+                              );
                               return;
                             }
                             setSidebarTab(tab.id);
@@ -989,117 +1073,119 @@ export default function PracticeMode({
                   ) : sidebarTab === "answers" ? (
                     <div className="mt-4 flex min-h-0 flex-1 flex-col">
                       <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
-                        {isReviewingAttempted ? "Review answer" : "Answer and explanation"}
+                        {isReviewingAttempted
+                          ? "Review answer"
+                          : "Answer and explanation"}
                       </p>
                       <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
                         {isReviewingAttempted ? (
                           <>
-                          <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Actual answer
-                            </p>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
-                              {displayQuestion.expected}
-                            </p>
-                          </div>
-                          <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Explanation
-                            </p>
-                            <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
-                              {displayQuestion.explanation
-                                .split("\n")
-                                .map((line, index) =>
-                                  line.trim() ? (
-                                    <p
-                                      key={`${displayQuestion.id}-review-explain-${index}`}
-                                    >
-                                      {line}
-                                    </p>
-                                  ) : null
-                                )}
+                            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Actual answer
+                              </p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                                {displayQuestion.expected}
+                              </p>
                             </div>
-                          </div>
+                            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Explanation
+                              </p>
+                              <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
+                                {displayQuestion.explanation
+                                  .split("\n")
+                                  .map((line, index) =>
+                                    line.trim() ? (
+                                      <p
+                                        key={`${displayQuestion.id}-review-explain-${index}`}
+                                      >
+                                        {line}
+                                      </p>
+                                    ) : null
+                                  )}
+                              </div>
+                            </div>
                           </>
                         ) : isRevealed ? (
                           <>
-                          <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Actual answer
-                            </p>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
-                              {currentQuestion.expected}
-                            </p>
-                          </div>
-                          <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Explanation
-                            </p>
-                            <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
-                              {currentQuestion.explanation
-                                .split("\n")
-                                .map((line, index) =>
-                                  line.trim() ? (
-                                    <p
-                                      key={`${currentQuestion.id}-explain-${index}`}
-                                    >
-                                      {line}
-                                    </p>
-                                  ) : null
-                                )}
+                            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Actual answer
+                              </p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                                {currentQuestion.expected}
+                              </p>
                             </div>
-                          </div>
+                            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Explanation
+                              </p>
+                              <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
+                                {currentQuestion.explanation
+                                  .split("\n")
+                                  .map((line, index) =>
+                                    line.trim() ? (
+                                      <p
+                                        key={`${currentQuestion.id}-explain-${index}`}
+                                      >
+                                        {line}
+                                      </p>
+                                    ) : null
+                                  )}
+                              </div>
+                            </div>
                           </>
                         ) : isChecked ? (
                           <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                          <div
-                            className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
-                              questionIsCorrect
-                                ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
-                                : "border-rose-400/20 bg-rose-400/10 text-rose-100"
-                            }`}
-                          >
-                            {questionIsCorrect
-                              ? "Correct. Your answer matches the expected output."
-                              : "Not quite. Your answer does not match the expected output."}
-                          </div>
-                          <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Your answer
-                            </p>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
-                              {currentAnswer || "No answer entered."}
-                            </p>
-                          </div>
-                          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                              Explanation
-                            </p>
-                            <div className="mt-2 space-y-3 text-sm leading-6 text-slate-200">
-                              {currentQuestion.explanation
-                                .split("\n")
-                                .map((line, index) =>
-                                  line.trim() ? (
-                                    <p
-                                      key={`${currentQuestion.id}-checked-explain-${index}`}
-                                    >
-                                      {line}
-                                    </p>
-                                  ) : null
-                                )}
+                            <div
+                              className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                                questionIsCorrect
+                                  ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                                  : "border-rose-400/20 bg-rose-400/10 text-rose-100"
+                              }`}
+                            >
+                              {questionIsCorrect
+                                ? "Correct. Your answer matches the expected output."
+                                : "Not quite. Your answer does not match the expected output."}
                             </div>
-                            <p className="mt-3 text-xs leading-5 text-slate-400">
-                              Click `Reveal Answer` if you want the actual
-                              output too.
-                            </p>
-                          </div>
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Your answer
+                              </p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                                {currentAnswer || "No answer entered."}
+                              </p>
+                            </div>
+                            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Explanation
+                              </p>
+                              <div className="mt-2 space-y-3 text-sm leading-6 text-slate-200">
+                                {currentQuestion.explanation
+                                  .split("\n")
+                                  .map((line, index) =>
+                                    line.trim() ? (
+                                      <p
+                                        key={`${currentQuestion.id}-checked-explain-${index}`}
+                                      >
+                                        {line}
+                                      </p>
+                                    ) : null
+                                  )}
+                              </div>
+                              <p className="mt-3 text-xs leading-5 text-slate-400">
+                                Click `Reveal Answer` if you want the actual
+                                output too.
+                              </p>
+                            </div>
                           </div>
                         ) : (
                           <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm leading-6 text-slate-300">
-                          Click `Check Answer` to compare your guess or `Reveal
-                          Answer` to open the actual output and explanation
-                          here.
-                        </div>
+                            Click `Check Answer` to compare your guess or
+                            `Reveal Answer` to open the actual output and
+                            explanation here.
+                          </div>
                         )}
                       </div>
                     </div>
