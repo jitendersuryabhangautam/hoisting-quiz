@@ -5,6 +5,13 @@ import { useEffect, useState } from "react";
 import { conceptQuestions } from "@/lib/conceptQuestions";
 import { normalizeCodeBlock } from "@/lib/javascriptContent";
 
+function splitExplanation(text) {
+  return (text ?? "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 function isEditableTarget(target) {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -136,9 +143,13 @@ export default function TheoryPage() {
             <span className="font-semibold text-white">Answer: </span>
             {currentQuestion.expected}
           </p>
-          <p className="mt-4 text-sm leading-6 text-slate-300">
-            {currentQuestion.explanation}
-          </p>
+          <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
+            {splitExplanation(currentQuestion.explanation).map((line, index) => (
+              <p key={`theory-explanation-${currentQuestion.id}-${index}`}>
+                {line}
+              </p>
+            ))}
+          </div>
           {currentQuestion.code ? (
             <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">

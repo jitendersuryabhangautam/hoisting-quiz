@@ -26,6 +26,13 @@ function createDraftStateFromDeck(deck) {
   );
 }
 
+function splitExplanation(text) {
+  return (text ?? "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 function isEditableTarget(target) {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -456,6 +463,10 @@ export default function PracticeMode({
   const showFeedback = isChecked || isRevealed;
   const useOverlayFeedback = feedbackMode === "overlay";
   const useSidebarAnswers = sidebarMode === "answers";
+  const showMobilePopupFeedback =
+    showFeedback &&
+    !useOverlayFeedback &&
+    (!useSidebarAnswers || currentQuestion?.type === "output");
   const verdictLabel =
     currentQuestion?.type === "implementation"
       ? "Reference solution"
@@ -490,6 +501,96 @@ export default function PracticeMode({
         { id: "back", label: "Back to practice" },
       ]
     : sidebarTabs;
+
+  const mobileFeedbackPopup = showMobilePopupFeedback ? (
+    <div
+      className={`fixed inset-x-3 bottom-3 z-50 flex max-h-[60vh] flex-col overflow-hidden rounded-[1.75rem] border p-4 shadow-2xl backdrop-blur sm:hidden ${
+        currentQuestion.type === "implementation"
+          ? "border-amber-400/25 bg-slate-950/95"
+          : isChecked && questionIsCorrect
+            ? "border-emerald-400/25 bg-slate-950/95"
+            : isChecked
+              ? "border-rose-400/25 bg-slate-950/95"
+              : "border-cyan-400/25 bg-slate-950/95"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p
+            className={`text-xs font-semibold uppercase tracking-[0.28em] ${
+              currentQuestion.type === "implementation"
+                ? "text-amber-300"
+                : isChecked && questionIsCorrect
+                  ? "text-emerald-300"
+                  : isChecked
+                    ? "text-rose-300"
+                    : "text-cyan-300"
+            }`}
+          >
+            {verdictLabel}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-slate-200">
+            {currentQuestion.type === "implementation"
+              ? "Reference solution is shown here."
+              : isChecked
+                ? questionIsCorrect
+                  ? "Your answer matches the expected output."
+                  : "Your answer does not match the expected output."
+                : "Correct answer preview is shown here."}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setChecked((prev) => {
+              const next = [...prev];
+              next[currentIdx] = false;
+              return next;
+            });
+            setRevealed((prev) => {
+              const next = [...prev];
+              next[currentIdx] = false;
+              return next;
+            });
+          }}
+          className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+        >
+          Close
+        </button>
+      </div>
+
+      <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+        {currentQuestion.type !== "implementation" ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+              Actual answer
+            </p>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+              {currentQuestion.expected}
+            </p>
+            <div className="mt-3 space-y-1 text-sm leading-6 text-slate-300">
+              {splitExplanation(currentQuestion.explanation).map((line, index) => (
+                <p key={`mobile-explanation-${currentQuestion.id}-${index}`}>
+                  <span className="mr-1 font-semibold text-slate-200">
+                    {index + 1})
+                  </span>
+                  <span>{line}</span>
+                </p>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-amber-400/15 bg-amber-400/5 p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">
+              Reference solution
+            </p>
+            <pre className="mt-2 overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
+              {normalizeCodeBlock(currentQuestion.referenceSolution)}
+            </pre>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : null;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_30%),linear-gradient(180deg,#07111f_0%,#0b1324_45%,#050816_100%)] text-slate-100">
@@ -901,7 +1002,7 @@ export default function PracticeMode({
                   )}
 
                   {showFeedback && !useOverlayFeedback && !useSidebarAnswers ? (
-                    <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5">
+                    <div className="hidden rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5 sm:block">
                       {currentQuestion.type === "implementation" ? (
                         <>
                           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300">
@@ -927,9 +1028,17 @@ export default function PracticeMode({
                           <p className="mt-1 whitespace-pre-wrap rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-cyan-50">
                             {currentQuestion.expected}
                           </p>
-                          <p className="mt-4 text-sm leading-6 text-slate-300">
-                            {currentQuestion.explanation}
-                          </p>
+                          <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
+                            {splitExplanation(currentQuestion.explanation).map(
+                              (line, index) => (
+                                <p
+                                  key={`inline-explanation-${currentQuestion.id}-${index}`}
+                                >
+                                  {line}
+                                </p>
+                              )
+                            )}
+                          </div>
                         </>
                       )}
                     </div>
@@ -996,9 +1105,17 @@ export default function PracticeMode({
                               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-100">
                                 {currentQuestion.expected}
                               </p>
-                              <p className="mt-3 text-sm leading-6 text-slate-300">
-                                {currentQuestion.explanation}
-                              </p>
+                              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+                                {splitExplanation(currentQuestion.explanation).map(
+                                  (line, index) => (
+                                    <p
+                                      key={`${currentQuestion.id}-overlay-explain-${index}`}
+                                    >
+                                      {line}
+                                    </p>
+                                  )
+                                )}
+                              </div>
                             </div>
                           ) : null}
                         </div>
@@ -1028,6 +1145,8 @@ export default function PracticeMode({
                   ) : null}
                 </div>
               </article>
+
+              {mobileFeedbackPopup}
 
               <aside className="smooth-scroll space-y-6 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
                 <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
@@ -1229,18 +1348,16 @@ export default function PracticeMode({
                               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
                                 Explanation
                               </p>
-                              <div className="mt-2 space-y-3 text-sm leading-6 text-slate-200">
-                                {currentQuestion.explanation
-                                  .split("\n")
-                                  .map((line, index) =>
-                                    line.trim() ? (
-                                      <p
-                                        key={`${currentQuestion.id}-checked-explain-${index}`}
-                                      >
-                                        {line}
-                                      </p>
-                                    ) : null
-                                  )}
+                              <div className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
+                                {splitExplanation(currentQuestion.explanation).map(
+                                  (line, index) => (
+                                    <p
+                                      key={`${currentQuestion.id}-checked-explain-${index}`}
+                                    >
+                                      {line}
+                                    </p>
+                                  )
+                                )}
                               </div>
                               <p className="mt-3 text-xs leading-5 text-slate-400">
                                 Click `Reveal Answer` if you want the actual
