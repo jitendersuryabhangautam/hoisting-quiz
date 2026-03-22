@@ -504,7 +504,7 @@ export default function PracticeMode({
 
   const mobileFeedbackPopup = showMobilePopupFeedback ? (
     <div
-      className={`fixed inset-x-3 bottom-3 z-50 flex max-h-[60vh] flex-col overflow-hidden rounded-[1.75rem] border p-4 shadow-2xl backdrop-blur sm:hidden ${
+      className={`fixed inset-x-3 bottom-3 z-50 flex w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] max-h-[60vh] min-w-0 flex-col overflow-hidden rounded-[1.75rem] border p-4 shadow-2xl backdrop-blur sm:hidden ${
         currentQuestion.type === "implementation"
           ? "border-amber-400/25 bg-slate-950/95"
           : isChecked && questionIsCorrect
@@ -560,7 +560,7 @@ export default function PracticeMode({
 
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
         {currentQuestion.type !== "implementation" ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+          <div className="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
               Actual answer
             </p>
@@ -579,11 +579,11 @@ export default function PracticeMode({
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-amber-400/15 bg-amber-400/5 p-3">
+          <div className="min-w-0 rounded-2xl border border-amber-400/15 bg-amber-400/5 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">
               Reference solution
             </p>
-            <pre className="mt-2 overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
+            <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
               {normalizeCodeBlock(currentQuestion.referenceSolution)}
             </pre>
           </div>
@@ -606,6 +606,7 @@ export default function PracticeMode({
           Next
         </button>
       </div>
+
     </div>
   ) : null;
 
@@ -1165,7 +1166,7 @@ export default function PracticeMode({
 
               {mobileFeedbackPopup}
 
-              <aside className="smooth-scroll space-y-6 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
+              <aside className="hidden smooth-scroll space-y-6 lg:block lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
                 <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   {displayQuestion.type === "implementation" &&
                   (isReviewingAttempted || isRevealed) ? (
