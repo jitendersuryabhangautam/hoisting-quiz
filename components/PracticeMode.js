@@ -290,6 +290,7 @@ export default function PracticeMode({
   };
 
   const markChecked = () => {
+    setSidebarTab("answers");
     setChecked((prev) => {
       const next = [...prev];
       next[currentIdx] = true;
@@ -308,6 +309,7 @@ export default function PracticeMode({
   };
 
   const markRevealed = () => {
+    setSidebarTab("answers");
     setRevealed((prev) => {
       const next = [...prev];
       next[currentIdx] = true;
@@ -402,6 +404,13 @@ export default function PracticeMode({
       setSidebarTab("answers");
     }
   }, [reviewQuestion]);
+
+  const sidebarActionTabs = isReviewingAttempted
+    ? [
+        { id: "answers", label: "Answer" },
+        { id: "back", label: "Back to practice" },
+      ]
+    : sidebarTabs;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_30%),linear-gradient(180deg,#07111f_0%,#0b1324_45%,#050816_100%)] text-slate-100">
@@ -659,12 +668,6 @@ export default function PracticeMode({
                           >
                             Previous attempted
                           </button>
-                          <button
-                            onClick={() => setReviewQuestionId(null)}
-                            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
-                          >
-                            Back to practice
-                          </button>
                         </div>
                       </div>
                       <p className="mt-3 text-xs uppercase tracking-[0.22em] text-slate-400">
@@ -675,12 +678,6 @@ export default function PracticeMode({
                       <p className="mt-3 text-sm leading-6 text-slate-300">
                         The answer and explanation are shown in the sidebar.
                       </p>
-                      <button
-                        onClick={() => setSidebarTab("answers")}
-                        className="mt-4 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100 transition hover:bg-cyan-400/20"
-                      >
-                        Show sidebar answer
-                      </button>
                     </div>
                   ) : (
                     <>
@@ -880,8 +877,8 @@ export default function PracticeMode({
                 </div>
               </article>
 
-              <aside className="space-y-6 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-1">
-                <section className="rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <aside className="smooth-scroll space-y-6 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
+                <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   {displayQuestion.type === "implementation" &&
                   (isReviewingAttempted || isRevealed) ? (
                     <div className="mb-4 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4">
@@ -905,12 +902,19 @@ export default function PracticeMode({
                   ) : null}
 
                   <div className="flex flex-wrap gap-2">
-                    {sidebarTabs.map((tab) => {
+                    {sidebarActionTabs.map((tab) => {
                       const active = sidebarTab === tab.id;
                       return (
                         <button
                           key={tab.id}
-                          onClick={() => setSidebarTab(tab.id)}
+                          onClick={() => {
+                            if (tab.id === "back") {
+                              setReviewQuestionId(null);
+                              setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
+                              return;
+                            }
+                            setSidebarTab(tab.id);
+                          }}
                           className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] transition ${
                             active
                               ? "bg-cyan-400/15 text-cyan-100 border border-cyan-400/30"
@@ -924,7 +928,7 @@ export default function PracticeMode({
                   </div>
 
                   {sidebarTab === "attempted" ? (
-                    <div className="mt-4">
+                    <div className="mt-4 flex min-h-0 flex-1 flex-col">
                       <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
                         Attempted questions
                       </p>
@@ -934,7 +938,7 @@ export default function PracticeMode({
                           : "No attempted questions saved yet."}
                       </p>
 
-                      <div className="mt-4 space-y-3">
+                      <div className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
                         {attemptedQuestions.length ? (
                           attemptedQuestions.map((question) => (
                             <button
@@ -942,11 +946,11 @@ export default function PracticeMode({
                               onClick={() => setReviewQuestionId(question.id)}
                               className="w-full rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-left transition hover:border-cyan-400/30 hover:bg-slate-950/80"
                             >
-                            <div className="flex items-start justify-between gap-3">
-                              <div>
-                                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
-                                  {question.topic}
-                                </p>
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+                                    {question.topic}
+                                  </p>
                                   <p className="mt-1 text-sm font-semibold text-white">
                                     {question.title}
                                   </p>
@@ -983,12 +987,13 @@ export default function PracticeMode({
                       </div>
                     </div>
                   ) : sidebarTab === "answers" ? (
-                    <>
+                    <div className="mt-4 flex min-h-0 flex-1 flex-col">
                       <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
                         {isReviewingAttempted ? "Review answer" : "Answer and explanation"}
                       </p>
-                      {isReviewingAttempted ? (
-                        <>
+                      <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
+                        {isReviewingAttempted ? (
+                          <>
                           <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
                               Actual answer
@@ -1015,9 +1020,9 @@ export default function PracticeMode({
                                 )}
                             </div>
                           </div>
-                        </>
-                      ) : isRevealed ? (
-                        <>
+                          </>
+                        ) : isRevealed ? (
+                          <>
                           <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
                               Actual answer
@@ -1044,9 +1049,9 @@ export default function PracticeMode({
                                 )}
                             </div>
                           </div>
-                        </>
-                      ) : isChecked ? (
-                        <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                          </>
+                        ) : isChecked ? (
+                          <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                           <div
                             className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
                               questionIsCorrect
@@ -1088,15 +1093,16 @@ export default function PracticeMode({
                               output too.
                             </p>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm leading-6 text-slate-300">
+                          </div>
+                        ) : (
+                          <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm leading-6 text-slate-300">
                           Click `Check Answer` to compare your guess or `Reveal
                           Answer` to open the actual output and explanation
                           here.
                         </div>
-                      )}
-                    </>
+                        )}
+                      </div>
+                    </div>
                   ) : (
                     <>
                       <p className="text-xs uppercase tracking-[0.28em] text-slate-400">
