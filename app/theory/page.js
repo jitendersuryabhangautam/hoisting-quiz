@@ -4,8 +4,8 @@ import { theorySections } from "@/lib/javascriptContent";
 export default function TheoryPage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.14),_transparent_28%),linear-gradient(180deg,_#140f08_0%,_#0e1220_55%,_#050816_100%)] text-slate-100">
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-[2rem] border border-white/10 bg-white/5 px-5 py-5 shadow-2xl backdrop-blur md:px-6">
+      <div className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-4 lg:px-5">
+        <header className="rounded-[2rem] border border-white/10 bg-white/5 px-4 py-5 shadow-2xl backdrop-blur md:px-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.35em] text-amber-300">

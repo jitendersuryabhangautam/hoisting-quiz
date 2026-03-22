@@ -27,8 +27,8 @@ const sections = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_28%),linear-gradient(180deg,#07111f_0%,#050816_100%)] text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-4xl border border-white/10 bg-white/5 px-6 py-8 shadow-2xl backdrop-blur">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-3 py-6 sm:px-4 lg:px-5">
+        <header className="rounded-4xl border border-white/10 bg-white/5 px-5 py-8 shadow-2xl backdrop-blur">
           <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
             JavaScript interview lab
           </p>

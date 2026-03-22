@@ -40,6 +40,8 @@ export default function PracticeMode({
     sidebarMode === "answers" ? "answers" : "help"
   );
   const [reviewQuestionId, setReviewQuestionId] = useState(null);
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [notice, setNotice] = useState(null);
 
   const deck = useMemo(() => {
     const available = questions.filter((q) => !storedAttempted.has(q.id));
@@ -95,8 +97,6 @@ export default function PracticeMode({
   const currentAnswer = answers[currentIdx];
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
-  const reviewedCount =
-    checked.filter(Boolean).length + revealed.filter(Boolean).length;
   const attemptedIds = new Set([
     ...storedAttempted,
     ...attempted,
@@ -104,6 +104,7 @@ export default function PracticeMode({
   const attemptedQuestions = questions.filter((question) =>
     attemptedIds.has(question.id)
   );
+  const attemptedCount = attemptedQuestions.length;
   const isReviewingAttempted = Boolean(reviewQuestion);
   const currentReviewIndex = reviewQuestion
     ? attemptedQuestions.findIndex((question) => question.id === reviewQuestion.id)
@@ -120,6 +121,19 @@ export default function PracticeMode({
     localStorage.removeItem(`attempted-${storageKey}`);
     setShuffleSeed((prev) => prev + 1);
     setReviewQuestionId(null);
+    setResetModalOpen(false);
+  };
+
+  const openResetModal = () => {
+    setResetModalOpen(true);
+  };
+
+  const closeResetModal = () => {
+    setResetModalOpen(false);
+  };
+
+  const closeNotice = () => {
+    setNotice(null);
   };
 
   const goNextReviewedQuestion = () => {
@@ -143,6 +157,22 @@ export default function PracticeMode({
         : attemptedQuestions.length - 1;
     setSidebarTab("attempted");
     setReviewQuestionId(attemptedQuestions[previousIndex].id);
+  };
+
+  const goNext = () => {
+    setCurrentIdx((idx) => {
+      if (idx + 1 < deck.length) return idx + 1;
+      setNotice("You have reached the end of this shuffled deck. Shuffle again to get a new order.");
+      return idx;
+    });
+  };
+
+  const goPrev = () => {
+    setCurrentIdx((idx) => {
+      if (idx - 1 >= 0) return idx - 1;
+      setNotice("This is the first question in the deck.");
+      return idx;
+    });
   };
 
   const updateAnswer = (value) => {
@@ -295,24 +325,6 @@ export default function PracticeMode({
     });
   };
 
-  const goNext = () => {
-    setCurrentIdx((idx) => {
-      if (idx + 1 < deck.length) return idx + 1;
-      alert(
-        "You have reached the end of this shuffled deck. Shuffle again to get a new order."
-      );
-      return idx;
-    });
-  };
-
-  const goPrev = () => {
-    setCurrentIdx((idx) => {
-      if (idx - 1 >= 0) return idx - 1;
-      alert("This is the first question in the deck.");
-      return idx;
-    });
-  };
-
   const resetCurrentAnswer = () => {
     setAnswers((prev) => {
       const next = [...prev];
@@ -393,10 +405,51 @@ export default function PracticeMode({
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_30%),linear-gradient(180deg,#07111f_0%,#0b1324_45%,#050816_100%)] text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+      {resetModalOpen ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[1.75rem] border border-cyan-400/50 bg-slate-950 p-6 shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_0_40px_rgba(34,211,238,0.15)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-rose-300">
+              Confirm reset
+            </p>
+            <h2 className="mt-3 text-2xl font-bold text-white">
+              Reset attempted questions?
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              This will clear all saved attempted progress in this browser and
+              return every question to the pool.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                onClick={resetAttempted}
+                className="rounded-full border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+              >
+                Reset
+              </button>
+              <button
+                onClick={closeResetModal}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {notice ? (
+        <div className="fixed bottom-4 right-4 z-[60] w-[min(92vw,360px)] rounded-2xl border border-emerald-400/50 bg-slate-950/95 p-4 shadow-[0_0_0_1px_rgba(74,222,128,0.35),0_0_30px_rgba(74,222,128,0.12)] backdrop-blur">
+          <p className="text-sm leading-6 text-slate-100">{notice}</p>
+          <button
+            onClick={closeNotice}
+            className="mt-3 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+          >
+            Dismiss
+          </button>
+        </div>
+      ) : null}
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-3 py-6 sm:px-4 lg:px-5">
         {deck.length === 0 && !reviewQuestion ? (
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="flex flex-col items-center justify-center min-h-[60vh] rounded-4xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
+            <div className="flex flex-col items-center justify-center min-h-[60vh] rounded-4xl border border-white/10 bg-white/5 px-4 py-6 text-center backdrop-blur sm:px-5">
               <h1 className="text-3xl font-black text-white mb-4">
                 All Questions Attempted
               </h1>
@@ -405,14 +458,14 @@ export default function PracticeMode({
                 &quot;Reset attempted&quot; to start over with all questions.
               </p>
               <button
-                onClick={resetAttempted}
+                onClick={openResetModal}
                 className="rounded-full bg-linear-r from-rose-500 to-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition hover:brightness-110"
               >
                 Reset Attempted Questions
               </button>
             </div>
 
-            <aside className="rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+            <aside className="rounded-4xl border border-white/10 bg-white/5 px-4 py-5 backdrop-blur sm:px-5">
               <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
                 Attempted questions
               </p>
@@ -466,7 +519,7 @@ export default function PracticeMode({
           </div>
         ) : (
           <>
-            <header className="mb-8 rounded-4xl border border-white/10 bg-white/5 px-5 py-4 shadow-2xl backdrop-blur md:px-6">
+            <header className="mb-8 rounded-4xl border border-white/10 bg-white/5 px-4 py-4 shadow-2xl backdrop-blur sm:px-5 md:px-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
@@ -494,7 +547,7 @@ export default function PracticeMode({
                     Shuffle deck
                   </button>
                   <button
-                    onClick={resetAttempted}
+                    onClick={openResetModal}
                     className="inline-flex items-center justify-center rounded-full border border-rose-400/40 bg-rose-400/10 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
                   >
                     Reset attempted
@@ -503,7 +556,7 @@ export default function PracticeMode({
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                     Focus
                   </p>
@@ -511,15 +564,15 @@ export default function PracticeMode({
                     {title}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                    Deck progress
+                    Attempted progress
                   </p>
                   <p className="mt-1 text-sm font-semibold text-white">
-                    {reviewedCount} reviewed out of {deck.length}
+                    {attemptedCount} attempted out of {questions.length}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                     Order
                   </p>
@@ -531,9 +584,9 @@ export default function PracticeMode({
 
               <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-900">
                 <div
-                  className="h-full rounded-full bg-linear-r from-cyan-400 via-sky-400 to-amber-300 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-amber-300 transition-all duration-500"
                   style={{
-                    width: `${progressValue(reviewedCount, deck.length)}%`,
+                    width: `${progressValue(attemptedCount, questions.length)}%`,
                   }}
                 />
               </div>
@@ -541,7 +594,7 @@ export default function PracticeMode({
 
             <section className="grid gap-6 lg:grid-cols-[1.45fr_0.85fr]">
               <article className="overflow-hidden rounded-4xl border border-white/10 bg-white/6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-                <div className="border-b border-white/10 bg-slate-950/50 px-5 py-4 sm:px-6">
+                <div className="border-b border-white/10 bg-slate-950/50 px-4 py-4 sm:px-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-2">
                       <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
@@ -564,7 +617,7 @@ export default function PracticeMode({
                   </p>
                 </div>
 
-                <div className="space-y-6 px-5 py-5 sm:px-6">
+                <div className="space-y-6 px-4 py-5 sm:px-5">
                   {displayQuestion.code ? (
                     <div>
                       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
@@ -615,14 +668,19 @@ export default function PracticeMode({
                         </div>
                       </div>
                       <p className="mt-3 text-xs uppercase tracking-[0.22em] text-slate-400">
-                        {reviewQuestion ? `${currentReviewIndex + 1} / ${attemptedQuestions.length}` : ""}
+                        {reviewQuestion
+                          ? `${currentReviewIndex + 1} / ${attemptedQuestions.length}`
+                          : ""}
                       </p>
-                      <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-200">
-                        {displayQuestion.expected}
+                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                        The answer and explanation are shown in the sidebar.
                       </p>
-                      <p className="mt-4 text-sm leading-6 text-slate-300">
-                        {displayQuestion.explanation}
-                      </p>
+                      <button
+                        onClick={() => setSidebarTab("answers")}
+                        className="mt-4 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100 transition hover:bg-cyan-400/20"
+                      >
+                        Show sidebar answer
+                      </button>
                     </div>
                   ) : (
                     <>
@@ -659,7 +717,7 @@ export default function PracticeMode({
                       <div className="flex flex-wrap gap-3">
                         <button
                           onClick={actionHandler}
-                          className="rounded-full bg-linear-r from-cyan-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+                          className="rounded-full border border-cyan-400/30 bg-gradient-to-r from-cyan-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
                         >
                           {actionLabel}
                         </button>
@@ -698,21 +756,12 @@ export default function PracticeMode({
                       {currentQuestion.type === "implementation" ? (
                         <>
                           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300">
-                            Reference solution
+                            Reference moved to sidebar
                           </p>
-                          <pre className="mt-3 overflow-x-auto rounded-2xl border border-amber-400/10 bg-amber-400/5 p-4 text-sm leading-6 text-amber-50">
-                            {normalizeCodeBlock(
-                              currentQuestion.referenceSolution
-                            )}
-                          </pre>
-                          {currentQuestion.hint ? (
-                            <p className="mt-4 text-sm text-slate-300">
-                              <span className="font-semibold text-slate-100">
-                                Hint:{" "}
-                              </span>
-                              {currentQuestion.hint}
-                            </p>
-                          ) : null}
+                          <p className="mt-3 text-sm leading-6 text-slate-300">
+                            The reference solution is shown in the sidebar so
+                            the main card stays focused on the question.
+                          </p>
                         </>
                       ) : (
                         <>
@@ -833,6 +882,28 @@ export default function PracticeMode({
 
               <aside className="space-y-6">
                 <section className="rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                  {displayQuestion.type === "implementation" &&
+                  (isReviewingAttempted || isRevealed) ? (
+                    <div className="mb-4 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
+                        Reference solution
+                      </p>
+                      <pre className="mt-3 overflow-x-auto rounded-2xl border border-amber-400/10 bg-slate-950/70 p-4 text-sm leading-6 text-amber-50">
+                        {normalizeCodeBlock(
+                          displayQuestion.referenceSolution
+                        )}
+                      </pre>
+                      {displayQuestion.hint ? (
+                        <p className="mt-4 text-sm leading-6 text-slate-300">
+                          <span className="font-semibold text-slate-100">
+                            Hint:{" "}
+                          </span>
+                          {displayQuestion.hint}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+
                   <div className="flex flex-wrap gap-2">
                     {sidebarTabs.map((tab) => {
                       const active = sidebarTab === tab.id;
