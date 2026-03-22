@@ -9,6 +9,7 @@ export default function OutputPage() {
       description="This mode only includes output-based JavaScript questions. The deck is shuffled every time."
       questions={outputQuestions}
       sidebarMode="answers"
+      storageKey="output"
     />
   );
 }

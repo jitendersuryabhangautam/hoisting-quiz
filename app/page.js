@@ -26,9 +26,9 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.16),_transparent_28%),linear-gradient(180deg,_#07111f_0%,_#050816_100%)] text-slate-100">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_28%),linear-gradient(180deg,#07111f_0%,#050816_100%)] text-slate-100">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-[2rem] border border-white/10 bg-white/5 px-6 py-8 shadow-2xl backdrop-blur">
+        <header className="rounded-4xl border border-white/10 bg-white/5 px-6 py-8 shadow-2xl backdrop-blur">
           <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
             JavaScript interview lab
           </p>
@@ -46,7 +46,7 @@ export default function Home() {
             <Link
               key={section.href}
               href={section.href}
-              className={`group rounded-[2rem] border border-white/10 bg-gradient-to-br ${section.accent} p-5 transition hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl`}
+              className={`group rounded-4xl border border-white/10 bg-linear-to-br ${section.accent} p-5 transition hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl`}
             >
               <p className="text-xs uppercase tracking-[0.3em] text-slate-300">
                 Mode
@@ -65,14 +65,14 @@ export default function Home() {
         </section>
 
         <section className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/50 p-5">
+          <div className="rounded-4xl border border-white/10 bg-slate-950/50 p-5">
             <h2 className="text-xl font-bold text-white">Why it is split</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
               Mixing theory, output, and implementation in one stream makes the
               practice feel noisy. Separate modes keep the mental model clean.
             </p>
           </div>
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/50 p-5">
+          <div className="rounded-4xl border border-white/10 bg-slate-950/50 p-5">
             <h2 className="text-xl font-bold text-white">How to use it</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
               Use output mode for execution order, theory mode for concepts, and
