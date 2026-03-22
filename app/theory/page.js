@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { conceptQuestions } from "@/lib/conceptQuestions";
+import { normalizeCodeBlock } from "@/lib/javascriptContent";
 
 function isEditableTarget(target) {
   if (!(target instanceof HTMLElement)) {
@@ -28,7 +29,7 @@ export default function TheoryPage() {
 
   const copyCode = async (code, id) => {
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(normalizeCodeBlock(code));
       setCopiedId(id);
     } catch {
       setCopiedId(null);
@@ -152,8 +153,8 @@ export default function TheoryPage() {
                   {copiedId === currentQuestion.id ? "Copied" : "Copy code"}
                 </button>
               </div>
-              <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-sm leading-6 text-slate-200">
-                {currentQuestion.code}
+              <pre className="mt-3 overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
+                {normalizeCodeBlock(currentQuestion.code)}
               </pre>
             </div>
           ) : null}
