@@ -446,7 +446,7 @@ export default function PracticeMode({
           </button>
         </div>
       ) : null}
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-3 py-6 sm:px-4 lg:px-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-3 py-6 sm:px-4 lg:px-5">
         {deck.length === 0 && !reviewQuestion ? (
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="flex flex-col items-center justify-center min-h-[60vh] rounded-4xl border border-white/10 bg-white/5 px-4 py-6 text-center backdrop-blur sm:px-5">
@@ -592,8 +592,8 @@ export default function PracticeMode({
               </div>
             </header>
 
-            <section className="grid gap-6 lg:grid-cols-[1.45fr_0.85fr]">
-              <article className="overflow-hidden rounded-4xl border border-white/10 bg-white/6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+            <section className="grid gap-6 lg:grid-cols-[1.45fr_0.85fr] lg:items-start">
+              <article className="self-start overflow-hidden rounded-4xl border border-white/10 bg-white/6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
                 <div className="border-b border-white/10 bg-slate-950/50 px-4 py-4 sm:px-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-2">
@@ -880,7 +880,7 @@ export default function PracticeMode({
                 </div>
               </article>
 
-              <aside className="space-y-6">
+              <aside className="space-y-6 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-1">
                 <section className="rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   {displayQuestion.type === "implementation" &&
                   (isReviewingAttempted || isRevealed) ? (

@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
         <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 backdrop-blur">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-4 lg:px-5">
+          <div className="mx-auto flex w-full max-w-[96rem] flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-4 lg:px-5">
             <Link
               href="/"
               className="text-sm font-black tracking-[0.25em] text-white"
