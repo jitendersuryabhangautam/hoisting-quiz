@@ -1,5 +1,5 @@
 import PracticeMode from "@/components/PracticeMode";
-import { implementationQuestions } from "@/lib/javascriptContent";
+import { implementationQuestions } from "@/lib/implementationQuestions";
 
 export default function ImplementationPage() {
   return (

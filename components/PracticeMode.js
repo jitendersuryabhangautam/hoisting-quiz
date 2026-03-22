@@ -18,6 +18,25 @@ function createFlagState(length) {
   return new Array(length).fill(false);
 }
 
+function createDraftStateFromDeck(deck) {
+  return deck.map((question) =>
+    question.type === "implementation"
+      ? normalizeCodeBlock(question.starter ?? "")
+      : ""
+  );
+}
+
+function isEditableTarget(target) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return Boolean(
+    target.isContentEditable ||
+      target.closest("textarea, input, select, [contenteditable='true']")
+  );
+}
+
 function progressValue(done, total) {
   if (total === 0) return 0;
   return Math.round((done / total) * 100);
@@ -92,7 +111,7 @@ export default function PracticeMode({
   }, [attempted, storageKey, attemptedHydrated]);
 
   useEffect(() => {
-    setAnswers(createBlankState(deck.length));
+    setAnswers(createDraftStateFromDeck(deck));
     setChecked(createFlagState(deck.length));
     setRevealed(createFlagState(deck.length));
     setCurrentIdx(0);
@@ -103,7 +122,7 @@ export default function PracticeMode({
     ? (questions.find((question) => question.id === reviewQuestionId) ?? null)
     : null;
   const displayQuestion = reviewQuestion ?? currentQuestion;
-  const currentAnswer = answers[currentIdx];
+  const currentAnswer = answers[currentIdx] ?? "";
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
   const attemptedIds = new Set([...storedAttempted, ...attempted]);
@@ -185,6 +204,51 @@ export default function PracticeMode({
       return idx;
     });
   };
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey
+      ) {
+        return;
+      }
+
+      if (resetModalOpen || isEditableTarget(event.target)) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        if (isReviewingAttempted) {
+          goPreviousReviewedQuestion();
+        } else {
+          goPrev();
+        }
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        if (isReviewingAttempted) {
+          goNextReviewedQuestion();
+        } else {
+          goNext();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    goNext,
+    goNextReviewedQuestion,
+    goPrev,
+    goPreviousReviewedQuestion,
+    isReviewingAttempted,
+    resetModalOpen,
+  ]);
 
   const updateAnswer = (value) => {
     setAnswers((prev) => {
@@ -341,7 +405,11 @@ export default function PracticeMode({
   const resetCurrentAnswer = () => {
     setAnswers((prev) => {
       const next = [...prev];
-      next[currentIdx] = "";
+      next[currentIdx] = currentQuestion
+        ? currentQuestion.type === "implementation"
+          ? normalizeCodeBlock(currentQuestion.starter ?? "")
+          : ""
+        : "";
       return next;
     });
     setChecked((prev) => {
@@ -368,7 +436,7 @@ export default function PracticeMode({
 
   const placeholder =
     currentQuestion?.type === "implementation"
-      ? "Write code, an algorithm outline, or your first pass here."
+      ? "Edit the starter code directly and complete the solution here."
       : 'Example: "undefined", "ReferenceError", or "3\\n3\\n3"';
 
   const actionLabel =
@@ -723,17 +791,6 @@ export default function PracticeMode({
                     </div>
                   ) : null}
 
-                  {displayQuestion.starter ? (
-                    <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                        Starter
-                      </p>
-                      <pre className="overflow-x-auto rounded-3xl border border-amber-400/15 bg-amber-400/5 p-4 text-sm leading-6 text-amber-50">
-                        {normalizeCodeBlock(displayQuestion.starter)}
-                      </pre>
-                    </div>
-                  ) : null}
-
                   {isReviewingAttempted ? (
                     <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5">
                       <div className="flex items-center justify-between gap-3">
@@ -770,6 +827,17 @@ export default function PracticeMode({
                         <label className="mb-3 block text-sm font-semibold text-slate-100">
                           {answerLabel}
                         </label>
+                        {displayQuestion.type === "implementation" ? (
+                          <div className="mb-3 rounded-3xl border border-amber-400/15 bg-amber-400/5 p-4">
+                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200">
+                              Starter included
+                            </p>
+                            <p className="mt-2 text-sm leading-6 text-amber-50">
+                              The starter code is already loaded into the
+                              editor below, so you can edit it directly.
+                            </p>
+                          </div>
+                        ) : null}
                         <textarea
                           value={currentAnswer}
                           onChange={(event) => updateAnswer(event.target.value)}
