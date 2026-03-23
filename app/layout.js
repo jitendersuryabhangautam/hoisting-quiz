@@ -55,6 +55,12 @@ export default function RootLayout({ children }) {
               >
                 Theory
               </Link>
+              <Link
+                href="/backend"
+                className="rounded-full border border-lime-400/30 bg-lime-400/10 px-4 py-2 text-lime-100 transition hover:bg-lime-400/20"
+              >
+                Backend
+              </Link>
             </nav>
           </div>
         </header>

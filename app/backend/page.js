@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { conceptQuestions } from "@/lib/conceptQuestions";
+import { backendQuestions } from "@/lib/backendQuestions";
 import {
   normalizeCodeBlock,
   shuffleQuestions,
@@ -26,11 +26,17 @@ function isEditableTarget(target) {
   );
 }
 
-function shuffleTheoryDeck(previousQuestionId = null) {
-  const shuffled = shuffleQuestions(conceptQuestions);
+function shuffleBackendDeck(previousQuestionId = null) {
+  const shuffled = shuffleQuestions(backendQuestions);
 
-  if (previousQuestionId && shuffled.length > 1 && shuffled[0]?.id === previousQuestionId) {
-    const swapIndex = shuffled.findIndex((question) => question.id !== previousQuestionId);
+  if (
+    previousQuestionId &&
+    shuffled.length > 1 &&
+    shuffled[0]?.id === previousQuestionId
+  ) {
+    const swapIndex = shuffled.findIndex(
+      (question) => question.id !== previousQuestionId
+    );
 
     if (swapIndex > 0) {
       [shuffled[0], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[0]];
@@ -40,9 +46,9 @@ function shuffleTheoryDeck(previousQuestionId = null) {
   return shuffled;
 }
 
-export default function TheoryPage() {
+export default function BackendPage() {
   const [copiedId, setCopiedId] = useState(null);
-  const [deck, setDeck] = useState(() => shuffleTheoryDeck());
+  const [deck, setDeck] = useState(() => shuffleBackendDeck());
   const [currentIndex, setCurrentIndex] = useState(0);
   const hasQuestions = deck.length > 0;
 
@@ -65,9 +71,9 @@ export default function TheoryPage() {
   const currentQuestion = deck[currentIndex] ?? deck[0];
 
   const reshuffleDeck = useCallback(() => {
-    if (!conceptQuestions.length) return;
+    if (!backendQuestions.length) return;
 
-    setDeck(shuffleTheoryDeck(currentQuestion?.id ?? null));
+    setDeck(shuffleBackendDeck(currentQuestion?.id ?? null));
     setCurrentIndex(0);
     setCopiedId(null);
   }, [currentQuestion?.id]);
@@ -78,7 +84,7 @@ export default function TheoryPage() {
     if (currentIndex + 1 < deck.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      setDeck(shuffleTheoryDeck(currentQuestion?.id ?? null));
+      setDeck(shuffleBackendDeck(currentQuestion?.id ?? null));
       setCurrentIndex(0);
     }
     setCopiedId(null);
@@ -119,26 +125,26 @@ export default function TheoryPage() {
   }, [goNext, goPrevious]);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.14),_transparent_28%),linear-gradient(180deg,_#140f08_0%,_#0e1220_55%,_#050816_100%)] text-slate-100">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.15),_transparent_28%),linear-gradient(180deg,_#07130e_0%,_#0b1224_55%,_#050816_100%)] text-slate-100">
       <div className="mx-auto w-full max-w-[96rem] px-3 py-6 sm:px-4 lg:px-5">
         <header className="rounded-[2rem] border border-white/10 bg-white/5 px-4 py-5 shadow-2xl backdrop-blur md:px-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-amber-300">
-                Theory questions
+              <p className="text-xs uppercase tracking-[0.35em] text-emerald-300">
+                Backend questions
               </p>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-                JavaScript concept questions and answers
+                Go and PostgreSQL interview questions
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
-                This page shows all theory/concept questions separately from the
-                practice decks.
+                This page focuses on Go concurrency, backend basics, and
+                PostgreSQL concepts.
               </p>
             </div>
 
             <Link
               href="/"
-              className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
+              className="inline-flex items-center justify-center rounded-full border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/20"
             >
               Back to menu
             </Link>
@@ -146,24 +152,24 @@ export default function TheoryPage() {
         </header>
 
         <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-300">
-          <span className="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 font-semibold text-amber-100">
-            {deck.length} theory questions
+          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 font-semibold text-emerald-100">
+            {deck.length} backend questions
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            Separate from output and implementation practice
+            Go + PostgreSQL only
           </span>
         </div>
 
         <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/6 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
           {!hasQuestions ? (
             <p className="text-sm leading-6 text-slate-300">
-              No theory questions are available yet.
+              No backend questions are available yet.
             </p>
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-amber-300">
+                  <p className="text-xs uppercase tracking-[0.28em] text-emerald-300">
                     {currentQuestion.topic}
                   </p>
                   <h2 className="mt-3 text-2xl font-bold text-white">
@@ -186,7 +192,7 @@ export default function TheoryPage() {
               <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
                 {splitExplanation(currentQuestion.explanation).map(
                   (line, index) => (
-                    <p key={`theory-explanation-${currentQuestion.id}-${index}`}>
+                    <p key={`backend-explanation-${currentQuestion.id}-${index}`}>
                       {line}
                     </p>
                   )
@@ -203,7 +209,7 @@ export default function TheoryPage() {
                       onClick={() =>
                         copyCode(currentQuestion.code, currentQuestion.id)
                       }
-                      className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-100 transition hover:bg-amber-400/20"
+                      className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-100 transition hover:bg-emerald-400/20"
                     >
                       {copiedId === currentQuestion.id ? "Copied" : "Copy code"}
                     </button>
@@ -244,7 +250,7 @@ export default function TheoryPage() {
                 <button
                   type="button"
                   onClick={goNext}
-                  className="rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
+                  className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/20"
                 >
                   Next
                 </button>

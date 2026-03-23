@@ -22,6 +22,13 @@ const sections = [
       "Read concise JavaScript concept questions with direct answers and examples.",
     accent: "from-emerald-500/20 to-teal-500/10",
   },
+  {
+    href: "/backend",
+    title: "Backend Questions",
+    description:
+      "Focus on Go and PostgreSQL concepts for backend interview prep.",
+    accent: "from-lime-500/20 to-green-500/10",
+  },
 ];
 
 export default function Home() {
@@ -37,11 +44,12 @@ export default function Home() {
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
             The questions are separated now, so output prediction, theory
-            review, and implementation drills each live on their own page.
+            review, backend prep, and implementation drills each live on their
+            own page.
           </p>
         </header>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-3">
+        <section className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {sections.map((section) => (
             <Link
               key={section.href}
@@ -58,7 +66,7 @@ export default function Home() {
                 {section.description}
               </p>
               <p className="mt-6 text-sm font-semibold text-cyan-100">
-                Enter practice mode →
+                Enter practice mode -&gt;
               </p>
             </Link>
           ))}
@@ -75,8 +83,9 @@ export default function Home() {
           <div className="rounded-4xl border border-white/10 bg-slate-950/50 p-5">
             <h2 className="text-xl font-bold text-white">How to use it</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              Use output mode for execution order, theory mode for concepts, and
-              implementation mode to practice writing code from scratch.
+              Use output mode for execution order, theory mode for concepts,
+              backend mode for Go and PostgreSQL, and implementation mode to
+              practice writing code from scratch.
             </p>
           </div>
         </section>
