@@ -1,11 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import Script from "next/script";
-import ThemeToggle from "@/components/ThemeToggle";
+import SiteHeader from "@/components/SiteHeader";
 import "./globals.css";
-
-const navLinkClass =
-  "rounded-full border px-4 py-2 text-sm font-semibold transition hover:opacity-95";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,68 +36,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body suppressHydrationWarning className="theme-app min-h-full flex flex-col">
-        <header
-          className="sticky top-0 z-50 border-b backdrop-blur"
-          style={{ background: "var(--surface-strong)", borderColor: "var(--border)" }}
-        >
-          <div className="mx-auto flex w-full max-w-384 flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-4 lg:px-5">
-            <Link
-              href="/"
-              className="text-sm font-black tracking-[0.25em] text-[color:var(--foreground)]"
-            >
-              JS LAB
-            </Link>
-            <div className="flex flex-wrap items-center gap-2">
-              <ThemeToggle />
-              <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-                <Link
-                  href="/output"
-                  className={navLinkClass}
-                  style={{
-                    background: "color-mix(in srgb, #06b6d4 12%, var(--surface-muted))",
-                    borderColor: "color-mix(in srgb, #06b6d4 30%, var(--border))",
-                    color: "var(--foreground)",
-                  }}
-                >
-                  Output
-                </Link>
-                <Link
-                  href="/implementation"
-                  className={navLinkClass}
-                  style={{
-                    background: "color-mix(in srgb, #f59e0b 12%, var(--surface-muted))",
-                    borderColor: "color-mix(in srgb, #f59e0b 30%, var(--border))",
-                    color: "var(--foreground)",
-                  }}
-                >
-                  Implementation
-                </Link>
-                <Link
-                  href="/theory"
-                  className={navLinkClass}
-                  style={{
-                    background: "color-mix(in srgb, #10b981 12%, var(--surface-muted))",
-                    borderColor: "color-mix(in srgb, #10b981 30%, var(--border))",
-                    color: "var(--foreground)",
-                  }}
-                >
-                  Theory
-                </Link>
-                <Link
-                  href="/backend"
-                  className={navLinkClass}
-                  style={{
-                    background: "color-mix(in srgb, #84cc16 12%, var(--surface-muted))",
-                    borderColor: "color-mix(in srgb, #84cc16 30%, var(--border))",
-                    color: "var(--foreground)",
-                  }}
-                >
-                  Backend
-                </Link>
-              </nav>
-            </div>
-          </div>
-        </header>
+        <SiteHeader />
         {children}
       </body>
     </html>
