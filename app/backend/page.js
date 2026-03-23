@@ -134,11 +134,10 @@ export default function BackendPage() {
                 Backend questions
               </p>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-                Go and PostgreSQL interview questions
+                Backend interview questions
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
-                This page focuses on Go concurrency, backend basics, and
-                PostgreSQL concepts.
+                This page focuses on Go, PostgreSQL, and backend fundamentals.
               </p>
             </div>
 
@@ -156,7 +155,7 @@ export default function BackendPage() {
             {deck.length} backend questions
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            Go + PostgreSQL only
+            Go, PostgreSQL, and backend fundamentals
           </span>
         </div>
 
