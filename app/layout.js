@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
           {`(function(){try{var key='hoisting-quiz-theme';var stored=localStorage.getItem(key);var theme=stored==='light'||stored==='dark'?stored:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark';}})();`}
         </Script>
       </head>
-      <body className="theme-app min-h-full flex flex-col">
+      <body suppressHydrationWarning className="theme-app min-h-full flex flex-col">
         <header
           className="sticky top-0 z-50 border-b backdrop-blur"
           style={{ background: "var(--surface-strong)", borderColor: "var(--border)" }}
