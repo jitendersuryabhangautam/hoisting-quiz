@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { conceptQuestions } from "@/lib/conceptQuestions";
@@ -7,6 +9,8 @@ import {
   normalizeCodeBlock,
   shuffleQuestions,
 } from "@/lib/javascriptContent";
+
+const STORAGE_KEY = "theory-seen-questions";
 
 function splitExplanation(text) {
   return (text ?? "")
@@ -26,25 +30,46 @@ function isEditableTarget(target) {
   );
 }
 
-function shuffleTheoryDeck(previousQuestionId = null) {
-  const shuffled = shuffleQuestions(conceptQuestions);
-
-  if (previousQuestionId && shuffled.length > 1 && shuffled[0]?.id === previousQuestionId) {
-    const swapIndex = shuffled.findIndex((question) => question.id !== previousQuestionId);
-
-    if (swapIndex > 0) {
-      [shuffled[0], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[0]];
-    }
+function loadSeenIds() {
+  if (typeof window === "undefined") {
+    return new Set();
   }
 
-  return shuffled;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return new Set();
+
+    const parsed = JSON.parse(stored);
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function buildDeck(seenIds) {
+  const unseen = conceptQuestions.filter((question) => !seenIds.has(question.id));
+  return shuffleQuestions(unseen);
 }
 
 export default function TheoryPage() {
   const [copiedId, setCopiedId] = useState(null);
-  const [deck, setDeck] = useState(() => shuffleTheoryDeck());
+  const [seenIds, setSeenIds] = useState(() => new Set());
+  const [deck, setDeck] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const hasQuestions = deck.length > 0;
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const initialSeen = loadSeenIds();
+    setSeenIds(initialSeen);
+    setDeck(buildDeck(initialSeen));
+    setCurrentIndex(0);
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...seenIds]));
+  }, [hydrated, seenIds]);
 
   useEffect(() => {
     if (!copiedId) return undefined;
@@ -62,27 +87,42 @@ export default function TheoryPage() {
     }
   }, []);
 
-  const currentQuestion = deck[currentIndex] ?? deck[0];
+  const currentQuestion = deck[currentIndex] ?? null;
+  const hasQuestions = hydrated && deck.length > 0;
 
-  const reshuffleDeck = useCallback(() => {
-    if (!conceptQuestions.length) return;
+  const markSeen = useCallback((id) => {
+    setSeenIds((prev) => {
+      if (prev.has(id)) return prev;
 
-    setDeck(shuffleTheoryDeck(currentQuestion?.id ?? null));
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  const resetSeenQuestions = useCallback(() => {
+    const empty = new Set();
+    setSeenIds(empty);
+    setDeck(buildDeck(empty));
     setCurrentIndex(0);
     setCopiedId(null);
-  }, [currentQuestion?.id]);
+    window.localStorage.removeItem(STORAGE_KEY);
+  }, []);
 
   const goNext = useCallback(() => {
-    if (!hasQuestions) return;
+    if (!currentQuestion) return;
+
+    markSeen(currentQuestion.id);
 
     if (currentIndex + 1 < deck.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      setDeck(shuffleTheoryDeck(currentQuestion?.id ?? null));
+      setDeck([]);
       setCurrentIndex(0);
     }
+
     setCopiedId(null);
-  }, [currentIndex, currentQuestion?.id, deck, hasQuestions]);
+  }, [currentIndex, currentQuestion, deck.length, markSeen]);
 
   const goPrevious = useCallback(() => {
     if (!hasQuestions) return;
@@ -98,7 +138,8 @@ export default function TheoryPage() {
         event.altKey ||
         event.ctrlKey ||
         event.metaKey ||
-        isEditableTarget(event.target)
+        isEditableTarget(event.target) ||
+        !hasQuestions
       ) {
         return;
       }
@@ -116,7 +157,7 @@ export default function TheoryPage() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [goNext, goPrevious]);
+  }, [goNext, goPrevious, hasQuestions]);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.14),_transparent_28%),linear-gradient(180deg,_#140f08_0%,_#0e1220_55%,_#050816_100%)] text-slate-100">
@@ -147,18 +188,31 @@ export default function TheoryPage() {
 
         <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-300">
           <span className="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 font-semibold text-amber-100">
-            {deck.length} theory questions
+            {seenIds.size}/{conceptQuestions.length} seen
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            Separate from output and implementation practice
+            Shuffled once, no repeats until reset
           </span>
         </div>
 
         <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/6 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
-          {!hasQuestions ? (
+          {!hydrated ? (
             <p className="text-sm leading-6 text-slate-300">
-              No theory questions are available yet.
+              Loading theory questions...
             </p>
+          ) : !hasQuestions ? (
+            <div className="space-y-4">
+              <p className="text-sm leading-6 text-slate-300">
+                You have seen every theory question in this page.
+              </p>
+              <button
+                type="button"
+                onClick={resetSeenQuestions}
+                className="rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
+              >
+                Reset seen questions
+              </button>
+            </div>
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -236,10 +290,10 @@ export default function TheoryPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={reshuffleDeck}
+                  onClick={resetSeenQuestions}
                   className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
                 >
-                  Shuffle deck
+                  Reset seen questions
                 </button>
                 <button
                   type="button"
