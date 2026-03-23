@@ -624,7 +624,10 @@ export default function PracticeMode({
   ) : null;
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_30%),linear-gradient(180deg,#07111f_0%,#0b1324_45%,#050816_100%)] text-slate-100">
+    <main
+      className="theme-page-practice min-h-screen text-slate-100"
+      style={{ background: "var(--practice-background)" }}
+    >
       {resetModalOpen ? (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[1.75rem] border border-cyan-400/50 bg-slate-950 p-6 shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_0_40px_rgba(34,211,238,0.15)]">
@@ -921,7 +924,7 @@ export default function PracticeMode({
                       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
                         Code
                       </p>
-                      <pre className="overflow-x-auto rounded-3xl border border-white/10 bg-[#09111f] p-4 text-sm leading-6 text-slate-200">
+                      <pre className="overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-200">
                         {normalizeCodeBlock(displayQuestion.code)}
                       </pre>
                     </div>
