@@ -5,10 +5,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { conceptQuestions } from "@/lib/conceptQuestions";
-import {
-  normalizeCodeBlock,
-  shuffleQuestions,
-} from "@/lib/javascriptContent";
+import { normalizeCodeBlock, shuffleQuestions } from "@/lib/javascriptContent";
 
 const STORAGE_KEY = "theory-seen-questions";
 
@@ -26,7 +23,7 @@ function isEditableTarget(target) {
 
   return Boolean(
     target.isContentEditable ||
-      target.closest("textarea, input, select, [contenteditable='true']")
+    target.closest("textarea, input, select, [contenteditable='true']")
   );
 }
 
@@ -47,7 +44,9 @@ function loadSeenIds() {
 }
 
 function buildDeck(seenIds) {
-  const unseen = conceptQuestions.filter((question) => !seenIds.has(question.id));
+  const unseen = conceptQuestions.filter(
+    (question) => !seenIds.has(question.id)
+  );
   return shuffleQuestions(unseen);
 }
 
@@ -243,7 +242,9 @@ export default function TheoryPage() {
               <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
                 {splitExplanation(currentQuestion.explanation).map(
                   (line, index) => (
-                    <p key={`theory-explanation-${currentQuestion.id}-${index}`}>
+                    <p
+                      key={`theory-explanation-${currentQuestion.id}-${index}`}
+                    >
                       {line}
                     </p>
                   )
