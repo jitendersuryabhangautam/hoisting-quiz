@@ -6,6 +6,11 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
   {
+    href: "/introduction",
+    label: "Introduction",
+    accent: "#f43f5e",
+  },
+  {
     href: "/output",
     label: "Output",
     accent: "#06b6d4",
@@ -58,7 +63,7 @@ export default function SiteHeader() {
       className="sticky top-0 z-50 border-b backdrop-blur"
       style={{ background: "var(--surface-strong)", borderColor: "var(--border)" }}
     >
-      <div className="mx-auto flex w-full max-w-384 items-center justify-between gap-3 px-3 py-2.5 sm:px-4 lg:px-5">
+      <div className="mx-auto flex w-full max-w-384 items-center gap-3 px-3 py-2.5 sm:px-4 lg:px-5">
         <Link
           href="/"
           className="text-sm font-black tracking-[0.25em] text-[color:var(--foreground)]"
@@ -67,7 +72,13 @@ export default function SiteHeader() {
           JS LAB
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
+          <nav className="hidden flex-wrap gap-2 text-sm font-semibold md:flex">
+            {navItems.map((item) => (
+              <NavLink key={item.href} href={item.href} label={item.label} accent={item.accent} />
+            ))}
+          </nav>
+
           <ThemeToggle />
 
           <button
@@ -86,11 +97,6 @@ export default function SiteHeader() {
           </button>
         </div>
 
-        <nav className="hidden flex-wrap gap-2 text-sm font-semibold md:flex">
-          {navItems.map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} accent={item.accent} />
-          ))}
-        </nav>
       </div>
 
       {menuOpen ? (

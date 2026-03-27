@@ -2,6 +2,13 @@ import Link from "next/link";
 
 const sections = [
   {
+    href: "/introduction",
+    title: "Introduction",
+    description:
+      "A concise personal introduction covering your experience, current role, stack, and project impact.",
+    accent: "from-rose-500/20 to-pink-500/10",
+  },
+  {
     href: "/output",
     title: "Output Questions",
     description:
@@ -52,7 +59,7 @@ export default function Home() {
           </p>
         </header>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
           {sections.map((section) => (
             <Link
               key={section.href}

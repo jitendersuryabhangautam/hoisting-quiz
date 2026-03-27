@@ -12,6 +12,7 @@
   --app-background: linear-gradient(180deg, #07111f 0%, #050816 100%);
   --home-background: radial-gradient(circle at top, rgba(34, 211, 238, 0.16), transparent 28%), linear-gradient(180deg, #07111f 0%, #050816 100%);
   --practice-background: radial-gradient(circle at top, rgba(34, 211, 238, 0.15), transparent 30%), linear-gradient(180deg, #07111f 0%, #0b1324 45%, #050816 100%);
+  --introduction-background: radial-gradient(circle at top, rgba(244, 63, 94, 0.16), transparent 30%), radial-gradient(circle at right, rgba(251, 113, 133, 0.1), transparent 24%), linear-gradient(180deg, #140811 0%, #0d1223 55%, #050816 100%);
   --output-background: radial-gradient(circle at top, rgba(34, 211, 238, 0.15), transparent 28%), linear-gradient(180deg, #07111f 0%, #050816 100%);
   --implementation-background: radial-gradient(circle at top, rgba(249, 115, 22, 0.15), transparent 28%), linear-gradient(180deg, #120b08 0%, #0c1220 55%, #050816 100%);
   --theory-background: radial-gradient(circle at top, rgba(250, 204, 21, 0.14), transparent 28%), linear-gradient(180deg, #140f08 0%, #0e1220 55%, #050816 100%);
@@ -31,6 +32,7 @@ html[data-theme="light"] {
   --app-background: linear-gradient(180deg, #ffffff 0%, #eaf2ff 100%);
   --home-background: radial-gradient(circle at top, rgba(14, 165, 233, 0.18), transparent 26%), radial-gradient(circle at right, rgba(168, 85, 247, 0.1), transparent 22%), linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
   --practice-background: radial-gradient(circle at top, rgba(14, 165, 233, 0.16), transparent 28%), radial-gradient(circle at left, rgba(34, 197, 94, 0.08), transparent 20%), linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  --introduction-background: radial-gradient(circle at top, rgba(244, 63, 94, 0.16), transparent 28%), radial-gradient(circle at right, rgba(251, 113, 133, 0.09), transparent 20%), linear-gradient(180deg, #fff8fb 0%, #f5faff 100%);
   --output-background: radial-gradient(circle at top, rgba(14, 165, 233, 0.18), transparent 26%), radial-gradient(circle at right, rgba(56, 189, 248, 0.08), transparent 20%), linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
   --implementation-background: radial-gradient(circle at top, rgba(249, 115, 22, 0.16), transparent 26%), radial-gradient(circle at right, rgba(251, 191, 36, 0.08), transparent 20%), linear-gradient(180deg, #fffefb 0%, #f6f9ff 100%);
   --theory-background: radial-gradient(circle at top, rgba(250, 204, 21, 0.16), transparent 26%), radial-gradient(circle at left, rgba(244, 114, 182, 0.08), transparent 20%), linear-gradient(180deg, #fffdf2 0%, #f7faff 100%);
@@ -113,6 +115,10 @@ html[data-theme="light"] ::selection {
 
 .theme-page-practice {
   background: var(--practice-background);
+}
+
+.theme-page-introduction {
+  background: var(--introduction-background);
 }
 
 .theme-page-output {
