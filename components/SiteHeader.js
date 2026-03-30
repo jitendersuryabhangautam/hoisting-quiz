@@ -16,6 +16,11 @@ const navItems = [
     accent: "#06b6d4",
   },
   {
+    href: "/go-output",
+    label: "Go Output",
+    accent: "#10b981",
+  },
+  {
     href: "/implementation",
     label: "Implementation",
     accent: "#f59e0b",

@@ -16,6 +16,13 @@ const sections = [
     accent: "from-cyan-500/20 to-sky-500/10",
   },
   {
+    href: "/go-output",
+    title: "Go Output Questions",
+    description:
+      "Practice Go scoping, defer order, goroutines, slices, maps, interfaces, and select behavior by predicting output.",
+    accent: "from-green-500/20 to-emerald-500/10",
+  },
+  {
     href: "/implementation",
     title: "Implementation Questions",
     description:
@@ -59,7 +66,7 @@ export default function Home() {
           </p>
         </header>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {sections.map((section) => (
             <Link
               key={section.href}
