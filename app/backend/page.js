@@ -22,6 +22,8 @@ export default function BackendPage() {
       backButtonClassName="inline-flex items-center justify-center rounded-full border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/20"
       resetButtonClassName="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-400/20"
       sidebarSeenClassName="border-emerald-400/30 bg-emerald-400/12 text-emerald-100 hover:bg-emerald-400/18"
+      enableSidebarSearch
+      sidebarSearchPlaceholder="Search full questions or keywords..."
     />
   );
 }

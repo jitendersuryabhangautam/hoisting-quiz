@@ -74,6 +74,8 @@ export default function QuestionIndexPage({
   backButtonClassName,
   resetButtonClassName,
   sidebarSeenClassName,
+  enableSidebarSearch = false,
+  sidebarSearchPlaceholder = "Search questions or keywords...",
 }) {
   const [copiedId, setCopiedId] = useState(null);
   const [seenIds, setSeenIds] = useState(() => new Set());
@@ -81,6 +83,7 @@ export default function QuestionIndexPage({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarSearch, setSidebarSearch] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
   const questionMap = useMemo(
@@ -89,6 +92,13 @@ export default function QuestionIndexPage({
   );
   const validIds = useMemo(
     () => new Set(questions.map((question) => question.id)),
+    [questions]
+  );
+  const questionOrderMap = useMemo(
+    () =>
+      new Map(
+        questions.map((question, index) => [question.id, index + 1])
+      ),
     [questions]
   );
 
@@ -146,6 +156,27 @@ export default function QuestionIndexPage({
   const progressLabel = selectedQuestionId
     ? "Selected from sidebar"
     : `${currentIndex + 1} / ${deck.length}`;
+  const normalizedSidebarSearch = sidebarSearch.trim().toLowerCase();
+  const filteredQuestions = useMemo(() => {
+    if (!enableSidebarSearch || !normalizedSidebarSearch) {
+      return questions;
+    }
+
+    return questions.filter((question) => {
+      const searchableParts = [
+        question.id,
+        question.title,
+        question.prompt,
+        question.topic,
+        ...(Array.isArray(question.keywords) ? question.keywords : []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableParts.includes(normalizedSidebarSearch);
+    });
+  }, [enableSidebarSearch, normalizedSidebarSearch, questions]);
 
   const resetSeenQuestions = useCallback(() => {
     const empty = new Set();
@@ -268,17 +299,33 @@ export default function QuestionIndexPage({
             Seen questions turn green.
           </p>
         </div>
-        <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold ${accentSoftClassName}`}
-        >
-          {questions.length} total
+        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${accentSoftClassName}`}>
+          {filteredQuestions.length}
+          {enableSidebarSearch && normalizedSidebarSearch ? ` / ${questions.length}` : ""} total
         </span>
       </div>
 
+      {enableSidebarSearch ? (
+        <div className="mt-4">
+          <label htmlFor="sidebar-search" className="sr-only">
+            Search questions
+          </label>
+          <input
+            id="sidebar-search"
+            type="search"
+            value={sidebarSearch}
+            onChange={(event) => setSidebarSearch(event.target.value)}
+            placeholder={sidebarSearchPlaceholder}
+            className="w-full rounded-xl border border-white/15 bg-slate-950/55 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-white/35 focus:ring-2 focus:ring-white/20"
+          />
+        </div>
+      ) : null}
+
       <nav className="mt-4 max-h-[65vh] space-y-2 overflow-y-auto pr-1 smooth-scroll lg:max-h-[70vh]">
-        {questions.map((question, index) => {
+        {filteredQuestions.map((question) => {
           const isSeen = seenIds.has(question.id);
           const isActive = currentQuestion?.id === question.id;
+          const displayIndex = questionOrderMap.get(question.id) ?? "-";
 
           return (
             <button
@@ -296,7 +343,7 @@ export default function QuestionIndexPage({
                 .join(" ")}
             >
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-                Question {index + 1}
+                Question {displayIndex}
               </p>
               <p className="mt-2 text-sm font-semibold leading-5">
                 {question.title}
@@ -304,6 +351,11 @@ export default function QuestionIndexPage({
             </button>
           );
         })}
+        {filteredQuestions.length === 0 ? (
+          <p className="rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-slate-300">
+            No matching questions.
+          </p>
+        ) : null}
       </nav>
     </div>
   );
