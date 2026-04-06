@@ -24,6 +24,7 @@ export default function TheoryPage() {
       sidebarSeenClassName="border-emerald-400/30 bg-emerald-400/12 text-emerald-100 hover:bg-emerald-400/18"
       enableSidebarSearch
       sidebarSearchPlaceholder="Search full questions or keywords..."
+      sidebarShowPrompt
     />
   );
 }

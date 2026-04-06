@@ -76,6 +76,7 @@ export default function QuestionIndexPage({
   sidebarSeenClassName,
   enableSidebarSearch = false,
   sidebarSearchPlaceholder = "Search questions or keywords...",
+  sidebarShowPrompt = false,
 }) {
   const [copiedId, setCopiedId] = useState(null);
   const [seenIds, setSeenIds] = useState(() => new Set());
@@ -348,6 +349,19 @@ export default function QuestionIndexPage({
               <p className="mt-2 text-sm font-semibold leading-5">
                 {question.title}
               </p>
+              {sidebarShowPrompt ? (
+                <p
+                  className="mt-2 text-xs leading-5 text-slate-300"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {question.prompt}
+                </p>
+              ) : null}
             </button>
           );
         })}
