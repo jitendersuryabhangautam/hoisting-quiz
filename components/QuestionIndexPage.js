@@ -20,7 +20,7 @@ function isEditableTarget(target) {
 
   return Boolean(
     target.isContentEditable ||
-      target.closest("textarea, input, select, [contenteditable='true']")
+    target.closest("textarea, input, select, [contenteditable='true']")
   );
 }
 
@@ -107,10 +107,7 @@ export default function QuestionIndexPage({
     [questions]
   );
   const questionOrderMap = useMemo(
-    () =>
-      new Map(
-        questions.map((question, index) => [question.id, index + 1])
-      ),
+    () => new Map(questions.map((question, index) => [question.id, index + 1])),
     [questions]
   );
 
@@ -163,7 +160,7 @@ export default function QuestionIndexPage({
   const currentQuestion =
     selectedQuestionId && questionMap.has(selectedQuestionId)
       ? questionMap.get(selectedQuestionId)
-      : deck[currentIndex] ?? null;
+      : (deck[currentIndex] ?? null);
   const hasQuestions = hydrated && deck.length > 0;
   const progressLabel = selectedQuestionId
     ? "Selected from sidebar"
@@ -211,7 +208,9 @@ export default function QuestionIndexPage({
 
   const selectQuestion = useCallback(
     (questionId) => {
-      const deckIndex = deck.findIndex((question) => question.id === questionId);
+      const deckIndex = deck.findIndex(
+        (question) => question.id === questionId
+      );
 
       if (deckIndex >= 0) {
         setCurrentIndex(deckIndex);
@@ -246,7 +245,13 @@ export default function QuestionIndexPage({
     }
 
     setCopiedId(null);
-  }, [currentIndex, currentQuestion, deck.length, markSeen, selectedQuestionId]);
+  }, [
+    currentIndex,
+    currentQuestion,
+    deck.length,
+    markSeen,
+    selectedQuestionId,
+  ]);
 
   const goPrevious = useCallback(() => {
     if (selectedQuestionId) {
@@ -312,16 +317,23 @@ export default function QuestionIndexPage({
     <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur sm:rounded-[2rem] sm:p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}>
+          <p
+            className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}
+          >
             Question index
           </p>
           <p className="mt-2 text-sm text-slate-300">
             Seen questions turn green.
           </p>
         </div>
-        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${accentSoftClassName}`}>
+        <span
+          className={`rounded-full border px-3 py-1 text-xs font-semibold ${accentSoftClassName}`}
+        >
           {filteredQuestions.length}
-          {enableSidebarSearch && normalizedSidebarSearch ? ` / ${questions.length}` : ""} total
+          {enableSidebarSearch && normalizedSidebarSearch
+            ? ` / ${questions.length}`
+            : ""}{" "}
+          total
         </span>
       </div>
 
@@ -436,7 +448,9 @@ export default function QuestionIndexPage({
         <header className="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-2xl backdrop-blur sm:rounded-[2rem] sm:py-5 md:px-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className={`text-xs uppercase tracking-[0.35em] ${accentTextClassName}`}>
+              <p
+                className={`text-xs uppercase tracking-[0.35em] ${accentTextClassName}`}
+              >
                 {eyebrow}
               </p>
               <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -459,7 +473,9 @@ export default function QuestionIndexPage({
         </header>
 
         <div className="mt-4 flex flex-col gap-2 text-sm text-slate-300 sm:mt-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-          <span className={`rounded-full border px-3 py-1 font-semibold ${accentClassName}`}>
+          <span
+            className={`rounded-full border px-3 py-1 font-semibold ${accentClassName}`}
+          >
             {seenIds.size}/{questions.length} seen
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:hidden">
@@ -470,7 +486,9 @@ export default function QuestionIndexPage({
               <span>Order</span>
               <select
                 value={shuffleEnabled ? "shuffle" : "serial"}
-                onChange={(event) => setShuffleEnabled(event.target.value === "shuffle")}
+                onChange={(event) =>
+                  setShuffleEnabled(event.target.value === "shuffle")
+                }
                 className="rounded border border-white/15 bg-slate-950/70 px-2 py-1 text-xs text-slate-100 outline-none"
               >
                 <option value="serial">Serial</option>
@@ -503,7 +521,9 @@ export default function QuestionIndexPage({
             />
             <div className="relative z-10 h-full w-[min(24rem,88vw)] overflow-y-auto border-r border-white/10 bg-[#081122] p-3 shadow-2xl sm:p-4">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <p className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}>
+                <p
+                  className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}
+                >
                   Questions
                 </p>
                 <button
@@ -556,7 +576,9 @@ export default function QuestionIndexPage({
               <>
                 <div className="relative flex min-w-0 flex-wrap items-start justify-between gap-3 pr-12 sm:pr-0">
                   <div className="min-w-0">
-                    <p className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}>
+                    <p
+                      className={`text-xs uppercase tracking-[0.28em] ${accentTextClassName}`}
+                    >
                       {currentQuestion.topic}
                     </p>
                     <h2 className="mt-3 text-xl font-bold text-white break-words sm:text-2xl">
@@ -580,11 +602,16 @@ export default function QuestionIndexPage({
                         className="h-4 w-4"
                         aria-hidden="true"
                       >
-                        <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+                        <path
+                          d="M4 7h16M4 12h16M4 17h16"
+                          strokeLinecap="round"
+                        />
                       </svg>
                     </span>
                   </button>
-                  <p className="hidden text-sm text-slate-300 sm:block">{progressLabel}</p>
+                  <p className="hidden text-sm text-slate-300 sm:block">
+                    {progressLabel}
+                  </p>
                 </div>
 
                 <p
@@ -604,15 +631,17 @@ export default function QuestionIndexPage({
                 ) : null}
                 {showAnswerAndExplanation ? (
                   <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
-                    {splitExplanation(currentQuestion.explanation).map((line, index) => (
-                      <p
-                        key={`${currentQuestion.id}-explanation-${index}`}
-                        className="break-words"
-                        style={{ overflowWrap: "anywhere" }}
-                      >
-                        {line}
-                      </p>
-                    ))}
+                    {splitExplanation(currentQuestion.explanation).map(
+                      (line, index) => (
+                        <p
+                          key={`${currentQuestion.id}-explanation-${index}`}
+                          className="break-words"
+                          style={{ overflowWrap: "anywhere" }}
+                        >
+                          {line}
+                        </p>
+                      )
+                    )}
                   </div>
                 ) : null}
                 {currentQuestion.code ? (
@@ -623,10 +652,14 @@ export default function QuestionIndexPage({
                       </p>
                       <button
                         type="button"
-                        onClick={() => copyCode(currentQuestion.code, currentQuestion.id)}
+                        onClick={() =>
+                          copyCode(currentQuestion.code, currentQuestion.id)
+                        }
                         className={resetButtonClassName}
                       >
-                        {copiedId === currentQuestion.id ? "Copied" : "Copy code"}
+                        {copiedId === currentQuestion.id
+                          ? "Copied"
+                          : "Copy code"}
                       </button>
                     </div>
                     <pre className="mt-3 overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
@@ -680,7 +713,8 @@ export default function QuestionIndexPage({
           className="fixed inset-x-0 bottom-0 z-30 border-t p-3 backdrop-blur lg:hidden"
           style={{
             borderColor: "var(--border)",
-            background: "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
+            background:
+              "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
           }}
         >
           <div className="mx-auto grid w-full max-w-[96rem] grid-cols-3 gap-2">

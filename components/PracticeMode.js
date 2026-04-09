@@ -40,7 +40,7 @@ function isEditableTarget(target) {
 
   return Boolean(
     target.isContentEditable ||
-      target.closest("textarea, input, select, [contenteditable='true']")
+    target.closest("textarea, input, select, [contenteditable='true']")
   );
 }
 
@@ -84,7 +84,9 @@ export default function PracticeMode({
     return seededShuffleQuestions(available, shuffleSeed);
   }, [questions, storedAttempted, shuffleSeed, orderMode]);
   const isOutputOnlyPage = useMemo(
-    () => questions.length > 0 && questions.every((question) => question.type === "output"),
+    () =>
+      questions.length > 0 &&
+      questions.every((question) => question.type === "output"),
     [questions]
   );
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -614,14 +616,16 @@ export default function PracticeMode({
               {currentQuestion.expected}
             </p>
             <div className="mt-3 space-y-1 text-sm leading-6 text-slate-300">
-              {splitExplanation(currentQuestion.explanation).map((line, index) => (
-                <p key={`mobile-explanation-${currentQuestion.id}-${index}`}>
-                  <span className="mr-1 font-semibold text-slate-200">
-                    {index + 1})
-                  </span>
-                  <span>{line}</span>
-                </p>
-              ))}
+              {splitExplanation(currentQuestion.explanation).map(
+                (line, index) => (
+                  <p key={`mobile-explanation-${currentQuestion.id}-${index}`}>
+                    <span className="mr-1 font-semibold text-slate-200">
+                      {index + 1})
+                    </span>
+                    <span>{line}</span>
+                  </p>
+                )
+              )}
             </div>
           </div>
         ) : (
@@ -652,7 +656,6 @@ export default function PracticeMode({
           Next
         </button>
       </div>
-
     </div>
   ) : null;
 
@@ -791,8 +794,8 @@ export default function PracticeMode({
                     : "No attempted questions saved yet."}
                 </p>
                 <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Use the sidebar to move through the attempted queue one card at
-                  a time.
+                  Use the sidebar to move through the attempted queue one card
+                  at a time.
                 </p>
               </div>
             </div>
@@ -895,7 +898,9 @@ export default function PracticeMode({
                     onClick={resetSession}
                     className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
                   >
-                    {orderMode === "shuffle" ? "Shuffle deck" : "Restart from first"}
+                    {orderMode === "shuffle"
+                      ? "Shuffle deck"
+                      : "Restart from first"}
                   </button>
                   <button
                     onClick={openResetModal}
@@ -957,34 +962,34 @@ export default function PracticeMode({
                       enableQuestionListSidebar ? "hidden sm:grid" : ""
                     }`}
                   >
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                      Focus
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
-                      {title}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={openMobileAttemptedPanel}
-                    className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 text-left transition hover:border-cyan-400/30 hover:bg-slate-950/60 sm:px-4"
-                  >
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                      Attempted progress
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
-                      {attemptedCount} attempted out of {questions.length}
-                    </p>
-                  </button>
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                      Order
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
-                      {currentIdx + 1} / {deck.length} in {orderMode} mode
-                    </p>
-                  </div>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                        Focus
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-white">
+                        {title}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={openMobileAttemptedPanel}
+                      className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 text-left transition hover:border-cyan-400/30 hover:bg-slate-950/60 sm:px-4"
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                        Attempted progress
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-white">
+                        {attemptedCount} attempted out of {questions.length}
+                      </p>
+                    </button>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                        Order
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-white">
+                        {currentIdx + 1} / {deck.length} in {orderMode} mode
+                      </p>
+                    </div>
                   </div>
                 </>
               )}
@@ -1037,7 +1042,10 @@ export default function PracticeMode({
                             className="h-4 w-4"
                             aria-hidden="true"
                           >
-                            <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+                            <path
+                              d="M4 7h16M4 12h16M4 17h16"
+                              strokeLinecap="round"
+                            />
                           </svg>
                         </button>
                       ) : null}
@@ -1126,8 +1134,8 @@ export default function PracticeMode({
                               Starter included
                             </p>
                             <p className="mt-2 text-sm leading-6 text-[color:var(--foreground)]">
-                              The starter code is already loaded into the
-                              editor below, so you can edit it directly.
+                              The starter code is already loaded into the editor
+                              below, so you can edit it directly.
                             </p>
                           </div>
                         ) : null}
@@ -1168,7 +1176,9 @@ export default function PracticeMode({
                               ? "Show ref"
                               : "Check"}
                           </span>
-                          <span className="hidden sm:inline">{actionLabel}</span>
+                          <span className="hidden sm:inline">
+                            {actionLabel}
+                          </span>
                         </button>
                         {secondaryActionLabel ? (
                           <button
@@ -1176,7 +1186,9 @@ export default function PracticeMode({
                             className="shrink-0 whitespace-nowrap rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-400/20 sm:px-5 sm:py-3 sm:text-sm"
                           >
                             <span className="sm:hidden">Reveal</span>
-                            <span className="hidden sm:inline">{secondaryActionLabel}</span>
+                            <span className="hidden sm:inline">
+                              {secondaryActionLabel}
+                            </span>
                           </button>
                         ) : null}
                         <button
@@ -1184,7 +1196,9 @@ export default function PracticeMode({
                           className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
                         >
                           <span className="sm:hidden">Next</span>
-                          <span className="hidden sm:inline">Next question</span>
+                          <span className="hidden sm:inline">
+                            Next question
+                          </span>
                         </button>
                         <button
                           onClick={goPrev}
@@ -1198,7 +1212,9 @@ export default function PracticeMode({
                           className="shrink-0 whitespace-nowrap rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/20 sm:px-5 sm:py-3 sm:text-sm"
                         >
                           <span className="sm:hidden">Clear</span>
-                          <span className="hidden sm:inline">Clear current</span>
+                          <span className="hidden sm:inline">
+                            Clear current
+                          </span>
                         </button>
                       </div>
                     </>
@@ -1309,15 +1325,15 @@ export default function PracticeMode({
                                 {currentQuestion.expected}
                               </p>
                               <div className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
-                                {splitExplanation(currentQuestion.explanation).map(
-                                  (line, index) => (
-                                    <p
-                                      key={`${currentQuestion.id}-overlay-explain-${index}`}
-                                    >
-                                      {line}
-                                    </p>
-                                  )
-                                )}
+                                {splitExplanation(
+                                  currentQuestion.explanation
+                                ).map((line, index) => (
+                                  <p
+                                    key={`${currentQuestion.id}-overlay-explain-${index}`}
+                                  >
+                                    {line}
+                                  </p>
+                                ))}
                               </div>
                             </div>
                           ) : null}
@@ -1904,15 +1920,15 @@ export default function PracticeMode({
                                 Explanation
                               </p>
                               <div className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
-                                {splitExplanation(currentQuestion.explanation).map(
-                                  (line, index) => (
-                                    <p
-                                      key={`${currentQuestion.id}-checked-explain-${index}`}
-                                    >
-                                      {line}
-                                    </p>
-                                  )
-                                )}
+                                {splitExplanation(
+                                  currentQuestion.explanation
+                                ).map((line, index) => (
+                                  <p
+                                    key={`${currentQuestion.id}-checked-explain-${index}`}
+                                  >
+                                    {line}
+                                  </p>
+                                ))}
                               </div>
                               <p className="mt-3 text-xs leading-5 text-slate-400">
                                 Click `Reveal Answer` if you want the actual

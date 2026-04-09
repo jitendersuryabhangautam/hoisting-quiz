@@ -71,7 +71,10 @@ export default function SiteHeader() {
   return (
     <header
       className="sticky top-0 z-50 border-b backdrop-blur"
-      style={{ background: "var(--surface-strong)", borderColor: "var(--border)" }}
+      style={{
+        background: "var(--surface-strong)",
+        borderColor: "var(--border)",
+      }}
     >
       <div className="mx-auto flex w-full max-w-384 items-center gap-3 px-3 py-2.5 sm:px-4 lg:px-5">
         <Link
@@ -85,7 +88,12 @@ export default function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <nav className="hidden flex-wrap gap-2 text-sm font-semibold md:flex">
             {navItems.map((item) => (
-              <NavLink key={item.href} href={item.href} label={item.label} accent={item.accent} />
+              <NavLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                accent={item.accent}
+              />
             ))}
           </nav>
 
@@ -106,11 +114,13 @@ export default function SiteHeader() {
             <span aria-hidden="true">{menuOpen ? "×" : "☰"}</span>
           </button>
         </div>
-
       </div>
 
       {menuOpen ? (
-        <div className="border-t md:hidden" style={{ borderColor: "var(--border)" }}>
+        <div
+          className="border-t md:hidden"
+          style={{ borderColor: "var(--border)" }}
+        >
           <div className="mx-auto flex w-full max-w-384 flex-col gap-2 px-3 py-3 sm:px-4 lg:px-5">
             {navItems.map((item) => (
               <NavLink
