@@ -531,6 +531,7 @@ export default function PracticeMode({
       ]
     : sidebarTabsWithIndex;
   const showMobileAttemptedPanel = sidebarTab === "attempted";
+  const showMobileQuestionPanel = sidebarTab === "questions";
   const closeMobileAttemptedPanel = () => {
     setReviewQuestionId(null);
     setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
@@ -538,6 +539,13 @@ export default function PracticeMode({
   const openMobileAttemptedPanel = () => {
     setReviewQuestionId(null);
     setSidebarTab("attempted");
+  };
+  const openMobileQuestionPanel = () => {
+    setReviewQuestionId(null);
+    setSidebarTab("questions");
+  };
+  const closeMobileQuestionPanel = () => {
+    setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
   };
 
   const mobileFeedbackPopup = showMobilePopupFeedback ? (
@@ -922,7 +930,33 @@ export default function PracticeMode({
                   </div>
                 </div>
               ) : (
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <>
+                  {enableQuestionListSidebar ? (
+                    <div className="mt-4 flex flex-wrap gap-2 sm:hidden">
+                      <span className="rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs font-semibold text-slate-200">
+                        {currentIdx + 1}/{deck.length} {orderMode}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={openMobileAttemptedPanel}
+                        className="rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-slate-950/60"
+                      >
+                        Attempted {attemptedCount}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={openMobileQuestionPanel}
+                        className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
+                      >
+                        Questions
+                      </button>
+                    </div>
+                  ) : null}
+                  <div
+                    className={`mt-6 grid gap-3 sm:grid-cols-3 ${
+                      enableQuestionListSidebar ? "hidden sm:grid" : ""
+                    }`}
+                  >
                   <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-3 sm:px-4">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                       Focus
@@ -951,7 +985,8 @@ export default function PracticeMode({
                       {currentIdx + 1} / {deck.length} in {orderMode} mode
                     </p>
                   </div>
-                </div>
+                  </div>
+                </>
               )}
 
               <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-900">
@@ -986,6 +1021,26 @@ export default function PracticeMode({
                       <span className="text-sm text-slate-400">
                         Question {currentIdx + 1} of {deck.length}
                       </span>
+                      {enableQuestionListSidebar ? (
+                        <button
+                          type="button"
+                          onClick={openMobileQuestionPanel}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10 sm:hidden"
+                          aria-label="Open question list"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          >
+                            <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+                          </svg>
+                        </button>
+                      ) : null}
                       {collapsibleSidebar ? (
                         <button
                           type="button"
@@ -1091,39 +1146,48 @@ export default function PracticeMode({
                       </div>
 
                       <div
-                        className={`flex flex-wrap gap-3 ${isOutputOnlyPage ? "hidden sm:flex" : ""}`}
+                        className={`flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0 ${isOutputOnlyPage ? "hidden sm:flex" : ""}`}
                       >
                         <button
                           onClick={actionHandler}
-                          className="rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+                          className="shrink-0 whitespace-nowrap rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110 sm:px-5 sm:py-3 sm:text-sm"
                         >
-                          {actionLabel}
+                          <span className="sm:hidden">
+                            {currentQuestion?.type === "implementation"
+                              ? "Show ref"
+                              : "Check"}
+                          </span>
+                          <span className="hidden sm:inline">{actionLabel}</span>
                         </button>
                         {secondaryActionLabel ? (
                           <button
                             onClick={secondaryActionHandler}
-                            className="rounded-full border border-amber-400/25 bg-amber-400/10 px-5 py-3 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
+                            className="shrink-0 whitespace-nowrap rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-400/20 sm:px-5 sm:py-3 sm:text-sm"
                           >
-                            {secondaryActionLabel}
+                            <span className="sm:hidden">Reveal</span>
+                            <span className="hidden sm:inline">{secondaryActionLabel}</span>
                           </button>
                         ) : null}
                         <button
                           onClick={goNext}
-                          className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                          className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
                         >
-                          Next question
+                          <span className="sm:hidden">Next</span>
+                          <span className="hidden sm:inline">Next question</span>
                         </button>
                         <button
                           onClick={goPrev}
-                          className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                          className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
                         >
-                          Previous
+                          <span className="sm:hidden">Prev</span>
+                          <span className="hidden sm:inline">Previous</span>
                         </button>
                         <button
                           onClick={resetCurrentAnswer}
-                          className="rounded-full border border-rose-400/20 bg-rose-400/10 px-5 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+                          className="shrink-0 whitespace-nowrap rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/20 sm:px-5 sm:py-3 sm:text-sm"
                         >
-                          Clear current
+                          <span className="sm:hidden">Clear</span>
+                          <span className="hidden sm:inline">Clear current</span>
                         </button>
                       </div>
                     </>
@@ -1275,6 +1339,59 @@ export default function PracticeMode({
               </article>
 
               {mobileFeedbackPopup}
+
+              {showMobileQuestionPanel ? (
+                <div
+                  className={`fixed inset-x-3 ${isOutputOnlyPage ? "bottom-20" : "bottom-3"} z-50 flex max-h-[72vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/96 shadow-2xl backdrop-blur sm:hidden`}
+                >
+                  <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                        Questions
+                      </p>
+                      <p className="mt-1 text-xs text-slate-300">
+                        Jump directly to any question
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={closeMobileQuestionPanel}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+                    <div className="space-y-2">
+                      {deck.map((question, index) => (
+                        <button
+                          key={question.id}
+                          type="button"
+                          onClick={() => {
+                            setReviewQuestionId(null);
+                            setCurrentIdx(index);
+                            closeMobileQuestionPanel();
+                          }}
+                          className={`w-full rounded-xl border px-3 py-2 text-left transition ${
+                            currentQuestion?.id === question.id
+                              ? "border-cyan-400/40 bg-cyan-400/10"
+                              : attemptedIds.has(question.id)
+                                ? "border-emerald-400/25 bg-emerald-400/8"
+                                : "border-white/10 bg-slate-950/50"
+                          }`}
+                        >
+                          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                            Q{index + 1}
+                          </p>
+                          <p className="mt-1 line-clamp-2 text-sm font-semibold text-white">
+                            {question.title}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               {showMobileAttemptedPanel ? (
                 <div

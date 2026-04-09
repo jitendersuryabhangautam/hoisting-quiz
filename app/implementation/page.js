@@ -9,6 +9,10 @@ export default function ImplementationPage() {
       description="This mode contains only implementation tasks, so you can focus on building functions and algorithms."
       questions={implementationQuestions}
       storageKey="implementation"
+      collapsibleSidebar
+      enableQuestionListSidebar
+      enableOrderToggle
+      defaultOrderMode="serial"
     />
   );
 }
