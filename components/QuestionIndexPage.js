@@ -54,9 +54,9 @@ function loadSeenIds(storageKey, storageScope, validIds) {
   }
 }
 
-function buildDeck(questions, seenIds) {
+function buildDeck(questions, seenIds, shouldShuffle) {
   const unseen = questions.filter((question) => !seenIds.has(question.id));
-  return shuffleQuestions(unseen);
+  return shouldShuffle ? shuffleQuestions(unseen) : unseen;
 }
 
 export default function QuestionIndexPage({
@@ -77,6 +77,12 @@ export default function QuestionIndexPage({
   enableSidebarSearch = false,
   sidebarSearchPlaceholder = "Search questions or keywords...",
   sidebarShowPrompt = false,
+  enableShuffleChoice = false,
+  defaultShuffle = true,
+  showAnswerAndExplanation = true,
+  collapsibleSidebar = false,
+  defaultSidebarCollapsed = false,
+  confirmBeforeReset = false,
 }) {
   const [copiedId, setCopiedId] = useState(null);
   const [seenIds, setSeenIds] = useState(() => new Set());
@@ -86,6 +92,11 @@ export default function QuestionIndexPage({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [shuffleEnabled, setShuffleEnabled] = useState(defaultShuffle);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    defaultSidebarCollapsed
+  );
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   const questionMap = useMemo(
     () => new Map(questions.map((question) => [question.id, question])),
@@ -106,11 +117,11 @@ export default function QuestionIndexPage({
   useEffect(() => {
     const initialSeen = loadSeenIds(storageKey, storageScope, validIds);
     setSeenIds(initialSeen);
-    setDeck(buildDeck(questions, initialSeen));
+    setDeck(buildDeck(questions, initialSeen, shuffleEnabled));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setHydrated(true);
-  }, [questions, storageKey, storageScope, validIds]);
+  }, [questions, storageKey, storageScope, validIds, shuffleEnabled]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -182,13 +193,21 @@ export default function QuestionIndexPage({
   const resetSeenQuestions = useCallback(() => {
     const empty = new Set();
     setSeenIds(empty);
-    setDeck(buildDeck(questions, empty));
+    setDeck(buildDeck(questions, empty, shuffleEnabled));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setCopiedId(null);
     setSidebarOpen(false);
     window.localStorage.removeItem(storageKey);
-  }, [questions, storageKey]);
+  }, [questions, storageKey, shuffleEnabled]);
+
+  const requestResetSeenQuestions = useCallback(() => {
+    if (confirmBeforeReset) {
+      setResetConfirmOpen(true);
+      return;
+    }
+    resetSeenQuestions();
+  }, [confirmBeforeReset, resetSeenQuestions]);
 
   const selectQuestion = useCallback(
     (questionId) => {
@@ -379,6 +398,40 @@ export default function QuestionIndexPage({
       className={`${themeClassName} min-h-screen w-full overflow-x-hidden text-slate-100`}
       style={{ background }}
     >
+      {resetConfirmOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[1.75rem] border border-rose-400/50 bg-slate-950 p-6 shadow-[0_0_0_1px_rgba(251,113,133,0.35),0_0_40px_rgba(251,113,133,0.15)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-rose-300">
+              Confirm reset
+            </p>
+            <h2 className="mt-3 text-2xl font-bold text-white">
+              Reset seen questions?
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              This will clear your seen progress for this page in this browser.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  resetSeenQuestions();
+                  setResetConfirmOpen(false);
+                }}
+                className="rounded-full border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setResetConfirmOpen(false)}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto w-full max-w-[96rem] px-3 pb-24 pt-4 sm:px-4 sm:py-6 sm:pb-6 lg:px-5">
         <header className="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-2xl backdrop-blur sm:rounded-[2rem] sm:py-5 md:px-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -412,9 +465,32 @@ export default function QuestionIndexPage({
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:hidden">
             {progressLabel}
           </span>
-          <span className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:inline-flex">
-            Shuffled once, no repeats until reset
-          </span>
+          {enableShuffleChoice ? (
+            <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em]">
+              <span>Order</span>
+              <select
+                value={shuffleEnabled ? "shuffle" : "serial"}
+                onChange={(event) => setShuffleEnabled(event.target.value === "shuffle")}
+                className="rounded border border-white/15 bg-slate-950/70 px-2 py-1 text-xs text-slate-100 outline-none"
+              >
+                <option value="serial">Serial</option>
+                <option value="shuffle">Shuffle</option>
+              </select>
+            </label>
+          ) : (
+            <span className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:inline-flex">
+              Shuffled once, no repeats until reset
+            </span>
+          )}
+          {collapsibleSidebar ? (
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed((prev) => !prev)}
+              className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-200 transition hover:bg-white/10 lg:inline-flex"
+            >
+              {sidebarCollapsed ? "Show list" : "Hide list"}
+            </button>
+          ) : null}
         </div>
 
         {sidebarOpen ? (
@@ -443,8 +519,18 @@ export default function QuestionIndexPage({
           </div>
         ) : null}
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
-          <aside className="hidden lg:sticky lg:top-5 lg:block lg:self-start">
+        <div
+          className={`mt-6 grid gap-6 ${
+            collapsibleSidebar && sidebarCollapsed
+              ? "lg:grid-cols-1"
+              : "lg:grid-cols-[22rem_minmax(0,1fr)]"
+          }`}
+        >
+          <aside
+            className={`hidden lg:sticky lg:top-5 lg:self-start ${
+              collapsibleSidebar && sidebarCollapsed ? "" : "lg:block"
+            }`}
+          >
             {sidebar}
           </aside>
 
@@ -460,7 +546,7 @@ export default function QuestionIndexPage({
                 </p>
                 <button
                   type="button"
-                  onClick={resetSeenQuestions}
+                  onClick={requestResetSeenQuestions}
                   className={resetButtonClassName}
                 >
                   Reset seen questions
@@ -507,24 +593,28 @@ export default function QuestionIndexPage({
                 >
                   {currentQuestion.prompt}
                 </p>
-                <p
-                  className="mt-4 text-sm leading-6 text-slate-300 break-words"
-                  style={{ overflowWrap: "anywhere" }}
-                >
-                  <span className="font-semibold text-white">Answer: </span>
-                  {currentQuestion.expected}
-                </p>
-                <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
-                  {splitExplanation(currentQuestion.explanation).map((line, index) => (
-                    <p
-                      key={`${currentQuestion.id}-explanation-${index}`}
-                      className="break-words"
-                      style={{ overflowWrap: "anywhere" }}
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
+                {showAnswerAndExplanation && currentQuestion.expected ? (
+                  <p
+                    className="mt-4 text-sm leading-6 text-slate-300 break-words"
+                    style={{ overflowWrap: "anywhere" }}
+                  >
+                    <span className="font-semibold text-white">Answer: </span>
+                    {currentQuestion.expected}
+                  </p>
+                ) : null}
+                {showAnswerAndExplanation ? (
+                  <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
+                    {splitExplanation(currentQuestion.explanation).map((line, index) => (
+                      <p
+                        key={`${currentQuestion.id}-explanation-${index}`}
+                        className="break-words"
+                        style={{ overflowWrap: "anywhere" }}
+                      >
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
                 {currentQuestion.code ? (
                   <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -567,7 +657,7 @@ export default function QuestionIndexPage({
                   </button>
                   <button
                     type="button"
-                    onClick={resetSeenQuestions}
+                    onClick={requestResetSeenQuestions}
                     className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
                   >
                     Reset seen questions
@@ -608,7 +698,7 @@ export default function QuestionIndexPage({
             </button>
             <button
               type="button"
-              onClick={resetSeenQuestions}
+              onClick={requestResetSeenQuestions}
               className={resetButtonClassName}
             >
               Reset

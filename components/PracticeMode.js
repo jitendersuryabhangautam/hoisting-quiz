@@ -57,6 +57,11 @@ export default function PracticeMode({
   feedbackMode = "inline",
   sidebarMode = "help",
   storageKey,
+  collapsibleSidebar = false,
+  defaultSidebarCollapsed = false,
+  enableQuestionListSidebar = false,
+  enableOrderToggle = false,
+  defaultOrderMode = "shuffle",
 }) {
   const [storedAttempted, setStoredAttempted] = useState(() => new Set());
   const [attempted, setAttempted] = useState(() => new Set());
@@ -68,11 +73,16 @@ export default function PracticeMode({
   const [reviewQuestionId, setReviewQuestionId] = useState(null);
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [notice, setNotice] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    defaultSidebarCollapsed
+  );
+  const [orderMode, setOrderMode] = useState(defaultOrderMode);
 
   const deck = useMemo(() => {
     const available = questions.filter((q) => !storedAttempted.has(q.id));
+    if (orderMode === "serial") return available;
     return seededShuffleQuestions(available, shuffleSeed);
-  }, [questions, storedAttempted, shuffleSeed]);
+  }, [questions, storedAttempted, shuffleSeed, orderMode]);
   const isOutputOnlyPage = useMemo(
     () => questions.length > 0 && questions.every((question) => question.type === "output"),
     [questions]
@@ -150,7 +160,13 @@ export default function PracticeMode({
     : -1;
 
   const resetSession = () => {
+    if (orderMode === "serial") {
+      setCurrentIdx(0);
+      setNotice("Switched back to the first question in serial order.");
+      return;
+    }
     setShuffleSeed((prev) => prev + 1);
+    setNotice("Deck reshuffled.");
   };
 
   const resetAttempted = () => {
@@ -202,7 +218,9 @@ export default function PracticeMode({
     setCurrentIdx((idx) => {
       if (idx + 1 < deck.length) return idx + 1;
       setNotice(
-        "You have reached the end of this shuffled deck. Shuffle again to get a new order."
+        orderMode === "shuffle"
+          ? "You have reached the end of this shuffled deck. Shuffle again to get a new order."
+          : "You have reached the last question in serial order."
       );
       return idx;
     });
@@ -488,6 +506,9 @@ export default function PracticeMode({
         { id: "help", label: "Help" },
         { id: "attempted", label: "Attempted" },
       ];
+  const sidebarTabsWithIndex = enableQuestionListSidebar
+    ? [...sidebarTabs, { id: "questions", label: "Questions" }]
+    : sidebarTabs;
 
   useEffect(() => {
     setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
@@ -508,7 +529,7 @@ export default function PracticeMode({
         { id: "answers", label: "Answer" },
         { id: "back", label: "Back to practice" },
       ]
-    : sidebarTabs;
+    : sidebarTabsWithIndex;
   const showMobileAttemptedPanel = sidebarTab === "attempted";
   const closeMobileAttemptedPanel = () => {
     setReviewQuestionId(null);
@@ -847,11 +868,26 @@ export default function PracticeMode({
                   >
                     Back to menu
                   </Link>
+                  {enableOrderToggle ? (
+                    <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100">
+                      <span className="text-xs uppercase tracking-[0.18em] text-slate-300">
+                        Order
+                      </span>
+                      <select
+                        value={orderMode}
+                        onChange={(event) => setOrderMode(event.target.value)}
+                        className="rounded border border-white/10 bg-slate-950/60 px-2 py-1 text-xs text-slate-100 outline-none"
+                      >
+                        <option value="serial">Serial</option>
+                        <option value="shuffle">Shuffle</option>
+                      </select>
+                    </label>
+                  ) : null}
                   <button
                     onClick={resetSession}
                     className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
                   >
-                    Shuffle deck
+                    {orderMode === "shuffle" ? "Shuffle deck" : "Restart from first"}
                   </button>
                   <button
                     onClick={openResetModal}
@@ -881,7 +917,7 @@ export default function PracticeMode({
                       Order
                     </p>
                     <p className="mt-1 text-sm font-semibold text-white">
-                      {currentIdx + 1} / {deck.length} in this shuffle
+                      {currentIdx + 1} / {deck.length} in {orderMode} mode
                     </p>
                   </div>
                 </div>
@@ -912,7 +948,7 @@ export default function PracticeMode({
                       Order
                     </p>
                     <p className="mt-1 text-sm font-semibold text-white">
-                      {currentIdx + 1} / {deck.length} in this shuffle
+                      {currentIdx + 1} / {deck.length} in {orderMode} mode
                     </p>
                   </div>
                 </div>
@@ -928,7 +964,13 @@ export default function PracticeMode({
               </div>
             </header>
 
-            <section className="grid gap-6 lg:grid-cols-[1.45fr_0.85fr] lg:items-start">
+            <section
+              className={`grid gap-6 lg:items-start ${
+                collapsibleSidebar && sidebarCollapsed
+                  ? "lg:grid-cols-1"
+                  : "lg:grid-cols-[1.45fr_0.85fr]"
+              }`}
+            >
               <article className="self-start overflow-hidden rounded-4xl border border-white/10 bg-white/6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
                 <div className="border-b border-white/10 bg-slate-950/50 px-4 py-4 sm:px-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -940,9 +982,20 @@ export default function PracticeMode({
                         {displayQuestion.type}
                       </span>
                     </div>
-                    <span className="text-sm text-slate-400">
-                      Question {currentIdx + 1} of {deck.length}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-slate-400">
+                        Question {currentIdx + 1} of {deck.length}
+                      </span>
+                      {collapsibleSidebar ? (
+                        <button
+                          type="button"
+                          onClick={() => setSidebarCollapsed((prev) => !prev)}
+                          className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10 lg:inline-flex"
+                        >
+                          {sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
 
                   <h2 className="mt-4 text-2xl font-bold text-white">
@@ -1477,7 +1530,11 @@ export default function PracticeMode({
                 </div>
               ) : null}
 
-              <aside className="hidden smooth-scroll space-y-6 lg:block lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
+              <aside
+                className={`hidden smooth-scroll space-y-6 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1 ${
+                  collapsibleSidebar && sidebarCollapsed ? "" : "lg:block"
+                }`}
+              >
                 <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                   {displayQuestion.type === "implementation" &&
                   (isReviewingAttempted || isRevealed) ? (
@@ -1527,7 +1584,48 @@ export default function PracticeMode({
                     })}
                   </div>
 
-                  {sidebarTab === "attempted" ? (
+                  {sidebarTab === "questions" ? (
+                    <div className="mt-4 flex min-h-0 flex-1 flex-col">
+                      <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
+                        All questions
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Jump to any question directly.
+                      </p>
+                      <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                        {deck.map((question, index) => {
+                          const isActive =
+                            !isReviewingAttempted &&
+                            currentQuestion?.id === question.id;
+                          const isDone = attemptedIds.has(question.id);
+                          return (
+                            <button
+                              key={question.id}
+                              type="button"
+                              onClick={() => {
+                                setReviewQuestionId(null);
+                                setCurrentIdx(index);
+                              }}
+                              className={`w-full rounded-2xl border p-3 text-left transition ${
+                                isActive
+                                  ? "border-cyan-400/40 bg-cyan-400/10"
+                                  : isDone
+                                    ? "border-emerald-400/25 bg-emerald-400/8 hover:bg-emerald-400/14"
+                                    : "border-white/10 bg-slate-950/50 hover:border-cyan-400/30 hover:bg-slate-950/80"
+                              }`}
+                            >
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                                Question {index + 1}
+                              </p>
+                              <p className="mt-1 text-sm font-semibold text-white">
+                                {question.title}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : sidebarTab === "attempted" ? (
                     <div className="mt-4 flex min-h-0 flex-1 flex-col">
                       <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
                         Attempted questions
@@ -1711,7 +1809,7 @@ export default function PracticeMode({
                       <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
                         <li>Question-specific skills for this page only.</li>
                         <li>
-                          Randomized order every time you click Shuffle deck.
+                          Switch between serial and shuffle order when enabled.
                         </li>
                         <li>
                           Answer review without mixing other question types.

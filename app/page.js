@@ -43,6 +43,13 @@ const sections = [
       "Focus on Go and PostgreSQL concepts for backend interview prep.",
     accent: "from-lime-500/20 to-green-500/10",
   },
+  {
+    href: "/backend-implementation",
+    title: "Backend Implementation",
+    description:
+      "Practice 100 backend implementation tasks in serial order, with optional shuffle.",
+    accent: "from-emerald-500/20 to-teal-500/10",
+  },
 ];
 
 export default function Home() {

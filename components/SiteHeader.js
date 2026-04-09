@@ -35,6 +35,11 @@ const navItems = [
     label: "Backend",
     accent: "#84cc16",
   },
+  {
+    href: "/backend-implementation",
+    label: "Backend Impl",
+    accent: "#14b8a6",
+  },
 ];
 
 const navButtonBase =
