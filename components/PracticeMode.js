@@ -1110,11 +1110,22 @@ export default function PracticeMode({
                           {answerLabel}
                         </label>
                         {displayQuestion.type === "implementation" ? (
-                          <div className="mb-3 rounded-3xl border border-amber-400/15 bg-amber-400/5 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200">
+                          <div
+                            className="mb-3 rounded-3xl border p-4"
+                            style={{
+                              borderColor:
+                                "color-mix(in srgb, var(--brand-secondary) 35%, var(--border))",
+                              background:
+                                "color-mix(in srgb, var(--brand-secondary) 10%, var(--surface-muted))",
+                            }}
+                          >
+                            <p
+                              className="text-xs font-semibold uppercase tracking-[0.3em]"
+                              style={{ color: "var(--foreground)" }}
+                            >
                               Starter included
                             </p>
-                            <p className="mt-2 text-sm leading-6 text-amber-50">
+                            <p className="mt-2 text-sm leading-6 text-[color:var(--foreground)]">
                               The starter code is already loaded into the
                               editor below, so you can edit it directly.
                             </p>

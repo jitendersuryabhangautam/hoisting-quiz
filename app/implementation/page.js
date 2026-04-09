@@ -4,9 +4,9 @@ import { implementationQuestions } from "@/lib/implementationQuestions";
 export default function ImplementationPage() {
   return (
     <PracticeMode
-      eyebrow="Implementation questions"
-      title="Write the code"
-      description="This mode contains only implementation tasks, so you can focus on building functions and algorithms."
+      eyebrow="JavaScript implementation questions"
+      title="JavaScript coding practice"
+      description="This mode contains JavaScript implementation tasks, so you can focus on writing functions, logic, and algorithms."
       questions={implementationQuestions}
       storageKey="implementation"
       collapsibleSidebar

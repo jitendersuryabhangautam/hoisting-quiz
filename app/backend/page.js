@@ -13,8 +13,8 @@ export default function BackendPage() {
       storageKey={STORAGE_KEY}
       storageScope="backend"
       questions={backendQuestions}
-      eyebrow="Backend questions"
-      title="Backend interview questions"
+      eyebrow="Backend theory questions"
+      title="Backend theory interview questions"
       description="This page focuses on Go, PostgreSQL, and backend fundamentals."
       accentClassName="border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
       accentTextClassName="text-emerald-300"

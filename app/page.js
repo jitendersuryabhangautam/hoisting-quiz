@@ -10,7 +10,7 @@ const sections = [
   },
   {
     href: "/output",
-    title: "Output Questions",
+    title: "JavaScript Output Questions",
     description:
       "Practice hoisting, scope, closures, async timing, and this-binding by predicting console output.",
     accent: "from-cyan-500/20 to-sky-500/10",
@@ -24,28 +24,28 @@ const sections = [
   },
   {
     href: "/implementation",
-    title: "Implementation Questions",
+    title: "JavaScript Implementation",
     description:
-      "Work through array helpers, closures, debounce, grouping, and other code-writing tasks.",
+      "Work through JavaScript coding tasks like array helpers, closures, debounce, grouping, and algorithmic patterns.",
     accent: "from-amber-500/20 to-orange-500/10",
   },
   {
     href: "/theory",
-    title: "Theory Questions",
+    title: "JavaScript Theory Questions",
     description:
       "Read concise JavaScript concept questions with direct answers and examples.",
     accent: "from-emerald-500/20 to-teal-500/10",
   },
   {
     href: "/backend",
-    title: "Backend Questions",
+    title: "Backend Theory Questions",
     description:
       "Focus on Go and PostgreSQL concepts for backend interview prep.",
     accent: "from-lime-500/20 to-green-500/10",
   },
   {
     href: "/backend-implementation",
-    title: "Backend Implementation",
+    title: "Backend Implementation Questions",
     description:
       "Practice 100 backend implementation tasks in serial order, with optional shuffle.",
     accent: "from-emerald-500/20 to-teal-500/10",

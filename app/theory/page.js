@@ -13,7 +13,7 @@ export default function TheoryPage() {
       storageKey={STORAGE_KEY}
       storageScope="theory"
       questions={conceptQuestions}
-      eyebrow="Theory questions"
+      eyebrow="JavaScript theory questions"
       title="JavaScript concept questions and answers"
       description="This page shows all theory/concept questions separately from the practice decks."
       accentClassName="border-amber-400/20 bg-amber-400/10 text-amber-100"

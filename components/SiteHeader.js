@@ -12,7 +12,7 @@ const navItems = [
   },
   {
     href: "/output",
-    label: "Output",
+    label: "JS Output",
     accent: "#06b6d4",
   },
   {
@@ -22,22 +22,22 @@ const navItems = [
   },
   {
     href: "/implementation",
-    label: "Implementation",
+    label: "JS Implementation",
     accent: "#f59e0b",
   },
   {
     href: "/theory",
-    label: "Theory",
+    label: "JS Theory",
     accent: "#10b981",
   },
   {
     href: "/backend",
-    label: "Backend",
+    label: "Backend Theory",
     accent: "#84cc16",
   },
   {
     href: "/backend-implementation",
-    label: "Backend Impl",
+    label: "Backend Implementation",
     accent: "#14b8a6",
   },
 ];
