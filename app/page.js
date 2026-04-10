@@ -50,6 +50,13 @@ const sections = [
       "Practice 100 backend implementation tasks in serial order, with optional shuffle.",
     accent: "from-emerald-500/20 to-teal-500/10",
   },
+  {
+    href: "/postgresql-implementation",
+    title: "PostgreSQL Implementation",
+    description:
+      "Open a dedicated page and reveal the full PostgreSQL e-commerce schema script with one button.",
+    accent: "from-green-500/20 to-emerald-500/10",
+  },
 ];
 
 export default function Home() {

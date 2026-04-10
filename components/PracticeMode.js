@@ -62,6 +62,7 @@ export default function PracticeMode({
   enableQuestionListSidebar = false,
   enableOrderToggle = false,
   defaultOrderMode = "shuffle",
+  renderQuestionTools = null,
 }) {
   const [storedAttempted, setStoredAttempted] = useState(() => new Set());
   const [attempted, setAttempted] = useState(() => new Set());
@@ -145,6 +146,9 @@ export default function PracticeMode({
     ? (questions.find((question) => question.id === reviewQuestionId) ?? null)
     : null;
   const displayQuestion = reviewQuestion ?? currentQuestion;
+  const questionTools = displayQuestion
+    ? renderQuestionTools?.({ question: displayQuestion })
+    : null;
   const currentAnswer = answers[currentIdx] ?? "";
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
@@ -1067,6 +1071,7 @@ export default function PracticeMode({
                   <p className="mt-2 text-sm leading-6 text-slate-300">
                     {displayQuestion.prompt}
                   </p>
+                  {questionTools ? <div className="mt-4">{questionTools}</div> : null}
                 </div>
 
                 <div className="space-y-6 px-4 py-5 sm:px-5">
