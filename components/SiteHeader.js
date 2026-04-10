@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
+import FontSizeToggle from "@/components/FontSizeToggle";
 
 const navGroups = [
   {
@@ -154,6 +155,7 @@ export default function SiteHeader() {
           </nav>
 
           <ThemeToggle />
+          <FontSizeToggle />
 
           <button
             type="button"

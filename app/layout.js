@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
-          {`(function(){try{var key='hoisting-quiz-theme';var stored=localStorage.getItem(key);var theme=stored==='light'||stored==='dark'?stored:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark';}})();`}
+          {`(function(){try{var themeKey='hoisting-quiz-theme';var themeStored=localStorage.getItem(themeKey);var theme=themeStored==='light'||themeStored==='dark'?themeStored:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;var fontKey='hoisting-quiz-font-size';var fontStored=localStorage.getItem(fontKey);var fontSize=fontStored==='sm'||fontStored==='md'||fontStored==='lg'?fontStored:'md';document.documentElement.dataset.fontSize=fontSize;}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark';document.documentElement.dataset.fontSize='md';}})();`}
         </Script>
       </head>
       <body suppressHydrationWarning className="theme-app min-h-full flex flex-col">

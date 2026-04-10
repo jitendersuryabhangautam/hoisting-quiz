@@ -14,6 +14,28 @@ function splitExplanation(text) {
     .filter(Boolean);
 }
 
+function renderStyledInlineText(text) {
+  const value = String(text ?? "");
+  const parts = value.split(/(\*\*[^*][\s\S]*?\*\*)/g);
+
+  return parts.map((part, index) => {
+    const isBoldToken = part.startsWith("**") && part.endsWith("**");
+
+    if (!isBoldToken) {
+      return <span key={`text-part-${index}`}>{part}</span>;
+    }
+
+    return (
+      <span
+        key={`text-part-${index}`}
+        className="font-semibold text-cyan-200"
+      >
+        {part.slice(2, -2)}
+      </span>
+    );
+  });
+}
+
 function isEditableTarget(target) {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -627,12 +649,12 @@ export default function QuestionIndexPage({
                 </div>
 
                 <div className="mt-3 min-h-0 overflow-y-auto pr-1 lg:flex-1">
-                  <p
-                    className="text-sm leading-6 text-slate-300 break-words"
-                    style={{ overflowWrap: "anywhere" }}
-                  >
-                    {currentQuestion.prompt}
-                  </p>
+                <p
+                  className="text-sm leading-6 text-slate-300 break-words"
+                  style={{ overflowWrap: "anywhere" }}
+                >
+                  {renderStyledInlineText(currentQuestion.prompt)}
+                </p>
                   {showAnswerAndExplanation && currentQuestion.expected ? (
                     <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -643,7 +665,7 @@ export default function QuestionIndexPage({
                           className="text-sm leading-6 text-slate-300 break-words"
                           style={{ overflowWrap: "anywhere" }}
                         >
-                          {currentQuestion.expected}
+                          {renderStyledInlineText(currentQuestion.expected)}
                         </p>
                       </div>
                     </div>
@@ -658,13 +680,13 @@ export default function QuestionIndexPage({
                           (line, index) => (
                             <p
                               key={`${currentQuestion.id}-explanation-${index}`}
-                              className="break-words"
-                              style={{ overflowWrap: "anywhere" }}
-                            >
-                              {line}
-                            </p>
-                          )
-                        )}
+                            className="break-words"
+                            style={{ overflowWrap: "anywhere" }}
+                          >
+                            {renderStyledInlineText(line)}
+                          </p>
+                        )
+                      )}
                       </div>
                     </div>
                   ) : null}
