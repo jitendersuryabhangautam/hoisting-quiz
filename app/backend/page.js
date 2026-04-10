@@ -25,6 +25,7 @@ export default function BackendPage() {
       enableSidebarSearch
       sidebarSearchPlaceholder="Search full questions or keywords..."
       sidebarShowPrompt
+      combineAnswerExplanation
     />
   );
 }

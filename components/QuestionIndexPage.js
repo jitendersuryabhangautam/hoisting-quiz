@@ -106,6 +106,7 @@ export default function QuestionIndexPage({
   collapsibleSidebar = false,
   defaultSidebarCollapsed = false,
   confirmBeforeReset = false,
+  combineAnswerExplanation = false,
 }) {
   const [copiedId, setCopiedId] = useState(null);
   const [seenIds, setSeenIds] = useState(() => new Set());
@@ -655,22 +656,60 @@ export default function QuestionIndexPage({
                 >
                   {renderStyledInlineText(currentQuestion.prompt)}
                 </p>
-                  {showAnswerAndExplanation && currentQuestion.expected ? (
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                        Answer
-                      </p>
-                      <div className="mt-2 max-h-32 overflow-y-auto pr-1">
-                        <p
-                          className="text-sm leading-6 text-slate-300 break-words"
-                          style={{ overflowWrap: "anywhere" }}
-                        >
-                          {renderStyledInlineText(currentQuestion.expected)}
+                {showAnswerAndExplanation && combineAnswerExplanation ? (
+                  <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                    <div className="mt-2 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                      {currentQuestion.expected ? (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            Answer
+                          </p>
+                          <p
+                            className="mt-1 break-words"
+                            style={{ overflowWrap: "anywhere" }}
+                          >
+                            {renderStyledInlineText(currentQuestion.expected)}
+                          </p>
+                        </div>
+                      ) : null}
+                      <div className="pt-1">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                          Explanation
                         </p>
+                        <div className="mt-1 space-y-2">
+                          {splitExplanation(currentQuestion.explanation).map(
+                            (line, index) => (
+                              <p
+                                key={`${currentQuestion.id}-explanation-${index}`}
+                                className="break-words"
+                                style={{ overflowWrap: "anywhere" }}
+                              >
+                                {renderStyledInlineText(line)}
+                              </p>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
-                  ) : null}
-                  {showAnswerAndExplanation ? (
+                  </div>
+                ) : null}
+                {showAnswerAndExplanation && !combineAnswerExplanation ? (
+                  <>
+                    {currentQuestion.expected ? (
+                      <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                          Answer
+                        </p>
+                        <div className="mt-2 max-h-32 overflow-y-auto pr-1">
+                          <p
+                            className="text-sm leading-6 text-slate-300 break-words"
+                            style={{ overflowWrap: "anywhere" }}
+                          >
+                            {renderStyledInlineText(currentQuestion.expected)}
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
                     <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                         Explanation
@@ -680,16 +719,17 @@ export default function QuestionIndexPage({
                           (line, index) => (
                             <p
                               key={`${currentQuestion.id}-explanation-${index}`}
-                            className="break-words"
-                            style={{ overflowWrap: "anywhere" }}
-                          >
-                            {renderStyledInlineText(line)}
-                          </p>
-                        )
-                      )}
+                              className="break-words"
+                              style={{ overflowWrap: "anywhere" }}
+                            >
+                              {renderStyledInlineText(line)}
+                            </p>
+                          )
+                        )}
                       </div>
                     </div>
-                  ) : null}
+                  </>
+                ) : null}
                   {currentQuestion.code ? (
                     <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-3">

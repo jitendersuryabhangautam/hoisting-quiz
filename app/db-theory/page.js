@@ -25,6 +25,7 @@ export default function DatabaseTheoryPage() {
       enableSidebarSearch
       sidebarSearchPlaceholder="Search database theory questions or keywords..."
       sidebarShowPrompt
+      combineAnswerExplanation
     />
   );
 }
