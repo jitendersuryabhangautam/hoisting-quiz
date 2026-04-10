@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import CodeBlockContent from "@/components/CodeBlockContent";
 import {
   isAnswerCorrect,
   normalizeCodeBlock,
@@ -656,7 +657,9 @@ export default function PracticeMode({
               Reference solution
             </p>
             <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
-              {normalizeCodeBlock(currentQuestion.referenceSolution)}
+              <CodeBlockContent
+                code={normalizeCodeBlock(currentQuestion.referenceSolution)}
+              />
             </pre>
             {currentQuestion.hint ? (
               <p className="mt-3 text-sm leading-6 text-slate-200">
@@ -794,11 +797,13 @@ export default function PracticeMode({
                   {featuredAttemptedQuestion.code ||
                   featuredAttemptedQuestion.starter ? (
                     <pre className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-xs leading-5 text-slate-200">
-                      {normalizeCodeBlock(
-                        featuredAttemptedQuestion.code ??
-                          featuredAttemptedQuestion.starter ??
-                          ""
-                      )}
+                      <CodeBlockContent
+                        code={normalizeCodeBlock(
+                          featuredAttemptedQuestion.code ??
+                            featuredAttemptedQuestion.starter ??
+                            ""
+                        )}
+                      />
                     </pre>
                   ) : null}
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -857,9 +862,11 @@ export default function PracticeMode({
                       </p>
                       {question.code || question.starter ? (
                         <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs leading-5 text-slate-200">
-                          {normalizeCodeBlock(
-                            question.code ?? question.starter ?? ""
-                          )}
+                          <CodeBlockContent
+                            code={normalizeCodeBlock(
+                              question.code ?? question.starter ?? ""
+                            )}
+                          />
                         </pre>
                       ) : null}
                       <p className="mt-2 text-xs leading-5 text-slate-400">
@@ -1109,7 +1116,9 @@ export default function PracticeMode({
                         Code
                       </p>
                       <pre className="overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-200">
-                        {normalizeCodeBlock(displayQuestion.code)}
+                        <CodeBlockContent
+                          code={normalizeCodeBlock(displayQuestion.code)}
+                        />
                       </pre>
                     </div>
                   ) : null}
@@ -1528,11 +1537,13 @@ export default function PracticeMode({
                                 Question program
                               </p>
                               <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
-                                {normalizeCodeBlock(
-                                  reviewQuestion.code ??
-                                    reviewQuestion.starter ??
-                                    ""
-                                )}
+                                <CodeBlockContent
+                                  code={normalizeCodeBlock(
+                                    reviewQuestion.code ??
+                                      reviewQuestion.starter ??
+                                      ""
+                                  )}
+                                />
                               </pre>
                             </div>
                           ) : null}
@@ -1543,9 +1554,11 @@ export default function PracticeMode({
                                 Reference solution
                               </p>
                               <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
-                                {normalizeCodeBlock(
-                                  reviewQuestion.referenceSolution
-                                )}
+                                <CodeBlockContent
+                                  code={normalizeCodeBlock(
+                                    reviewQuestion.referenceSolution
+                                  )}
+                                />
                               </pre>
                               {reviewQuestion.hint ? (
                                 <p className="mt-3 text-sm leading-6 text-slate-300">
@@ -1670,9 +1683,11 @@ export default function PracticeMode({
                                 </p>
                                 {question.code || question.starter ? (
                                   <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs leading-5 text-slate-200">
-                                    {normalizeCodeBlock(
-                                      question.code ?? question.starter ?? ""
-                                    )}
+                                    <CodeBlockContent
+                                      code={normalizeCodeBlock(
+                                        question.code ?? question.starter ?? ""
+                                      )}
+                                    />
                                   </pre>
                                 ) : null}
                                 <div className="mt-4 flex flex-wrap gap-2">
@@ -1743,7 +1758,11 @@ export default function PracticeMode({
                         Reference solution
                       </p>
                       <pre className="mt-3 overflow-x-auto rounded-2xl border border-amber-400/10 bg-slate-950/70 p-4 text-sm leading-6 text-amber-50">
-                        {normalizeCodeBlock(displayQuestion.referenceSolution)}
+                        <CodeBlockContent
+                          code={normalizeCodeBlock(
+                            displayQuestion.referenceSolution
+                          )}
+                        />
                       </pre>
                       {displayQuestion.hint ? (
                         <p className="mt-4 text-sm leading-6 text-slate-300">
@@ -1862,9 +1881,11 @@ export default function PracticeMode({
                               </p>
                               {question.code || question.starter ? (
                                 <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs leading-5 text-slate-200">
-                                  {normalizeCodeBlock(
-                                    question.code ?? question.starter ?? ""
-                                  )}
+                                  <CodeBlockContent
+                                    code={normalizeCodeBlock(
+                                      question.code ?? question.starter ?? ""
+                                    )}
+                                  />
                                 </pre>
                               ) : null}
                               <p className="mt-3 text-xs leading-5 text-slate-400">

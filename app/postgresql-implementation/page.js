@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import PracticeMode from "@/components/PracticeMode";
+import CodeBlockContent from "@/components/CodeBlockContent";
 import { postgresqlImplementationQuestions } from "@/lib/postgresqlImplementationQuestions";
 import { getRelevantSchemaForQuestion } from "@/lib/postgresqlSchema";
 
@@ -180,7 +181,7 @@ export default function PostgresqlImplementationPage() {
                       <div className="mt-2 min-h-0 flex-1 overflow-auto sm:mt-3">
                         {!schemaModal.showDiagram ? (
                           <pre className="h-full overflow-auto whitespace-pre rounded-2xl border border-white/10 bg-slate-900/80 p-2.5 font-mono text-[11px] leading-5 text-slate-200 sm:p-4 sm:text-sm sm:leading-6">
-                            {schemaText}
+                            <CodeBlockContent code={schemaText} />
                           </pre>
                         ) : null}
 

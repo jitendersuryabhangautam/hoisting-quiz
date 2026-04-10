@@ -35,7 +35,10 @@ const navGroups = [
     id: "postgresql",
     label: "PostgreSQL",
     accent: "#22c55e",
-    items: [{ href: "/postgresql-implementation", label: "PG Implementation" }],
+    items: [
+      { href: "/db-theory", label: "DB Theory" },
+      { href: "/postgresql-implementation", label: "PG Implementation" },
+    ],
   },
 ];
 
@@ -234,4 +237,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-

@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { normalizeCodeBlock, shuffleQuestions } from "@/lib/javascriptContent";
+import CodeBlockContent from "@/components/CodeBlockContent";
 
 function splitExplanation(text) {
   return (text ?? "")
@@ -565,7 +566,7 @@ export default function QuestionIndexPage({
             {sidebar}
           </aside>
 
-          <section className="min-w-0 overflow-x-hidden rounded-[1.5rem] border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-[2rem] sm:p-5">
+          <section className="min-w-0 overflow-x-hidden rounded-[1.5rem] border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-[2rem] sm:p-5 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col">
             {!hydrated ? (
               <p className="text-sm leading-6 text-slate-300">
                 Loading questions...
@@ -625,94 +626,109 @@ export default function QuestionIndexPage({
                   </p>
                 </div>
 
-                <p
-                  className="mt-3 text-sm leading-6 text-slate-300 break-words"
-                  style={{ overflowWrap: "anywhere" }}
-                >
-                  {currentQuestion.prompt}
-                </p>
-                {showAnswerAndExplanation && currentQuestion.expected ? (
+                <div className="mt-3 min-h-0 overflow-y-auto pr-1 lg:flex-1">
                   <p
-                    className="mt-4 text-sm leading-6 text-slate-300 break-words"
+                    className="text-sm leading-6 text-slate-300 break-words"
                     style={{ overflowWrap: "anywhere" }}
                   >
-                    <span className="font-semibold text-white">Answer: </span>
-                    {currentQuestion.expected}
+                    {currentQuestion.prompt}
                   </p>
-                ) : null}
-                {showAnswerAndExplanation ? (
-                  <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
-                    {splitExplanation(currentQuestion.explanation).map(
-                      (line, index) => (
+                  {showAnswerAndExplanation && currentQuestion.expected ? (
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        Answer
+                      </p>
+                      <div className="mt-2 max-h-32 overflow-y-auto pr-1">
                         <p
-                          key={`${currentQuestion.id}-explanation-${index}`}
-                          className="break-words"
+                          className="text-sm leading-6 text-slate-300 break-words"
                           style={{ overflowWrap: "anywhere" }}
                         >
-                          {line}
+                          {currentQuestion.expected}
                         </p>
-                      )
-                    )}
-                  </div>
-                ) : null}
-                {currentQuestion.code ? (
-                  <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                        Program
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          copyCode(currentQuestion.code, currentQuestion.id)
-                        }
-                        className={resetButtonClassName}
-                      >
-                        {copiedId === currentQuestion.id
-                          ? "Copied"
-                          : "Copy code"}
-                      </button>
+                      </div>
                     </div>
-                    <pre className="mt-3 overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
-                      {normalizeCodeBlock(currentQuestion.code)}
+                  ) : null}
+                  {showAnswerAndExplanation ? (
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        Explanation
+                      </p>
+                      <div className="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                        {splitExplanation(currentQuestion.explanation).map(
+                          (line, index) => (
+                            <p
+                              key={`${currentQuestion.id}-explanation-${index}`}
+                              className="break-words"
+                              style={{ overflowWrap: "anywhere" }}
+                            >
+                              {line}
+                            </p>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  {currentQuestion.code ? (
+                    <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                          Program
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            copyCode(currentQuestion.code, currentQuestion.id)
+                          }
+                          className={resetButtonClassName}
+                        >
+                          {copiedId === currentQuestion.id
+                            ? "Copied"
+                            : "Copy code"}
+                        </button>
+                      </div>
+                    <pre className="mt-3 max-h-72 overflow-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
+                      <CodeBlockContent
+                        code={normalizeCodeBlock(currentQuestion.code)}
+                      />
                     </pre>
                   </div>
                 ) : null}
-                {currentQuestion.keywords?.length ? (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {currentQuestion.keywords.map((keyword) => (
-                      <span
-                        key={`${currentQuestion.id}-${keyword}`}
-                        className="rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200"
-                      >
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
+                  {currentQuestion.keywords?.length ? (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {currentQuestion.keywords.map((keyword) => (
+                        <span
+                          key={`${currentQuestion.id}-${keyword}`}
+                          className="rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200"
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
 
-                <div className="mt-6 hidden gap-3 sm:flex sm:flex-wrap">
-                  <button
-                    type="button"
-                    onClick={goPrevious}
-                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    onClick={requestResetSeenQuestions}
-                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                  >
-                    Reset seen questions
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    className={resetButtonClassName}
-                  >
-                    Next
-                  </button>
+                  <div className="mt-6 hidden gap-3 sm:flex sm:flex-wrap">
+                    <button
+                      type="button"
+                      onClick={goPrevious}
+                      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      onClick={requestResetSeenQuestions}
+                      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                    >
+                      Reset seen questions
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goNext}
+                      className={resetButtonClassName}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </>
             ) : null}

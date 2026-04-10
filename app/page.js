@@ -57,6 +57,13 @@ const sections = [
       "Open a dedicated page and reveal the full PostgreSQL e-commerce schema script with one button.",
     accent: "from-green-500/20 to-emerald-500/10",
   },
+  {
+    href: "/db-theory",
+    title: "Database Theory Questions",
+    description:
+      "Study core database concepts, ACID, CAP, SQL vs NoSQL, and PostgreSQL architecture topics.",
+    accent: "from-teal-500/20 to-green-500/10",
+  },
 ];
 
 export default function Home() {
