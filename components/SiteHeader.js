@@ -4,41 +4,38 @@ import Link from "next/link";
 import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const navItems = [
+const navGroups = [
   {
-    href: "/introduction",
+    id: "introduction",
     label: "Introduction",
     accent: "#f43f5e",
+    items: [{ href: "/introduction", label: "Introduction" }],
   },
   {
-    href: "/output",
-    label: "JS Output",
+    id: "javascript",
+    label: "JavaScript",
     accent: "#06b6d4",
+    items: [
+      { href: "/output", label: "JS Output" },
+      { href: "/implementation", label: "JS Implementation" },
+      { href: "/theory", label: "JS Theory" },
+    ],
   },
   {
-    href: "/go-output",
-    label: "Go Output",
-    accent: "#10b981",
-  },
-  {
-    href: "/implementation",
-    label: "JS Implementation",
-    accent: "#f59e0b",
-  },
-  {
-    href: "/theory",
-    label: "JS Theory",
-    accent: "#10b981",
-  },
-  {
-    href: "/backend",
-    label: "Backend Theory",
-    accent: "#84cc16",
-  },
-  {
-    href: "/backend-implementation",
-    label: "Backend Implementation",
+    id: "backend",
+    label: "Backend",
     accent: "#14b8a6",
+    items: [
+      { href: "/go-output", label: "Go Output" },
+      { href: "/backend", label: "Backend Theory" },
+      { href: "/backend-implementation", label: "Backend Implementation" },
+    ],
+  },
+  {
+    id: "postgresql",
+    label: "PostgreSQL",
+    accent: "#22c55e",
+    items: [{ href: "/postgresql-implementation", label: "PG Implementation" }],
   },
 ];
 
@@ -52,7 +49,7 @@ function NavLink({ href, label, accent, mobile = false, onNavigate }) {
       onClick={onNavigate}
       className={`${navButtonBase} ${mobile ? "w-full justify-center text-center" : ""}`}
       style={{
-        display: mobile ? "inline-flex" : "inline-flex",
+        display: "inline-flex",
         background: `color-mix(in srgb, ${accent} 12%, var(--surface-muted))`,
         borderColor: `color-mix(in srgb, ${accent} 30%, var(--border))`,
         color: "var(--foreground)",
@@ -60,6 +57,66 @@ function NavLink({ href, label, accent, mobile = false, onNavigate }) {
     >
       {label}
     </Link>
+  );
+}
+
+function HomeLink({ mobile = false, onNavigate }) {
+  return (
+    <Link
+      href="/"
+      onClick={onNavigate}
+      className={`${navButtonBase} ${mobile ? "w-full justify-center text-center" : ""}`}
+      style={{
+        display: "inline-flex",
+        background: "color-mix(in srgb, #38bdf8 12%, var(--surface-muted))",
+        borderColor: "color-mix(in srgb, #38bdf8 30%, var(--border))",
+        color: "var(--foreground)",
+      }}
+    >
+      Home
+    </Link>
+  );
+}
+
+function GroupNav({ group }) {
+  if (group.items.length === 1) {
+    return (
+      <NavLink
+        href={group.items[0].href}
+        label={group.label}
+        accent={group.accent}
+      />
+    );
+  }
+
+  return (
+    <div className="group relative">
+      <button
+        type="button"
+        className={navButtonBase}
+        style={{
+          display: "inline-flex",
+          background: `color-mix(in srgb, ${group.accent} 12%, var(--surface-muted))`,
+          borderColor: `color-mix(in srgb, ${group.accent} 30%, var(--border))`,
+          color: "var(--foreground)",
+        }}
+      >
+        {group.label}
+      </button>
+
+      <div className="invisible absolute right-0 top-[calc(100%+0.45rem)] z-50 min-w-[16rem] rounded-2xl border border-white/10 bg-slate-950/95 p-2 opacity-0 shadow-2xl transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <div className="flex flex-col gap-2">
+          {group.items.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              accent={group.accent}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -87,13 +144,9 @@ export default function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2">
           <nav className="hidden flex-wrap gap-2 text-sm font-semibold md:flex">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                accent={item.accent}
-              />
+            <HomeLink />
+            {navGroups.map((group) => (
+              <GroupNav key={group.id} group={group} />
             ))}
           </nav>
 
@@ -104,14 +157,38 @@ export default function SiteHeader() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border text-[1.05rem] font-bold shadow-[0_10px_24px_rgba(15,23,42,0.12)] transition hover:-translate-y-px hover:shadow-[0_14px_28px_rgba(15,23,42,0.16)] md:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border text-xs font-bold shadow-[0_10px_24px_rgba(15,23,42,0.12)] transition hover:-translate-y-px hover:shadow-[0_14px_28px_rgba(15,23,42,0.16)] md:hidden"
             style={{
               background: "var(--surface-strong)",
               borderColor: "var(--border)",
               color: "var(--foreground)",
             }}
           >
-            <span aria-hidden="true">{menuOpen ? "×" : "☰"}</span>
+            {menuOpen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
@@ -121,20 +198,40 @@ export default function SiteHeader() {
           className="border-t md:hidden"
           style={{ borderColor: "var(--border)" }}
         >
-          <div className="mx-auto flex w-full max-w-384 flex-col gap-2 px-3 py-3 sm:px-4 lg:px-5">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                accent={item.accent}
-                mobile
-                onNavigate={closeMenu}
-              />
-            ))}
+          <div className="mx-auto max-h-[72vh] w-full max-w-384 overflow-y-auto px-3 py-3 sm:px-4 lg:px-5">
+            <div className="flex flex-col gap-3">
+              <HomeLink mobile onNavigate={closeMenu} />
+
+              {navGroups.map((group) => (
+                <div
+                  key={group.id}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-2"
+                >
+                  <p
+                    className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.2em]"
+                    style={{ color: group.accent }}
+                  >
+                    {group.label}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {group.items.map((item) => (
+                      <NavLink
+                        key={item.href}
+                        href={item.href}
+                        label={item.label}
+                        accent={group.accent}
+                        mobile
+                        onNavigate={closeMenu}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}
     </header>
   );
 }
+

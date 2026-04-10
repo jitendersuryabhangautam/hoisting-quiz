@@ -529,9 +529,20 @@ export default function QuestionIndexPage({
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(false)}
-                  className={resetButtonClassName}
+                  aria-label="Close questions panel"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
                 >
-                  Close
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                  </svg>
                 </button>
               </div>
               {sidebar}

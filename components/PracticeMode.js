@@ -63,6 +63,7 @@ export default function PracticeMode({
   enableOrderToggle = false,
   defaultOrderMode = "shuffle",
   renderQuestionTools = null,
+  onDisplayQuestionChange = null,
 }) {
   const [storedAttempted, setStoredAttempted] = useState(() => new Set());
   const [attempted, setAttempted] = useState(() => new Set());
@@ -149,6 +150,11 @@ export default function PracticeMode({
   const questionTools = displayQuestion
     ? renderQuestionTools?.({ question: displayQuestion })
     : null;
+
+  useEffect(() => {
+    if (!displayQuestion || !onDisplayQuestionChange) return;
+    onDisplayQuestionChange(displayQuestion);
+  }, [displayQuestion, onDisplayQuestionChange]);
   const currentAnswer = answers[currentIdx] ?? "";
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
@@ -592,6 +598,8 @@ export default function PracticeMode({
           </p>
         </div>
         <button
+          type="button"
+          aria-label="Close popup"
           onClick={() => {
             setChecked((prev) => {
               const next = [...prev];
@@ -604,9 +612,19 @@ export default function PracticeMode({
               return next;
             });
           }}
-          className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+          className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
         >
-          Close
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+          </svg>
         </button>
       </div>
 
@@ -640,6 +658,12 @@ export default function PracticeMode({
             <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-sm leading-6 text-amber-50">
               {normalizeCodeBlock(currentQuestion.referenceSolution)}
             </pre>
+            {currentQuestion.hint ? (
+              <p className="mt-3 text-sm leading-6 text-slate-200">
+                <span className="font-semibold text-amber-200">Hint: </span>
+                {currentQuestion.hint}
+              </p>
+            ) : null}
           </div>
         )}
       </div>
@@ -1065,13 +1089,17 @@ export default function PracticeMode({
                     </div>
                   </div>
 
-                  <h2 className="mt-4 text-2xl font-bold text-white">
-                    {displayQuestion.title}
-                  </h2>
+                  <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
+                    <h2 className="text-2xl font-bold text-white">
+                      {displayQuestion.title}
+                    </h2>
+                    {questionTools ? (
+                      <div className="shrink-0">{questionTools}</div>
+                    ) : null}
+                  </div>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
                     {displayQuestion.prompt}
                   </p>
-                  {questionTools ? <div className="mt-4">{questionTools}</div> : null}
                 </div>
 
                 <div className="space-y-6 px-4 py-5 sm:px-5">
@@ -1344,6 +1372,8 @@ export default function PracticeMode({
                           ) : null}
                         </div>
                         <button
+                          type="button"
+                          aria-label="Close overlay"
                           onClick={() => {
                             setChecked((prev) => {
                               const next = [...prev];
@@ -1356,9 +1386,19 @@ export default function PracticeMode({
                               return next;
                             });
                           }}
-                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+                          className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
                         >
-                          Close
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          >
+                            <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -1388,9 +1428,20 @@ export default function PracticeMode({
                     <button
                       type="button"
                       onClick={closeMobileQuestionPanel}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+                      aria-label="Close question panel"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
                     >
-                      Close
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="h-4 w-4"
+                        aria-hidden="true"
+                      >
+                        <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                      </svg>
                     </button>
                   </div>
                   <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
