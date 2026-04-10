@@ -80,6 +80,7 @@ export default function PracticeMode({
     defaultSidebarCollapsed
   );
   const [orderMode, setOrderMode] = useState(defaultOrderMode);
+  const [questionSearch, setQuestionSearch] = useState("");
 
   const deck = useMemo(() => {
     const available = questions.filter((q) => !storedAttempted.has(q.id));
@@ -522,6 +523,28 @@ export default function PracticeMode({
   const sidebarTabsWithIndex = enableQuestionListSidebar
     ? [...sidebarTabs, { id: "questions", label: "Questions" }]
     : sidebarTabs;
+  const normalizedQuestionSearch = questionSearch.trim().toLowerCase();
+  const filteredDeckWithIndex = useMemo(() => {
+    if (!normalizedQuestionSearch) {
+      return deck.map((question, index) => ({ question, index }));
+    }
+
+    return deck
+      .map((question, index) => ({ question, index }))
+      .filter(({ question }) => {
+        const haystack = [
+          question.id,
+          question.topic,
+          question.title,
+          question.prompt,
+          ...(Array.isArray(question.keywords) ? question.keywords : []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(normalizedQuestionSearch);
+      });
+  }, [deck, normalizedQuestionSearch]);
 
   useEffect(() => {
     setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
@@ -1454,8 +1477,21 @@ export default function PracticeMode({
                     </button>
                   </div>
                   <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+                    <div className="mb-3">
+                      <label htmlFor="mobile-question-search" className="sr-only">
+                        Search questions
+                      </label>
+                      <input
+                        id="mobile-question-search"
+                        type="search"
+                        value={questionSearch}
+                        onChange={(event) => setQuestionSearch(event.target.value)}
+                        placeholder="Search by title/topic..."
+                        className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                      />
+                    </div>
                     <div className="space-y-2">
-                      {deck.map((question, index) => (
+                      {filteredDeckWithIndex.map(({ question, index }) => (
                         <button
                           key={question.id}
                           type="button"
@@ -1480,6 +1516,11 @@ export default function PracticeMode({
                           </p>
                         </button>
                       ))}
+                      {filteredDeckWithIndex.length === 0 ? (
+                        <p className="rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-sm text-slate-300">
+                          No matching questions.
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -1811,8 +1852,21 @@ export default function PracticeMode({
                       <p className="mt-2 text-sm leading-6 text-slate-300">
                         Jump to any question directly.
                       </p>
+                      <div className="mt-3">
+                        <label htmlFor="desktop-question-search" className="sr-only">
+                          Search questions
+                        </label>
+                        <input
+                          id="desktop-question-search"
+                          type="search"
+                          value={questionSearch}
+                          onChange={(event) => setQuestionSearch(event.target.value)}
+                          placeholder="Search by title/topic..."
+                          className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                        />
+                      </div>
                       <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-                        {deck.map((question, index) => {
+                        {filteredDeckWithIndex.map(({ question, index }) => {
                           const isActive =
                             !isReviewingAttempted &&
                             currentQuestion?.id === question.id;
@@ -1842,6 +1896,11 @@ export default function PracticeMode({
                             </button>
                           );
                         })}
+                        {filteredDeckWithIndex.length === 0 ? (
+                          <p className="rounded-xl border border-white/10 bg-slate-950/50 px-3 py-3 text-sm text-slate-300">
+                            No matching questions.
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                   ) : sidebarTab === "attempted" ? (
