@@ -1429,7 +1429,10 @@ export default function PracticeMode({
                             className="h-4 w-4"
                             aria-hidden="true"
                           >
-                            <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                            <path
+                              d="M6 6l12 12M18 6L6 18"
+                              strokeLinecap="round"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -1478,14 +1481,19 @@ export default function PracticeMode({
                   </div>
                   <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
                     <div className="mb-3">
-                      <label htmlFor="mobile-question-search" className="sr-only">
+                      <label
+                        htmlFor="mobile-question-search"
+                        className="sr-only"
+                      >
                         Search questions
                       </label>
                       <input
                         id="mobile-question-search"
                         type="search"
                         value={questionSearch}
-                        onChange={(event) => setQuestionSearch(event.target.value)}
+                        onChange={(event) =>
+                          setQuestionSearch(event.target.value)
+                        }
                         placeholder="Search by title/topic..."
                         className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
                       />
@@ -1853,14 +1861,19 @@ export default function PracticeMode({
                         Jump to any question directly.
                       </p>
                       <div className="mt-3">
-                        <label htmlFor="desktop-question-search" className="sr-only">
+                        <label
+                          htmlFor="desktop-question-search"
+                          className="sr-only"
+                        >
                           Search questions
                         </label>
                         <input
                           id="desktop-question-search"
                           type="search"
                           value={questionSearch}
-                          onChange={(event) => setQuestionSearch(event.target.value)}
+                          onChange={(event) =>
+                            setQuestionSearch(event.target.value)
+                          }
                           placeholder="Search by title/topic..."
                           className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
                         />
