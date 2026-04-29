@@ -662,7 +662,7 @@ export default function QuestionIndexPage({
                     disableInternalScrolls
                       ? "overflow-visible"
                       : "min-h-0 overflow-y-auto lg:flex-1"
-                  } pb-24 lg:pb-28`}
+                  } pb-6 smooth-scroll`}
                 >
                   <p
                     className="text-sm leading-6 text-slate-300 wrap-break-word"
@@ -805,7 +805,6 @@ export default function QuestionIndexPage({
                       ))}
                     </div>
                   ) : null}
-
                 </div>
               </>
             ) : null}
