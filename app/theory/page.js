@@ -27,7 +27,6 @@ export default function TheoryPage() {
       sidebarShowPrompt
       enableOrderToggle
       combineAnswerExplanation
-      disableInternalScrolls
     />
   );
 }

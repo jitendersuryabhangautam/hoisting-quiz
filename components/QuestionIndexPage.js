@@ -344,7 +344,7 @@ export default function QuestionIndexPage({
   }, [sidebarOpen]);
 
   const sidebar = (
-    <div className="rounded-3xl border border-white/10 bg-white/6 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur sm:rounded-4xl sm:p-4">
+    <div className="flex h-full min-h-0 flex-col rounded-3xl border border-white/10 bg-white/6 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur sm:rounded-4xl sm:p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p
@@ -383,7 +383,7 @@ export default function QuestionIndexPage({
         </div>
       ) : null}
 
-      <nav className="mt-4 max-h-[65vh] space-y-2 overflow-y-auto pr-1 smooth-scroll lg:max-h-[70vh]">
+      <nav className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 smooth-scroll">
         {filteredQuestions.map((question, index) => {
           const isSeen = seenIds.has(question.id);
           const isActive = currentQuestion?.id === question.id;
@@ -586,7 +586,7 @@ export default function QuestionIndexPage({
           }`}
         >
           <aside
-            className={`hidden lg:sticky lg:top-5 lg:self-start ${
+            className={`hidden lg:sticky lg:top-24 lg:block lg:h-[calc(100vh-7rem)] lg:self-start ${
               collapsibleSidebar && sidebarCollapsed ? "" : "lg:block"
             }`}
           >
@@ -594,7 +594,7 @@ export default function QuestionIndexPage({
           </aside>
 
           <section
-            className={`min-w-0 overflow-x-hidden rounded-3xl border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-4xl sm:p-5 lg:flex lg:flex-col ${
+            className={`min-w-0 overflow-x-hidden rounded-3xl border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-4xl sm:p-5 lg:flex lg:min-h-0 lg:flex-col lg:overflow-hidden ${
               disableInternalScrolls ? "" : "lg:h-[calc(100vh-8rem)]"
             }`}
           >
@@ -662,7 +662,7 @@ export default function QuestionIndexPage({
                     disableInternalScrolls
                       ? "overflow-visible"
                       : "min-h-0 overflow-y-auto lg:flex-1"
-                  }`}
+                  } pb-24 lg:pb-28`}
                 >
                   <p
                     className="text-sm leading-6 text-slate-300 wrap-break-word"
@@ -676,7 +676,7 @@ export default function QuestionIndexPage({
                         className={`mt-2 space-y-2 pr-1 text-sm leading-6 text-slate-300 ${
                           disableInternalScrolls
                             ? "overflow-visible"
-                            : "max-h-80 overflow-y-auto"
+                            : "overflow-visible"
                         }`}
                       >
                         {currentQuestion.expected ? (
@@ -724,7 +724,7 @@ export default function QuestionIndexPage({
                             className={`mt-2 pr-1 ${
                               disableInternalScrolls
                                 ? "overflow-visible"
-                                : "max-h-32 overflow-y-auto"
+                                : "overflow-visible"
                             }`}
                           >
                             <p
@@ -744,7 +744,7 @@ export default function QuestionIndexPage({
                           className={`mt-2 space-y-2 pr-1 text-sm leading-6 text-slate-300 ${
                             disableInternalScrolls
                               ? "overflow-visible"
-                              : "max-h-48 overflow-y-auto"
+                              : "overflow-visible"
                           }`}
                         >
                           {splitExplanation(currentQuestion.explanation).map(
@@ -784,7 +784,7 @@ export default function QuestionIndexPage({
                         className={`mt-3 max-w-full whitespace-pre font-mono text-sm leading-6 text-slate-200 ${
                           disableInternalScrolls
                             ? "overflow-x-auto overflow-y-visible"
-                            : "max-h-72 overflow-auto"
+                            : "overflow-x-auto overflow-y-visible"
                         }`}
                       >
                         <CodeBlockContent
@@ -813,14 +813,7 @@ export default function QuestionIndexPage({
         </div>
       </div>
       {hydrated && (hasQuestions || selectedQuestionId) ? (
-        <div
-          className="fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur"
-          style={{
-            borderColor: "var(--border)",
-            background:
-              "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
-          }}
-        >
+        <div className="fixed inset-x-0 bottom-0 z-30">
           <div className="mx-auto w-full max-w-384 px-3 py-3 sm:px-4 sm:py-3 lg:px-5">
             <div
               className={`lg:grid lg:gap-6 ${
@@ -833,6 +826,14 @@ export default function QuestionIndexPage({
                 className={`grid grid-cols-3 gap-2 ${
                   collapsibleSidebar && sidebarCollapsed ? "" : "lg:col-start-2"
                 }`}
+                style={{
+                  border: "1px solid var(--border)",
+                  background:
+                    "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "9999px",
+                  padding: "0.25rem",
+                }}
               >
                 <button
                   type="button"
