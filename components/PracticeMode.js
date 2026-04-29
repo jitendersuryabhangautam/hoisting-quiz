@@ -157,6 +157,11 @@ export default function PracticeMode({
     if (!displayQuestion || !onDisplayQuestionChange) return;
     onDisplayQuestionChange(displayQuestion);
   }, [displayQuestion, onDisplayQuestionChange]);
+
+  useEffect(() => {
+    if (!displayQuestion) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [displayQuestion?.id]);
   const currentAnswer = answers[currentIdx] ?? "";
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];

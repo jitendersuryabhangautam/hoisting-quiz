@@ -185,6 +185,10 @@ export default function QuestionIndexPage({
     selectedQuestionId && questionMap.has(selectedQuestionId)
       ? questionMap.get(selectedQuestionId)
       : (deck[currentIndex] ?? null);
+  useEffect(() => {
+    if (!currentQuestion) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [currentQuestion?.id]);
   const hasQuestions = hydrated && deck.length > 0;
   const progressLabel = selectedQuestionId
     ? "Selected from sidebar"
