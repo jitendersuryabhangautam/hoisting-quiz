@@ -51,6 +51,11 @@ html[data-theme="light"] {
   --font-mono: var(--font-geist-mono);
 }
 
+.tech-hero-title {
+  font-family: var(--font-space-grotesk), var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  letter-spacing: -0.02em;
+}
+
 html {
   min-height: 100%;
   scroll-behavior: smooth;
@@ -423,22 +428,54 @@ html[data-theme="light"] .nav-logo-mark {
 
 .nav-brand-text {
   letter-spacing: 0.09em;
-  background: linear-gradient(90deg, #0f172a, #0f766e);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #0f172a;
 }
 
 html[data-theme="light"] .nav-brand-text {
+  color: #0f172a;
+}
+
+html[data-theme="dark"] .nav-brand-text {
+  color: #e2e8f0;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .nav-brand-text {
+    background: linear-gradient(90deg, #0f172a, #0f766e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  html[data-theme="dark"] .nav-brand-text {
+    background: linear-gradient(90deg, #e2e8f0, #67e8f9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  html[data-theme="light"] .nav-brand-text {
   background: linear-gradient(90deg, #0f172a, #0369a1);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  }
 }
 
 .nav-link-motion {
   transform: translate3d(0, 0, 0);
   transition: transform 170ms ease, color 170ms ease, background-color 170ms ease;
+}
+
+.nav-dropdown-panel {
+  opacity: 1 !important;
+  filter: none !important;
+  visibility: visible !important;
+  isolation: isolate;
+}
+
+.nav-dropdown-panel a {
+  opacity: 1 !important;
 }
 
 .floating-character {

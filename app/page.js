@@ -207,7 +207,7 @@ export default function Home() {
   const visibleLines = TERMINAL_LINES.slice(0, termIdx + 1).slice(-8);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="theme-page-home min-h-screen">
       <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
@@ -227,7 +227,7 @@ export default function Home() {
                 />
                 Free and Open Source
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
+              <h1 className="tech-hero-title text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
                 Crack Interviews with
                 <span className="bg-brand-gradient bg-clip-text text-transparent">
                   {" "}
@@ -308,7 +308,7 @@ export default function Home() {
 
       <section
         ref={tracksRef}
-        className={`border-t border-slate-100 bg-slate-50/80 py-16 sm:py-24 dark:border-slate-800 dark:bg-slate-900/50 transition-all duration-700 ${tracksVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`border-t border-slate-200/70 bg-white/70 py-16 sm:py-24 dark:border-slate-800 dark:bg-slate-900/50 transition-all duration-700 ${tracksVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
@@ -324,7 +324,7 @@ export default function Home() {
               <Link
                 key={t.name}
                 href={t.href}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-100/70 dark:border-slate-700/80 dark:bg-slate-900"
               >
                 <div
                   className="pointer-events-none absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-linear-to-br from-slate-100/80 to-slate-200/40 transition-transform duration-300 group-hover:scale-125 dark:from-slate-800/60 dark:to-slate-700/30"
@@ -350,7 +350,7 @@ export default function Home() {
       <section
         id="features"
         ref={featRef}
-        className={`py-16 sm:py-24 transition-all duration-700 ${featVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`bg-white/55 py-16 sm:py-24 transition-all duration-700 dark:bg-transparent ${featVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
@@ -365,7 +365,7 @@ export default function Home() {
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-amber-100/70 dark:border-slate-700/80 dark:bg-slate-900"
               >
                 <div
                   className="pointer-events-none absolute -bottom-2 -right-2 h-24 w-24 rounded-full bg-amber-100/50 dark:bg-amber-500/10"
@@ -388,7 +388,7 @@ export default function Home() {
 
       <section
         ref={roadRef}
-        className={`border-t border-violet-100 bg-linear-to-b from-violet-50/60 via-slate-50/80 to-slate-50/80 py-16 sm:py-24 dark:border-violet-900/30 dark:from-violet-950/20 dark:via-slate-900/50 dark:to-slate-900/50 transition-all duration-700 ${roadVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`border-t border-violet-200/70 bg-linear-to-b from-violet-50/65 via-white/80 to-sky-50/55 py-16 sm:py-24 dark:border-violet-900/30 dark:from-violet-950/20 dark:via-slate-900/50 dark:to-slate-900/50 transition-all duration-700 ${roadVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
@@ -400,7 +400,7 @@ export default function Home() {
             {ROADMAP.map((r) => (
               <div
                 key={r.title}
-                className="group relative overflow-hidden rounded-2xl border border-dashed border-violet-300/70 bg-white/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-violet-400/80 dark:border-violet-700/50 dark:bg-slate-900/70 dark:hover:border-violet-600/70"
+                className="group relative overflow-hidden rounded-2xl border border-dashed border-violet-300/70 bg-white/90 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-violet-400/80 dark:border-violet-700/50 dark:bg-slate-900/70 dark:hover:border-violet-600/70"
               >
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   {r.title}

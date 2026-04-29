@@ -85,7 +85,7 @@ export default function SiteHeader() {
   }, [menuOpen]);
 
   return (
-    <nav className="relative sticky top-0 z-50 overflow-hidden border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+    <nav className="relative sticky top-0 z-[1000] overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div aria-hidden="true" className="nav-cartoon-track pointer-events-none">
         <span className="nav-cartoon-runner">
           <svg viewBox="0 0 48 28" className="h-7 w-12" fill="none">
@@ -103,7 +103,7 @@ export default function SiteHeader() {
           </svg>
         </span>
       </div>
-      <div className="relative z-10 mx-auto flex h-14 max-w-7xl items-center justify-between px-3 sm:h-16 sm:px-6 lg:px-8">
+      <div className="relative z-[1001] mx-auto flex h-14 max-w-7xl items-center justify-between overflow-visible px-3 sm:h-16 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="nav-logo-badge nav-logo-mark flex h-10 w-10 items-center justify-center rounded-xl text-slate-900">
             <svg viewBox="0 0 40 40" className="h-8 w-8" fill="none">
@@ -126,7 +126,7 @@ export default function SiteHeader() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-0.5 lg:flex xl:gap-1">
+        <div className="hidden items-center gap-0.5 overflow-visible lg:flex xl:gap-1">
           {/* Home Link */}
           <Link
             href="/"
@@ -146,7 +146,7 @@ export default function SiteHeader() {
             const isOpen = openDropdown === group.label;
 
             return (
-              <div key={group.label} className="relative nav-dropdown">
+              <div key={group.label} className="relative nav-dropdown overflow-visible">
                 <button
                   type="button"
                   onClick={() => setOpenDropdown(isOpen ? null : group.label)}
@@ -174,7 +174,7 @@ export default function SiteHeader() {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800 nav-dropdown">
+                  <div className="nav-dropdown nav-dropdown-panel absolute left-0 top-full z-[1200] mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                     {group.links.map((link) => (
                       <Link
                         key={link.href}
@@ -182,7 +182,7 @@ export default function SiteHeader() {
                         className={`flex items-center gap-2 px-3 py-2 text-sm transition ${
                           pathname === link.href
                             ? "bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100"
-                            : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
+                            : "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-700"
                         }`}
                         onClick={() => setOpenDropdown(null)}
                       >
