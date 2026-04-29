@@ -327,11 +327,11 @@ export default function Home() {
                 className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900"
               >
                 <div
-                  className="pointer-events-none absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-gradient-to-br from-slate-100/80 to-slate-200/40 transition-transform duration-300 group-hover:scale-125 dark:from-slate-800/60 dark:to-slate-700/30"
+                  className="pointer-events-none absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-linear-to-br from-slate-100/80 to-slate-200/40 transition-transform duration-300 group-hover:scale-125 dark:from-slate-800/60 dark:to-slate-700/30"
                   aria-hidden="true"
                 />
                 <div
-                  className={`relative mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${t.color} text-xs font-extrabold ${t.darkText ? "text-white dark:text-slate-900" : "text-white"} shadow-sm transition-transform duration-300 group-hover:scale-110`}
+                  className={`relative mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${t.color} text-xs font-extrabold ${t.darkText ? "text-white dark:text-slate-900" : "text-white"} shadow-sm transition-transform duration-300 group-hover:scale-110`}
                 >
                   {t.icon}
                 </div>
@@ -388,7 +388,7 @@ export default function Home() {
 
       <section
         ref={roadRef}
-        className={`border-t border-violet-100 bg-gradient-to-b from-violet-50/60 via-slate-50/80 to-slate-50/80 py-16 sm:py-24 dark:border-violet-900/30 dark:from-violet-950/20 dark:via-slate-900/50 dark:to-slate-900/50 transition-all duration-700 ${roadVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`border-t border-violet-100 bg-linear-to-b from-violet-50/60 via-slate-50/80 to-slate-50/80 py-16 sm:py-24 dark:border-violet-900/30 dark:from-violet-950/20 dark:via-slate-900/50 dark:to-slate-900/50 transition-all duration-700 ${roadVis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">

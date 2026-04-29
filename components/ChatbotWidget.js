@@ -392,7 +392,7 @@ export default function ChatbotWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="group fixed bottom-20 right-3 z-50 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-white shadow-xl shadow-amber-500/25 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30 sm:bottom-20 sm:right-6 sm:h-14 sm:w-14 dark:from-amber-500 dark:via-amber-600 dark:to-orange-600 dark:shadow-amber-600/20"
+        className="group fixed bottom-20 right-3 z-50 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 via-amber-500 to-orange-500 text-white shadow-xl shadow-amber-500/25 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30 sm:bottom-20 sm:right-6 sm:h-14 sm:w-14 dark:from-amber-500 dark:via-amber-600 dark:to-orange-600 dark:shadow-amber-600/20"
         aria-label="Open AI chat"
       >
         {/* Animated ring */}
@@ -460,9 +460,9 @@ export default function ChatbotWidget() {
         aria-hidden="true"
       />
 
-      <div className="fixed bottom-0 right-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden bg-white shadow-2xl sm:bottom-4 sm:right-4 sm:h-[580px] sm:w-[420px] sm:rounded-3xl sm:border sm:border-slate-200/80 dark:bg-slate-900 dark:sm:border-slate-700/80">
+      <div className="fixed bottom-0 right-0 z-50 flex h-dvh w-full flex-col overflow-hidden bg-white shadow-2xl sm:bottom-4 sm:right-4 sm:h-145 sm:w-105 sm:rounded-3xl sm:border sm:border-slate-200/80 dark:bg-slate-900 dark:sm:border-slate-700/80">
         {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div className="relative flex items-center justify-between bg-gradient-to-br from-amber-500 via-amber-500 to-orange-500 px-4 py-3.5 sm:rounded-t-3xl dark:from-amber-600 dark:via-amber-600 dark:to-orange-600">
+        <div className="relative flex items-center justify-between bg-linear-to-br from-amber-500 via-amber-500 to-orange-500 px-4 py-3.5 sm:rounded-t-3xl dark:from-amber-600 dark:via-amber-600 dark:to-orange-600">
           {/* Decorative dots */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden sm:rounded-t-3xl">
             <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10" />
@@ -567,7 +567,7 @@ export default function ChatbotWidget() {
               >
                 {/* Avatar */}
                 {!isUser && (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-400 shadow-sm dark:from-amber-500 dark:to-orange-500">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-amber-400 to-orange-400 shadow-sm dark:from-amber-500 dark:to-orange-500">
                     <svg
                       viewBox="0 0 16 16"
                       className="h-3.5 w-3.5"
@@ -589,11 +589,11 @@ export default function ChatbotWidget() {
                 <div
                   className={`max-w-[80%] text-sm leading-relaxed ${
                     isUser
-                      ? "rounded-2xl rounded-br-md bg-gradient-to-br from-amber-500 to-orange-500 px-3.5 py-2.5 text-white shadow-sm dark:from-amber-600 dark:to-orange-600"
+                      ? "rounded-2xl rounded-br-md bg-linear-to-br from-amber-500 to-orange-500 px-3.5 py-2.5 text-white shadow-sm dark:from-amber-600 dark:to-orange-600"
                       : "rounded-2xl rounded-bl-md border border-slate-200/80 bg-white px-3.5 py-2.5 text-slate-700 shadow-sm dark:border-slate-700/60 dark:bg-slate-800 dark:text-slate-200"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words">
+                  <p className="whitespace-pre-wrap wrap-break-word">
                     {msg.content}
                   </p>
                   {!isUser &&
@@ -637,7 +637,7 @@ export default function ChatbotWidget() {
           {/* Typing indicator */}
           {isTyping && (
             <div className="flex items-end gap-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-400 shadow-sm dark:from-amber-500 dark:to-orange-500">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-amber-400 to-orange-400 shadow-sm dark:from-amber-500 dark:to-orange-500">
                 <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="white">
                   <rect x="2" y="4" width="12" height="9" rx="3.5" />
                   <circle cx="6" cy="8.5" r="1" fill="#f59e0b" />
@@ -737,7 +737,7 @@ export default function ChatbotWidget() {
               type="button"
               onClick={handleSend}
               disabled={isTyping || !input.trim()}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm transition hover:from-amber-500 hover:to-orange-600 disabled:opacity-30 disabled:shadow-none dark:from-amber-500 dark:to-orange-600"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-sm transition hover:from-amber-500 hover:to-orange-600 disabled:opacity-30 disabled:shadow-none dark:from-amber-500 dark:to-orange-600"
               aria-label="Send message"
             >
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">

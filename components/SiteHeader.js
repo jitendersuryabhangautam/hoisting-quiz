@@ -4,26 +4,75 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const NAV_GROUPS = [
+  {
+    label: "JavaScript",
+    icon: "🟨",
+    links: [
+      { href: "/introduction", label: "Introduction", icon: "👤" },
+      { href: "/output", label: "JS Output", icon: "🟨" },
+      { href: "/theory", label: "JS Theory", icon: "🧠" },
+      { href: "/implementation", label: "JS Implementation", icon: "⚙️" },
+    ],
+  },
+  {
+    label: "Backend",
+    icon: "🏗️",
+    links: [
+      { href: "/backend", label: "Backend Theory", icon: "🏗️" },
+      {
+        href: "/backend-implementation",
+        label: "Backend Implementation",
+        icon: "🔧",
+      },
+    ],
+  },
+  {
+    label: "Database",
+    icon: "🗃️",
+    links: [
+      { href: "/db-theory", label: "DB Theory", icon: "🗃️" },
+      {
+        href: "/postgresql-implementation",
+        label: "PG Implementation",
+        icon: "🐘",
+      },
+    ],
+  },
+  {
+    label: "Go",
+    icon: "🟦",
+    links: [{ href: "/go-output", label: "Go Output", icon: "🟦" }],
+  },
+];
+
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: "🏠" },
-  { href: "/introduction", label: "Introduction", icon: "👤" },
-  { href: "/output", label: "JS Output", icon: "🟨" },
-  { href: "/theory", label: "JS Theory", icon: "🧠" },
-  { href: "/implementation", label: "JS Implementation", icon: "⚙️" },
-  { href: "/go-output", label: "Go Output", icon: "🟦" },
-  { href: "/backend", label: "Backend Theory", icon: "🏗️" },
-  { href: "/backend-implementation", label: "Backend Implementation", icon: "🔧" },
-  { href: "/db-theory", label: "DB Theory", icon: "🗃️" },
-  { href: "/postgresql-implementation", label: "PG Implementation", icon: "🐘" },
+  ...NAV_GROUPS.flatMap((group) => group.links),
 ];
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
     setMenuOpen(false);
+    setOpenDropdown(null);
   }, [pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".nav-dropdown")) {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [openDropdown]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -44,7 +93,12 @@ export default function SiteHeader() {
             <circle cx="29" cy="22" r="4" fill="#0f172a" />
             <circle cx="13" cy="14" r="2" fill="#f8fafc" />
             <circle cx="20" cy="14" r="2" fill="#f8fafc" />
-            <path d="M37 16h7" stroke="#0ea5e9" strokeWidth="3" strokeLinecap="round" />
+            <path
+              d="M37 16h7"
+              stroke="#0ea5e9"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
           </svg>
         </span>
       </div>
@@ -53,7 +107,12 @@ export default function SiteHeader() {
           <span className="nav-logo-badge nav-logo-mark flex h-10 w-10 items-center justify-center rounded-xl text-slate-900">
             <svg viewBox="0 0 40 40" className="h-8 w-8" fill="none">
               <rect x="4" y="4" width="32" height="32" rx="10" fill="#f59e0b" />
-              <path d="M13 24h14M15 18h10" stroke="#0f172a" strokeWidth="2.6" strokeLinecap="round" />
+              <path
+                d="M13 24h14M15 18h10"
+                stroke="#0f172a"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+              />
               <circle cx="14.5" cy="14.5" r="2.1" fill="#0f172a" />
               <circle cx="25.5" cy="14.5" r="2.1" fill="#0f172a" />
             </svg>
@@ -67,20 +126,74 @@ export default function SiteHeader() {
         </Link>
 
         <div className="hidden items-center gap-0.5 lg:flex xl:gap-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`nav-link-motion inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition xl:px-2.5 xl:py-2 xl:text-sm ${
-                pathname === link.href
-                  ? "bg-brand-gradient text-white shadow-md shadow-amber-500/20"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-              }`}
-            >
-              <span aria-hidden="true">{link.icon}</span>
-              {link.label}
-            </Link>
-          ))}
+          {/* Home Link */}
+          <Link
+            href="/"
+            className={`nav-link-motion inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition xl:px-2.5 xl:py-2 xl:text-sm ${
+              pathname === "/"
+                ? "bg-brand-gradient text-white shadow-md shadow-amber-500/20"
+                : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            }`}
+          >
+            <span aria-hidden="true">🏠</span>
+            Home
+          </Link>
+
+          {/* Technology Group Dropdowns */}
+          {NAV_GROUPS.map((group) => {
+            const isActive = group.links.some((link) => pathname === link.href);
+            const isOpen = openDropdown === group.label;
+
+            return (
+              <div key={group.label} className="relative nav-dropdown">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdown(isOpen ? null : group.label)}
+                  className={`nav-link-motion inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition xl:px-2.5 xl:py-2 xl:text-sm ${
+                    isActive
+                      ? "bg-brand-gradient text-white shadow-md shadow-amber-500/20"
+                      : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  <span aria-hidden="true">{group.icon}</span>
+                  {group.label}
+                  <svg
+                    className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {isOpen && (
+                  <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800 nav-dropdown">
+                    {group.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm transition ${
+                          pathname === link.href
+                            ? "bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100"
+                            : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
+                        }`}
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        <span aria-hidden="true">{link.icon}</span>
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
@@ -96,23 +209,45 @@ export default function SiteHeader() {
 
       {menuOpen && (
         <div className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-slate-200 bg-white px-3 py-3 sm:max-h-[calc(100dvh-4rem)] dark:border-slate-800 dark:bg-slate-950 lg:hidden">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={`nav-link-motion inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-                  pathname === link.href
-                    ? "bg-brand-gradient font-semibold text-white"
-                    : "text-slate-700 dark:text-slate-300"
-                }`}
-              >
-                <span aria-hidden="true">{link.icon}</span>
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {/* Home Link */}
+          <Link
+            href="/"
+            onClick={() => setMenuOpen(false)}
+            className={`nav-link-motion inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm mb-2 ${
+              pathname === "/"
+                ? "bg-brand-gradient font-semibold text-white"
+                : "text-slate-700 dark:text-slate-300"
+            }`}
+          >
+            <span aria-hidden="true">🏠</span>
+            Home
+          </Link>
+
+          {/* Technology Groups */}
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="mb-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <span aria-hidden="true">{group.icon}</span>
+                {group.label}
+              </h3>
+              <div className="ml-6 space-y-1">
+                {group.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`nav-link-motion block rounded-lg px-3 py-2 text-sm ${
+                      pathname === link.href
+                        ? "bg-brand-gradient font-semibold text-white"
+                        : "text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    <span aria-hidden="true">{link.icon}</span> {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </nav>

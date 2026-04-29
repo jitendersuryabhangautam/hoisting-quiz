@@ -1203,7 +1203,7 @@ export default function PracticeMode({
                             >
                               Starter included
                             </p>
-                            <p className="mt-2 text-sm leading-6 text-[color:var(--foreground)]">
+                            <p className="mt-2 text-sm leading-6 text-foreground">
                               The starter code is already loaded into the editor
                               below, so you can edit it directly.
                             </p>
@@ -1454,7 +1454,7 @@ export default function PracticeMode({
 
               {showMobileQuestionPanel ? (
                 <div
-                  className={`fixed inset-x-3 ${isOutputOnlyPage ? "bottom-20" : "bottom-3"} z-50 flex max-h-[72vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/96 shadow-2xl backdrop-blur sm:hidden`}
+                  className={`fixed inset-x-3 ${isOutputOnlyPage ? "bottom-20" : "bottom-3"} z-50 flex max-h-[72vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] min-w-0 flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/96 shadow-2xl backdrop-blur sm:hidden`}
                 >
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div>

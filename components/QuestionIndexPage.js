@@ -343,7 +343,7 @@ export default function QuestionIndexPage({
   }, [sidebarOpen]);
 
   const sidebar = (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur sm:rounded-[2rem] sm:p-4">
+    <div className="rounded-3xl border border-white/10 bg-white/6 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur sm:rounded-4xl sm:p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p
@@ -473,8 +473,8 @@ export default function QuestionIndexPage({
           </div>
         </div>
       ) : null}
-      <div className="mx-auto w-full max-w-[96rem] px-3 pb-24 pt-4 sm:px-4 sm:py-6 sm:pb-6 lg:px-5">
-        <header className="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-2xl backdrop-blur sm:rounded-[2rem] sm:py-5 md:px-5">
+      <div className="mx-auto w-full max-w-384 px-3 pb-24 pt-4 sm:px-4 sm:py-6 sm:pb-6 lg:px-5">
+        <header className="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 shadow-2xl backdrop-blur sm:rounded-4xl sm:py-5 md:px-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p
@@ -511,7 +511,7 @@ export default function QuestionIndexPage({
             {progressLabel}
           </span>
           {enableOrderToggle ? (
-            <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em]">
+            <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest">
               <span>Order</span>
               <select
                 value={orderMode}
@@ -531,7 +531,7 @@ export default function QuestionIndexPage({
             <button
               type="button"
               onClick={() => setSidebarCollapsed((prev) => !prev)}
-              className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-200 transition hover:bg-white/10 lg:inline-flex"
+              className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-200 transition hover:bg-white/10 lg:inline-flex"
             >
               {sidebarCollapsed ? "Show list" : "Hide list"}
             </button>
@@ -592,7 +592,7 @@ export default function QuestionIndexPage({
             {sidebar}
           </aside>
 
-          <section className="min-w-0 overflow-x-hidden rounded-[1.5rem] border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-[2rem] sm:p-5 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col">
+          <section className="min-w-0 overflow-x-hidden rounded-3xl border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-4xl sm:p-5 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col">
             {!hydrated ? (
               <p className="text-sm leading-6 text-slate-300">
                 Loading questions...
@@ -619,7 +619,7 @@ export default function QuestionIndexPage({
                     >
                       {currentQuestion.topic}
                     </p>
-                    <h2 className="mt-3 text-xl font-bold text-white break-words sm:text-2xl">
+                    <h2 className="mt-3 text-xl font-bold text-white wrap-break-word sm:text-2xl">
                       {currentQuestion.title}
                     </h2>
                   </div>
@@ -654,7 +654,7 @@ export default function QuestionIndexPage({
 
                 <div className="mt-3 min-h-0 overflow-y-auto pr-1 lg:flex-1">
                   <p
-                    className="text-sm leading-6 text-slate-300 break-words"
+                    className="text-sm leading-6 text-slate-300 wrap-break-word"
                     style={{ overflowWrap: "anywhere" }}
                   >
                     {renderStyledInlineText(currentQuestion.prompt)}
@@ -809,7 +809,7 @@ export default function QuestionIndexPage({
               "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
           }}
         >
-          <div className="mx-auto grid w-full max-w-[96rem] grid-cols-3 gap-2">
+          <div className="mx-auto grid w-full max-w-384 grid-cols-3 gap-2">
             <button
               type="button"
               onClick={goPrevious}
