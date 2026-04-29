@@ -101,6 +101,7 @@ export default function QuestionIndexPage({
   sidebarSearchPlaceholder = "Search questions or keywords...",
   sidebarShowPrompt = false,
   enableOrderToggle = false,
+  enableDifficultyFilter = false,
   defaultOrderMode = "shuffle",
   showAnswerAndExplanation = true,
   collapsibleSidebar = false,
@@ -118,6 +119,7 @@ export default function QuestionIndexPage({
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [orderMode, setOrderMode] = useState(defaultOrderMode);
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [shuffleSeed, setShuffleSeed] = useState(() => 0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     defaultSidebarCollapsed
@@ -132,19 +134,52 @@ export default function QuestionIndexPage({
     () => new Set(questions.map((question) => question.id)),
     [questions]
   );
+  const difficultyOptions = useMemo(() => {
+    if (!enableDifficultyFilter) return [];
+
+    return [...new Set(
+      questions
+        .map((question) => question?.difficulty)
+        .filter((difficulty) => typeof difficulty === "string" && difficulty.trim())
+        .map((difficulty) => difficulty.trim())
+    )];
+  }, [enableDifficultyFilter, questions]);
+  const questionsByDifficulty = useMemo(() => {
+    if (!enableDifficultyFilter || difficultyFilter === "all") {
+      return questions;
+    }
+
+    return questions.filter(
+      (question) =>
+        typeof question?.difficulty === "string" &&
+        question.difficulty.trim() === difficultyFilter
+    );
+  }, [difficultyFilter, enableDifficultyFilter, questions]);
   const questionOrderMap = useMemo(
-    () => new Map(questions.map((question, index) => [question.id, index + 1])),
-    [questions]
+    () =>
+      new Map(
+        questionsByDifficulty.map((question, index) => [question.id, index + 1])
+      ),
+    [questionsByDifficulty]
   );
 
   useEffect(() => {
     const initialSeen = loadSeenIds(storageKey, storageScope, validIds);
     setSeenIds(initialSeen); // eslint-disable-line react-hooks/set-state-in-effect
-    setDeck(buildDeck(questions, initialSeen, orderMode, shuffleSeed));
+    setDeck(
+      buildDeck(questionsByDifficulty, initialSeen, orderMode, shuffleSeed)
+    );
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setHydrated(true);
-  }, [questions, storageKey, storageScope, validIds, orderMode, shuffleSeed]);
+  }, [
+    questionsByDifficulty,
+    storageKey,
+    storageScope,
+    validIds,
+    orderMode,
+    shuffleSeed,
+  ]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -198,10 +233,10 @@ export default function QuestionIndexPage({
   const normalizedSidebarSearch = sidebarSearch.trim().toLowerCase();
   const filteredQuestions = useMemo(() => {
     if (!enableSidebarSearch || !normalizedSidebarSearch) {
-      return questions;
+      return questionsByDifficulty;
     }
 
-    return questions.filter((question) => {
+    return questionsByDifficulty.filter((question) => {
       const searchableParts = [
         question.id,
         question.title,
@@ -215,18 +250,31 @@ export default function QuestionIndexPage({
 
       return searchableParts.includes(normalizedSidebarSearch);
     });
-  }, [enableSidebarSearch, normalizedSidebarSearch, questions]);
+  }, [
+    enableSidebarSearch,
+    normalizedSidebarSearch,
+    questionsByDifficulty,
+  ]);
+
+  const seenInViewCount = useMemo(
+    () =>
+      questionsByDifficulty.reduce(
+        (count, question) => count + (seenIds.has(question.id) ? 1 : 0),
+        0
+      ),
+    [questionsByDifficulty, seenIds]
+  );
 
   const resetSeenQuestions = useCallback(() => {
     const empty = new Set();
     setSeenIds(empty);
-    setDeck(buildDeck(questions, empty, orderMode, shuffleSeed));
+    setDeck(buildDeck(questionsByDifficulty, empty, orderMode, shuffleSeed));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setCopiedId(null);
     setSidebarOpen(false);
     window.localStorage.removeItem(storageKey);
-  }, [questions, storageKey, orderMode, shuffleSeed]);
+  }, [questionsByDifficulty, storageKey, orderMode, shuffleSeed]);
 
   const requestResetSeenQuestions = useCallback(() => {
     if (confirmBeforeReset) {
@@ -361,7 +409,7 @@ export default function QuestionIndexPage({
         >
           {filteredQuestions.length}
           {enableSidebarSearch && normalizedSidebarSearch
-            ? ` / ${questions.length}`
+            ? ` / ${questionsByDifficulty.length}`
             : ""}{" "}
           total
         </span>
@@ -506,7 +554,7 @@ export default function QuestionIndexPage({
           <span
             className={`rounded-full border px-3 py-1 font-semibold ${accentClassName}`}
           >
-            {seenIds.size}/{questions.length} seen
+            {seenInViewCount}/{questionsByDifficulty.length} seen
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:hidden">
             {progressLabel}
@@ -528,6 +576,23 @@ export default function QuestionIndexPage({
               Shuffled once, no repeats until reset
             </span>
           )}
+          {enableDifficultyFilter ? (
+            <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest">
+              <span>Difficulty</span>
+              <select
+                value={difficultyFilter}
+                onChange={(event) => setDifficultyFilter(event.target.value)}
+                className="rounded border border-white/15 bg-slate-950/70 px-2 py-1 text-xs text-slate-100 outline-none"
+              >
+                <option value="all">All</option>
+                {difficultyOptions.map((difficulty) => (
+                  <option key={difficulty} value={difficulty}>
+                    {difficulty}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           {collapsibleSidebar ? (
             <button
               type="button"

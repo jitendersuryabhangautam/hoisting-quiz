@@ -25,6 +25,7 @@ export default function NodejsTheoryPage() {
       enableSidebarSearch
       sidebarSearchPlaceholder="Search full questions or keywords..."
       sidebarShowPrompt
+      enableDifficultyFilter
       enableOrderToggle
       combineAnswerExplanation
     />
