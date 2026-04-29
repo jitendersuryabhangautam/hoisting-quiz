@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import MCQSection from "@/components/MCQSection";
 
 const TRACKS = [
   { name: "Introduction", icon: "In", color: "from-rose-400 to-pink-500", desc: "Personal profile, role context, and stack overview.", href: "/introduction" },
@@ -66,6 +67,44 @@ const TERMINAL_LINES = [
   { prompt: false, text: "LIFO order before function return." },
 ];
 
+const HOME_MCQ = [
+  {
+    question: "What is the output of: console.log(typeof null)?",
+    options: ["null", "object", "undefined", "number"],
+    correctAnswer: 1,
+    explanation:
+      "JavaScript has a long-standing bug where `typeof null` returns `object`.",
+  },
+  {
+    question: "Which hook runs after render and supports cleanup?",
+    options: ["useMemo", "useRef", "useEffect", "useState"],
+    correctAnswer: 2,
+    explanation:
+      "`useEffect` runs after render, and it may return a cleanup function.",
+  },
+  {
+    question: "In Go, deferred calls execute in which order?",
+    options: ["FIFO", "LIFO", "Random", "By goroutine priority"],
+    correctAnswer: 1,
+    explanation:
+      "Deferred function calls are executed in Last-In-First-Out order.",
+  },
+  {
+    question: "Which SQL clause filters groups after aggregation?",
+    options: ["WHERE", "ORDER BY", "HAVING", "LIMIT"],
+    correctAnswer: 2,
+    explanation:
+      "`HAVING` is used to filter grouped rows after aggregate functions.",
+  },
+  {
+    question: "React list rendering requires unique ____ for each item.",
+    options: ["refs", "keys", "hooks", "props"],
+    correctAnswer: 1,
+    explanation:
+      "Keys help React identify list items and reconcile updates correctly.",
+  },
+];
+
 function useReveal() {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -91,6 +130,7 @@ function useReveal() {
 
 export default function Home() {
   const [termIdx, setTermIdx] = useState(0);
+  const [mcqOpen, setMcqOpen] = useState(false);
   const [tracksRef, tracksVis] = useReveal();
   const [featRef, featVis] = useReveal();
   const [roadRef, roadVis] = useReveal();
@@ -231,6 +271,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <MCQSection
+        quiz={HOME_MCQ}
+        isVisible={mcqOpen}
+        onToggle={() => setMcqOpen((value) => !value)}
+      />
     </div>
   );
 }
