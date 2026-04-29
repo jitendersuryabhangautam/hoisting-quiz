@@ -57,12 +57,12 @@ export default function IntroductionTabs({
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            {tabs.map((tab) => {
+            {tabs.map((tab, index) => {
               const isActive = activeTab === tab.id;
 
               return (
                 <button
-                  key={tab.id}
+                  key={`tab-${index}-${tab.id}`}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   className="rounded-full border px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5"
@@ -122,7 +122,7 @@ export default function IntroductionTabs({
                 <div className="grid gap-4">
                   {highlights.map((item, index) => (
                     <div
-                      key={item}
+                      key={`highlight-${index}-${item}`}
                       className="rounded-3xl border border-white/10 bg-white/5 p-5"
                     >
                       <p className="text-xs uppercase tracking-[0.25em] text-rose-300">
@@ -165,9 +165,9 @@ export default function IntroductionTabs({
                     Stack and delivery focus
                   </h3>
                   <div className="mt-5 grid gap-4">
-                    {stackGroups.map((group) => (
+                    {stackGroups.map((group, index) => (
                       <div
-                        key={group.title}
+                        key={`stack-group-${index}-${group.title}`}
                         className="rounded-3xl border border-white/10 bg-white/5 p-4"
                       >
                         <p className="text-sm font-semibold text-white">
@@ -198,9 +198,9 @@ export default function IntroductionTabs({
                   </p>
                 </div>
                 <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {projectLinks.map((project) => (
+                  {projectLinks.map((project, index) => (
                     <a
-                      key={project.href}
+                      key={`project-${index}-${project.href}`}
                       href={project.href}
                       target="_blank"
                       rel="noreferrer"

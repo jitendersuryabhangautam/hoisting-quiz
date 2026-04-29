@@ -378,14 +378,14 @@ export default function QuestionIndexPage({
       ) : null}
 
       <nav className="mt-4 max-h-[65vh] space-y-2 overflow-y-auto pr-1 smooth-scroll lg:max-h-[70vh]">
-        {filteredQuestions.map((question) => {
+        {filteredQuestions.map((question, index) => {
           const isSeen = seenIds.has(question.id);
           const isActive = currentQuestion?.id === question.id;
           const displayIndex = questionOrderMap.get(question.id) ?? "-";
 
           return (
             <button
-              key={question.id}
+              key={`${question.id}-${index}-${question.title}`}
               type="button"
               onClick={() => selectQuestion(question.id)}
               className={[
@@ -757,9 +757,9 @@ export default function QuestionIndexPage({
                 ) : null}
                   {currentQuestion.keywords?.length ? (
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {currentQuestion.keywords.map((keyword) => (
+                      {currentQuestion.keywords.map((keyword, index) => (
                         <span
-                          key={`${currentQuestion.id}-${keyword}`}
+                          key={`${currentQuestion.id}-keyword-${index}-${keyword}`}
                           className="rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200"
                         >
                           {keyword}

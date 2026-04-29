@@ -868,9 +868,9 @@ export default function PracticeMode({
 
               <div className="mt-4 space-y-3">
                 {attemptedQuestions.length ? (
-                  attemptedQuestions.map((question) => (
+                  attemptedQuestions.map((question, index) => (
                     <button
-                      key={question.id}
+                      key={`attempted-desktop-${index}-${question.id}-${question.title}`}
                       onClick={() => setReviewQuestionId(question.id)}
                       className="w-full rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-left transition hover:border-cyan-400/30 hover:bg-slate-950/80"
                     >
@@ -1501,7 +1501,7 @@ export default function PracticeMode({
                     <div className="space-y-2">
                       {filteredDeckWithIndex.map(({ question, index }) => (
                         <button
-                          key={question.id}
+                          key={`mobile-questions-${index}-${question.id}-${question.title}`}
                           type="button"
                           onClick={() => {
                             setReviewQuestionId(null);
@@ -1704,9 +1704,9 @@ export default function PracticeMode({
                       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
                         {attemptedQuestions.length ? (
                           <div className="space-y-3">
-                            {attemptedQuestions.map((question) => (
+                            {attemptedQuestions.map((question, index) => (
                               <button
-                                key={question.id}
+                                key={`attempted-mobile-${index}-${question.id}-${question.title}`}
                                 type="button"
                                 onClick={() => {
                                   setReviewQuestionId(question.id);
@@ -1825,11 +1825,11 @@ export default function PracticeMode({
                   ) : null}
 
                   <div className="flex flex-wrap gap-2">
-                    {sidebarActionTabs.map((tab) => {
+                    {sidebarActionTabs.map((tab, index) => {
                       const active = sidebarTab === tab.id;
                       return (
                         <button
-                          key={tab.id}
+                          key={`sidebar-tab-${index}-${tab.id}-${tab.label}`}
                           onClick={() => {
                             if (tab.id === "back") {
                               setReviewQuestionId(null);
@@ -1886,7 +1886,7 @@ export default function PracticeMode({
                           const isDone = attemptedIds.has(question.id);
                           return (
                             <button
-                              key={question.id}
+                              key={`sidebar-question-${index}-${question.id}-${question.title}`}
                               type="button"
                               onClick={() => {
                                 setReviewQuestionId(null);
@@ -1929,9 +1929,9 @@ export default function PracticeMode({
 
                       <div className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
                         {attemptedQuestions.length ? (
-                          attemptedQuestions.map((question) => (
+                          attemptedQuestions.map((question, index) => (
                             <button
-                              key={question.id}
+                              key={`attempted-sidebar-${index}-${question.id}-${question.title}`}
                               onClick={() => setReviewQuestionId(question.id)}
                               className="w-full rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-left transition hover:border-cyan-400/30 hover:bg-slate-950/80"
                             >

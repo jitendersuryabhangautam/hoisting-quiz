@@ -110,9 +110,9 @@ function GroupNav({ group }) {
 
       <div className="invisible absolute right-0 top-[calc(100%+0.45rem)] z-50 min-w-[16rem] rounded-2xl border border-white/10 bg-slate-950/95 p-2 opacity-0 shadow-2xl transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
         <div className="flex flex-col gap-2">
-          {group.items.map((item) => (
+          {group.items.map((item, index) => (
             <NavLink
-              key={item.href}
+              key={`${group.id}-desktop-item-${index}-${item.href}`}
               href={item.href}
               label={item.label}
               accent={group.accent}
@@ -160,8 +160,8 @@ export default function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <nav className="hidden flex-wrap gap-2 text-sm font-semibold md:flex">
             <HomeLink />
-            {navGroups.map((group) => (
-              <GroupNav key={group.id} group={group} />
+            {navGroups.map((group, index) => (
+              <GroupNav key={`desktop-group-${index}-${group.id}`} group={group} />
             ))}
           </nav>
 
@@ -245,9 +245,9 @@ export default function SiteHeader() {
               <div className="flex flex-col gap-3">
                 <HomeLink mobile onNavigate={closeMenu} />
 
-                {navGroups.map((group) => (
+                {navGroups.map((group, index) => (
                   <div
-                    key={group.id}
+                    key={`mobile-group-${index}-${group.id}`}
                     className="rounded-2xl border border-white/10 bg-white/5 p-2"
                   >
                     <p
@@ -257,9 +257,9 @@ export default function SiteHeader() {
                       {group.label}
                     </p>
                     <div className="flex flex-col gap-2">
-                      {group.items.map((item) => (
+                      {group.items.map((item, itemIndex) => (
                         <NavLink
-                          key={item.href}
+                          key={`${group.id}-mobile-item-${itemIndex}-${item.href}`}
                           href={item.href}
                           label={item.label}
                           accent={group.accent}

@@ -88,9 +88,9 @@ export default function Home() {
         </header>
 
         <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {sections.map((section) => (
+          {sections.map((section, index) => (
             <Link
-              key={section.href}
+              key={`section-${index}-${section.href}`}
               href={section.href}
               className={`group rounded-4xl border border-white/10 bg-linear-to-br ${section.accent} p-5 transition hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl`}
             >
