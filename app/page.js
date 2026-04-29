@@ -198,6 +198,26 @@ export default function Home() {
   const [roadRef, roadVis] = useReveal();
 
   useEffect(() => {
+    const root = document.documentElement;
+    const previousTheme = root.dataset.theme;
+    const previousColorScheme = root.style.colorScheme;
+
+    root.dataset.theme = "dark";
+    root.style.colorScheme = "dark";
+
+    return () => {
+      const storedTheme = window.localStorage.getItem("hoisting-quiz-theme");
+      const nextTheme =
+        storedTheme === "light" || storedTheme === "dark"
+          ? storedTheme
+          : previousTheme || "dark";
+
+      root.dataset.theme = nextTheme;
+      root.style.colorScheme = previousColorScheme || nextTheme;
+    };
+  }, []);
+
+  useEffect(() => {
     const id = setInterval(() => {
       setTermIdx((idx) => (idx + 1 >= TERMINAL_LINES.length ? 0 : idx + 1));
     }, 900);

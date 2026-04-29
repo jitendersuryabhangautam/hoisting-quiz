@@ -103,7 +103,7 @@ export default function RootLayout({ children }) {
           </div>
         </div>
         <SiteHeader />
-        <div className="relative z-10">{children}</div>
+        <div className="relative z-0">{children}</div>
       </body>
     </html>
   );

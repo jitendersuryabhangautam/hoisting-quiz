@@ -85,7 +85,7 @@ export default function SiteHeader() {
   }, [menuOpen]);
 
   return (
-    <nav className="relative sticky top-0 z-[1000] overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+    <nav className="site-header relative sticky top-0 z-[1000] overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div aria-hidden="true" className="nav-cartoon-track pointer-events-none">
         <span className="nav-cartoon-runner">
           <svg viewBox="0 0 48 28" className="h-7 w-12" fill="none">
@@ -179,11 +179,8 @@ export default function SiteHeader() {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`flex items-center gap-2 px-3 py-2 text-sm transition ${
-                          pathname === link.href
-                            ? "bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100"
-                            : "text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-700"
-                        }`}
+                        data-active={pathname === link.href ? "true" : undefined}
+                        className="nav-dropdown-link flex items-center gap-2 px-3 py-2 text-sm transition"
                         onClick={() => setOpenDropdown(null)}
                       >
                         <span aria-hidden="true">{link.icon}</span>
@@ -198,7 +195,7 @@ export default function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          {pathname !== "/" ? <ThemeToggle /> : null}
           <button
             type="button"
             onClick={() => setMenuOpen((value) => !value)}
