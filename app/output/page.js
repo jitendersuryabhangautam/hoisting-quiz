@@ -6,10 +6,12 @@ export default function OutputPage() {
     <PracticeMode
       eyebrow="JavaScript output questions"
       title="Predict JavaScript output"
-      description="This mode only includes output-based JavaScript questions. The deck is shuffled every time."
+      description="This mode includes output-based JavaScript questions. Switch between shuffle and serial order anytime."
       questions={outputQuestions}
       sidebarMode="answers"
       storageKey="output"
+      enableOrderToggle
+      defaultOrderMode="shuffle"
     />
   );
 }

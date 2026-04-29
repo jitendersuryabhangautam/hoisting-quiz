@@ -219,13 +219,13 @@ export default function QuestionIndexPage({
   const resetSeenQuestions = useCallback(() => {
     const empty = new Set();
     setSeenIds(empty);
-    setDeck(buildDeck(questions, empty, shuffleEnabled));
+    setDeck(buildDeck(questions, empty, orderMode, shuffleSeed));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setCopiedId(null);
     setSidebarOpen(false);
     window.localStorage.removeItem(storageKey);
-  }, [questions, storageKey, shuffleEnabled]);
+  }, [questions, storageKey, orderMode, shuffleSeed]);
 
   const requestResetSeenQuestions = useCallback(() => {
     if (confirmBeforeReset) {

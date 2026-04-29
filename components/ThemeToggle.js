@@ -76,8 +76,9 @@ export default function ThemeToggle() {
         }}
         aria-hidden="true"
       >
-        {mounted ? (theme === "dark" ? "☾" : "☀") : "◐"}
+        {mounted ? (theme === "dark" ? "\u263E" : "\u2600") : "\u25D0"}
       </span>
     </button>
   );
 }
+
