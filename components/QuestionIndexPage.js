@@ -107,6 +107,7 @@ export default function QuestionIndexPage({
   defaultSidebarCollapsed = false,
   confirmBeforeReset = false,
   combineAnswerExplanation = false,
+  disableInternalScrolls = false,
 }) {
   const [copiedId, setCopiedId] = useState(null);
   const [seenIds, setSeenIds] = useState(() => new Set());
@@ -117,7 +118,7 @@ export default function QuestionIndexPage({
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [orderMode, setOrderMode] = useState(defaultOrderMode);
-  const [shuffleSeed, setShuffleSeed] = useState(Date.now());
+  const [shuffleSeed, setShuffleSeed] = useState(() => 0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     defaultSidebarCollapsed
   );
@@ -138,7 +139,7 @@ export default function QuestionIndexPage({
 
   useEffect(() => {
     const initialSeen = loadSeenIds(storageKey, storageScope, validIds);
-    setSeenIds(initialSeen);
+    setSeenIds(initialSeen); // eslint-disable-line react-hooks/set-state-in-effect
     setDeck(buildDeck(questions, initialSeen, orderMode, shuffleSeed));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
@@ -189,7 +190,7 @@ export default function QuestionIndexPage({
   useEffect(() => {
     if (!currentQuestion) return;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [currentQuestion?.id]);
+  }, [currentQuestion]);
   const hasQuestions = hydrated && deck.length > 0;
   const progressLabel = selectedQuestionId
     ? "Selected from sidebar"
@@ -592,7 +593,11 @@ export default function QuestionIndexPage({
             {sidebar}
           </aside>
 
-          <section className="min-w-0 overflow-x-hidden rounded-3xl border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-4xl sm:p-5 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col">
+          <section
+            className={`min-w-0 overflow-x-hidden rounded-3xl border border-white/10 bg-white/6 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:rounded-4xl sm:p-5 lg:flex lg:flex-col ${
+              disableInternalScrolls ? "" : "lg:h-[calc(100vh-8rem)]"
+            }`}
+          >
             {!hydrated ? (
               <p className="text-sm leading-6 text-slate-300">
                 Loading questions...
@@ -652,7 +657,13 @@ export default function QuestionIndexPage({
                   </p>
                 </div>
 
-                <div className="mt-3 min-h-0 overflow-y-auto pr-1 lg:flex-1">
+                <div
+                  className={`mt-3 pr-1 ${
+                    disableInternalScrolls
+                      ? "overflow-visible"
+                      : "min-h-0 overflow-y-auto lg:flex-1"
+                  }`}
+                >
                   <p
                     className="text-sm leading-6 text-slate-300 wrap-break-word"
                     style={{ overflowWrap: "anywhere" }}
@@ -661,14 +672,20 @@ export default function QuestionIndexPage({
                   </p>
                   {showAnswerAndExplanation && combineAnswerExplanation ? (
                     <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
-                      <div className="mt-2 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                      <div
+                        className={`mt-2 space-y-2 pr-1 text-sm leading-6 text-slate-300 ${
+                          disableInternalScrolls
+                            ? "overflow-visible"
+                            : "max-h-80 overflow-y-auto"
+                        }`}
+                      >
                         {currentQuestion.expected ? (
                           <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                               Answer
                             </p>
                             <p
-                              className="mt-1 break-words"
+                              className="mt-1 wrap-break-word"
                               style={{ overflowWrap: "anywhere" }}
                             >
                               {renderStyledInlineText(currentQuestion.expected)}
@@ -684,7 +701,7 @@ export default function QuestionIndexPage({
                               (line, index) => (
                                 <p
                                   key={`${currentQuestion.id}-explanation-${index}`}
-                                  className="break-words"
+                                  className="wrap-break-word"
                                   style={{ overflowWrap: "anywhere" }}
                                 >
                                   {renderStyledInlineText(line)}
@@ -703,9 +720,15 @@ export default function QuestionIndexPage({
                           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                             Answer
                           </p>
-                          <div className="mt-2 max-h-32 overflow-y-auto pr-1">
+                          <div
+                            className={`mt-2 pr-1 ${
+                              disableInternalScrolls
+                                ? "overflow-visible"
+                                : "max-h-32 overflow-y-auto"
+                            }`}
+                          >
                             <p
-                              className="text-sm leading-6 text-slate-300 break-words"
+                              className="text-sm leading-6 text-slate-300 wrap-break-word"
                               style={{ overflowWrap: "anywhere" }}
                             >
                               {renderStyledInlineText(currentQuestion.expected)}
@@ -717,12 +740,18 @@ export default function QuestionIndexPage({
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                           Explanation
                         </p>
-                        <div className="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                        <div
+                          className={`mt-2 space-y-2 pr-1 text-sm leading-6 text-slate-300 ${
+                            disableInternalScrolls
+                              ? "overflow-visible"
+                              : "max-h-48 overflow-y-auto"
+                          }`}
+                        >
                           {splitExplanation(currentQuestion.explanation).map(
                             (line, index) => (
                               <p
                                 key={`${currentQuestion.id}-explanation-${index}`}
-                                className="break-words"
+                                className="wrap-break-word"
                                 style={{ overflowWrap: "anywhere" }}
                               >
                                 {renderStyledInlineText(line)}
@@ -751,7 +780,13 @@ export default function QuestionIndexPage({
                             : "Copy code"}
                         </button>
                       </div>
-                      <pre className="mt-3 max-h-72 overflow-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
+                      <pre
+                        className={`mt-3 max-w-full whitespace-pre font-mono text-sm leading-6 text-slate-200 ${
+                          disableInternalScrolls
+                            ? "overflow-x-auto overflow-y-visible"
+                            : "max-h-72 overflow-auto"
+                        }`}
+                      >
                         <CodeBlockContent
                           code={normalizeCodeBlock(currentQuestion.code)}
                         />
@@ -771,29 +806,6 @@ export default function QuestionIndexPage({
                     </div>
                   ) : null}
 
-                  <div className="mt-6 hidden gap-3 sm:flex sm:flex-wrap">
-                    <button
-                      type="button"
-                      onClick={goPrevious}
-                      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      type="button"
-                      onClick={requestResetSeenQuestions}
-                      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                    >
-                      Reset seen questions
-                    </button>
-                    <button
-                      type="button"
-                      onClick={goNext}
-                      className={resetButtonClassName}
-                    >
-                      Next
-                    </button>
-                  </div>
                 </div>
               </>
             ) : null}
@@ -802,40 +814,94 @@ export default function QuestionIndexPage({
       </div>
       {hydrated && (hasQuestions || selectedQuestionId) ? (
         <div
-          className="fixed inset-x-0 bottom-0 z-30 border-t p-3 backdrop-blur lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur"
           style={{
             borderColor: "var(--border)",
             background:
               "color-mix(in srgb, var(--surface-strong) 92%, transparent)",
           }}
         >
-          <div className="mx-auto grid w-full max-w-384 grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={goPrevious}
-              className="rounded-full border px-3 py-2 text-sm font-semibold transition"
-              style={{
-                borderColor: "var(--border)",
-                background: "var(--surface-muted)",
-                color: "var(--foreground)",
-              }}
+          <div className="mx-auto w-full max-w-384 px-3 py-3 sm:px-4 sm:py-3 lg:px-5">
+            <div
+              className={`lg:grid lg:gap-6 ${
+                collapsibleSidebar && sidebarCollapsed
+                  ? "lg:grid-cols-1"
+                  : "lg:grid-cols-[22rem_minmax(0,1fr)]"
+              }`}
             >
-              Previous
-            </button>
-            <button
-              type="button"
-              onClick={requestResetSeenQuestions}
-              className={resetButtonClassName}
-            >
-              Reset
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              className={resetButtonClassName}
-            >
-              Next
-            </button>
+              <div
+                className={`grid grid-cols-3 gap-2 ${
+                  collapsibleSidebar && sidebarCollapsed ? "" : "lg:col-start-2"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={goPrevious}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition sm:px-3 sm:py-2 sm:text-sm"
+                  style={{
+                    borderColor: "var(--border)",
+                    background: "var(--surface-muted)",
+                    color: "var(--foreground)",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M15 18l-6-6 6-6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={requestResetSeenQuestions}
+                  className="rounded-full border px-2.5 py-1.5 text-xs font-semibold transition hover:opacity-90 sm:px-3 sm:py-2 sm:text-sm"
+                  style={{
+                    borderColor: "var(--border)",
+                    background: "var(--surface-muted)",
+                    color: "var(--foreground)",
+                  }}
+                >
+                  Reset seen questions
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition hover:opacity-90 sm:px-3 sm:py-2 sm:text-sm"
+                  style={{
+                    borderColor: "var(--border)",
+                    background: "var(--surface-muted)",
+                    color: "var(--foreground)",
+                  }}
+                >
+                  Next
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 6l6 6-6 6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}

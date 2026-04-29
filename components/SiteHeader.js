@@ -58,7 +58,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
 
   useEffect(() => {
-    setMenuOpen(false);
+    setMenuOpen(false); // eslint-disable-line react-hooks/set-state-in-effect
     setOpenDropdown(null);
   }, [pathname]);
 
@@ -85,7 +85,7 @@ export default function SiteHeader() {
   }, [menuOpen]);
 
   return (
-    <nav className="site-header relative sticky top-0 z-[1000] overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+    <nav className="site-header sticky top-0 z-1000 overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div aria-hidden="true" className="nav-cartoon-track pointer-events-none">
         <span className="nav-cartoon-runner">
           <svg viewBox="0 0 48 28" className="h-7 w-12" fill="none">
@@ -103,7 +103,7 @@ export default function SiteHeader() {
           </svg>
         </span>
       </div>
-      <div className="relative z-[1001] mx-auto flex h-14 max-w-7xl items-center justify-between overflow-visible px-3 sm:h-16 sm:px-6 lg:px-8">
+      <div className="relative z-1001 mx-auto flex h-14 max-w-7xl items-center justify-between overflow-visible px-3 sm:h-16 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="nav-logo-badge nav-logo-mark flex h-10 w-10 items-center justify-center rounded-xl text-slate-900">
             <svg viewBox="0 0 40 40" className="h-8 w-8" fill="none">
@@ -174,7 +174,7 @@ export default function SiteHeader() {
                 </button>
 
                 {isOpen && (
-                  <div className="nav-dropdown nav-dropdown-panel absolute left-0 top-full z-[1200] mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                  <div className="nav-dropdown nav-dropdown-panel absolute left-0 top-full z-1200 mt-1 w-56 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                     {group.links.map((link) => (
                       <Link
                         key={link.href}

@@ -15,11 +15,16 @@ export default function MCQSection({ quiz, isVisible, onToggle }) {
   const [score, setScore] = useState(0);
   const [shuffleKey, setShuffleKey] = useState(0);
 
-  // Shuffle array using Fisher-Yates algorithm
-  const shuffleArray = (array) => {
+  // Deterministic Fisher-Yates shuffle (seeded, no Math.random in render).
+  const shuffleArray = (array, seed = 1) => {
+    let state = (seed >>> 0) || 1;
+    const nextRand = () => {
+      state = (1664525 * state + 1013904223) >>> 0;
+      return state / 4294967296;
+    };
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(nextRand() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
@@ -30,14 +35,17 @@ export default function MCQSection({ quiz, isVisible, onToggle }) {
     if (!quiz || quiz.length === 0) return [];
 
     // Shuffle and take first 15 questions
-    const shuffledQuestions = shuffleArray(quiz).slice(0, 15);
+    const shuffledQuestions = shuffleArray(quiz, shuffleKey + 101).slice(0, 15);
     if (shuffleKey % 2 === 1) {
       shuffledQuestions.reverse();
     }
 
-    return shuffledQuestions.map((question) => {
+    return shuffledQuestions.map((question, index) => {
       const correctOption = question.options[question.correctAnswer];
-      const shuffledOptions = shuffleArray(question.options);
+      const shuffledOptions = shuffleArray(
+        question.options,
+        shuffleKey + index + 1009
+      );
       const newCorrectIndex = shuffledOptions.indexOf(correctOption);
 
       return {
@@ -52,14 +60,17 @@ export default function MCQSection({ quiz, isVisible, onToggle }) {
   const studyQuestions = useMemo(() => {
     if (!quiz || quiz.length === 0) return [];
 
-    const shuffledQuestions = shuffleArray(quiz);
+    const shuffledQuestions = shuffleArray(quiz, shuffleKey + 503);
     if (shuffleKey % 2 === 1) {
       shuffledQuestions.reverse();
     }
 
-    return shuffledQuestions.map((question) => {
+    return shuffledQuestions.map((question, index) => {
       const correctOption = question.options[question.correctAnswer];
-      const shuffledOptions = shuffleArray(question.options);
+      const shuffledOptions = shuffleArray(
+        question.options,
+        shuffleKey + index + 2003
+      );
       const newCorrectIndex = shuffledOptions.indexOf(correctOption);
 
       return {
