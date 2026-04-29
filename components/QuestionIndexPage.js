@@ -1,10 +1,12 @@
 "use client";
 
-/* eslint-disable react-hooks/set-state-in-effect */
-
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { normalizeCodeBlock, shuffleQuestions } from "@/lib/javascriptContent";
+import {
+  normalizeCodeBlock,
+  shuffleQuestions,
+  seededShuffleQuestions,
+} from "@/lib/javascriptContent";
 import CodeBlockContent from "@/components/CodeBlockContent";
 
 function splitExplanation(text) {
@@ -26,10 +28,7 @@ function renderStyledInlineText(text) {
     }
 
     return (
-      <span
-        key={`text-part-${index}`}
-        className="font-semibold text-cyan-200"
-      >
+      <span key={`text-part-${index}`} className="font-semibold text-cyan-200">
         {part.slice(2, -2)}
       </span>
     );
@@ -77,9 +76,10 @@ function loadSeenIds(storageKey, storageScope, validIds) {
   }
 }
 
-function buildDeck(questions, seenIds, shouldShuffle) {
+function buildDeck(questions, seenIds, orderMode, shuffleSeed) {
   const unseen = questions.filter((question) => !seenIds.has(question.id));
-  return shouldShuffle ? shuffleQuestions(unseen) : unseen;
+  if (orderMode === "serial") return unseen;
+  return seededShuffleQuestions(unseen, shuffleSeed);
 }
 
 export default function QuestionIndexPage({
@@ -100,8 +100,8 @@ export default function QuestionIndexPage({
   enableSidebarSearch = false,
   sidebarSearchPlaceholder = "Search questions or keywords...",
   sidebarShowPrompt = false,
-  enableShuffleChoice = false,
-  defaultShuffle = true,
+  enableOrderToggle = false,
+  defaultOrderMode = "shuffle",
   showAnswerAndExplanation = true,
   collapsibleSidebar = false,
   defaultSidebarCollapsed = false,
@@ -116,7 +116,8 @@ export default function QuestionIndexPage({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [hydrated, setHydrated] = useState(false);
-  const [shuffleEnabled, setShuffleEnabled] = useState(defaultShuffle);
+  const [orderMode, setOrderMode] = useState(defaultOrderMode);
+  const [shuffleSeed, setShuffleSeed] = useState(Date.now());
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     defaultSidebarCollapsed
   );
@@ -138,11 +139,11 @@ export default function QuestionIndexPage({
   useEffect(() => {
     const initialSeen = loadSeenIds(storageKey, storageScope, validIds);
     setSeenIds(initialSeen);
-    setDeck(buildDeck(questions, initialSeen, shuffleEnabled));
+    setDeck(buildDeck(questions, initialSeen, orderMode, shuffleSeed));
     setCurrentIndex(0);
     setSelectedQuestionId(null);
     setHydrated(true);
-  }, [questions, storageKey, storageScope, validIds, shuffleEnabled]);
+  }, [questions, storageKey, storageScope, validIds, orderMode, shuffleSeed]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -509,14 +510,12 @@ export default function QuestionIndexPage({
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 sm:hidden">
             {progressLabel}
           </span>
-          {enableShuffleChoice ? (
+          {enableOrderToggle ? (
             <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em]">
               <span>Order</span>
               <select
-                value={shuffleEnabled ? "shuffle" : "serial"}
-                onChange={(event) =>
-                  setShuffleEnabled(event.target.value === "shuffle")
-                }
+                value={orderMode}
+                onChange={(event) => setOrderMode(event.target.value)}
                 className="rounded border border-white/15 bg-slate-950/70 px-2 py-1 text-xs text-slate-100 outline-none"
               >
                 <option value="serial">Serial</option>
@@ -654,33 +653,71 @@ export default function QuestionIndexPage({
                 </div>
 
                 <div className="mt-3 min-h-0 overflow-y-auto pr-1 lg:flex-1">
-                <p
-                  className="text-sm leading-6 text-slate-300 break-words"
-                  style={{ overflowWrap: "anywhere" }}
-                >
-                  {renderStyledInlineText(currentQuestion.prompt)}
-                </p>
-                {showAnswerAndExplanation && combineAnswerExplanation ? (
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
-                    <div className="mt-2 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                  <p
+                    className="text-sm leading-6 text-slate-300 break-words"
+                    style={{ overflowWrap: "anywhere" }}
+                  >
+                    {renderStyledInlineText(currentQuestion.prompt)}
+                  </p>
+                  {showAnswerAndExplanation && combineAnswerExplanation ? (
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+                      <div className="mt-2 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
+                        {currentQuestion.expected ? (
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                              Answer
+                            </p>
+                            <p
+                              className="mt-1 break-words"
+                              style={{ overflowWrap: "anywhere" }}
+                            >
+                              {renderStyledInlineText(currentQuestion.expected)}
+                            </p>
+                          </div>
+                        ) : null}
+                        <div className="pt-1">
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            Explanation
+                          </p>
+                          <div className="mt-1 space-y-2">
+                            {splitExplanation(currentQuestion.explanation).map(
+                              (line, index) => (
+                                <p
+                                  key={`${currentQuestion.id}-explanation-${index}`}
+                                  className="break-words"
+                                  style={{ overflowWrap: "anywhere" }}
+                                >
+                                  {renderStyledInlineText(line)}
+                                </p>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {showAnswerAndExplanation && !combineAnswerExplanation ? (
+                    <>
                       {currentQuestion.expected ? (
-                        <div>
+                        <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
                           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                             Answer
                           </p>
-                          <p
-                            className="mt-1 break-words"
-                            style={{ overflowWrap: "anywhere" }}
-                          >
-                            {renderStyledInlineText(currentQuestion.expected)}
-                          </p>
+                          <div className="mt-2 max-h-32 overflow-y-auto pr-1">
+                            <p
+                              className="text-sm leading-6 text-slate-300 break-words"
+                              style={{ overflowWrap: "anywhere" }}
+                            >
+                              {renderStyledInlineText(currentQuestion.expected)}
+                            </p>
+                          </div>
                         </div>
                       ) : null}
-                      <div className="pt-1">
+                      <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                           Explanation
                         </p>
-                        <div className="mt-1 space-y-2">
+                        <div className="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
                           {splitExplanation(currentQuestion.explanation).map(
                             (line, index) => (
                               <p
@@ -694,46 +731,8 @@ export default function QuestionIndexPage({
                           )}
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ) : null}
-                {showAnswerAndExplanation && !combineAnswerExplanation ? (
-                  <>
-                    {currentQuestion.expected ? (
-                      <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                          Answer
-                        </p>
-                        <div className="mt-2 max-h-32 overflow-y-auto pr-1">
-                          <p
-                            className="text-sm leading-6 text-slate-300 break-words"
-                            style={{ overflowWrap: "anywhere" }}
-                          >
-                            {renderStyledInlineText(currentQuestion.expected)}
-                          </p>
-                        </div>
-                      </div>
-                    ) : null}
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/45 p-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                        Explanation
-                      </p>
-                      <div className="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1 text-sm leading-6 text-slate-300">
-                        {splitExplanation(currentQuestion.explanation).map(
-                          (line, index) => (
-                            <p
-                              key={`${currentQuestion.id}-explanation-${index}`}
-                              className="break-words"
-                              style={{ overflowWrap: "anywhere" }}
-                            >
-                              {renderStyledInlineText(line)}
-                            </p>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </>
-                ) : null}
+                    </>
+                  ) : null}
                   {currentQuestion.code ? (
                     <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -752,13 +751,13 @@ export default function QuestionIndexPage({
                             : "Copy code"}
                         </button>
                       </div>
-                    <pre className="mt-3 max-h-72 overflow-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
-                      <CodeBlockContent
-                        code={normalizeCodeBlock(currentQuestion.code)}
-                      />
-                    </pre>
-                  </div>
-                ) : null}
+                      <pre className="mt-3 max-h-72 overflow-auto whitespace-pre font-mono text-sm leading-6 text-slate-200">
+                        <CodeBlockContent
+                          code={normalizeCodeBlock(currentQuestion.code)}
+                        />
+                      </pre>
+                    </div>
+                  ) : null}
                   {currentQuestion.keywords?.length ? (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {currentQuestion.keywords.map((keyword, index) => (

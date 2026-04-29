@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import SiteHeader from "@/components/SiteHeader";
-import ChatbotWidget from "@/components/ChatbotWidget";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,41 +33,71 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head />
-      <body suppressHydrationWarning className="theme-app min-h-full flex flex-col">
+      <body
+        suppressHydrationWarning
+        className="theme-app min-h-full flex flex-col"
+      >
         <Script
           id="theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
-        <div aria-hidden="true" className="global-float-layer pointer-events-none">
+        <div
+          aria-hidden="true"
+          className="global-float-layer pointer-events-none"
+        >
           <div className="floating-character floating-character-1">
             <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none">
               <circle cx="24" cy="24" r="22" fill="rgba(56,189,248,0.22)" />
               <circle cx="18" cy="20" r="2.2" fill="#f8fafc" />
               <circle cx="30" cy="20" r="2.2" fill="#f8fafc" />
-              <path d="M16 30c2.4 2.2 5.1 3.2 8 3.2s5.6-1 8-3.2" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M16 30c2.4 2.2 5.1 3.2 8 3.2s5.6-1 8-3.2"
+                stroke="#f8fafc"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
           <div className="floating-character floating-character-2">
             <svg viewBox="0 0 48 48" className="h-9 w-9" fill="none">
-              <rect x="6" y="8" width="36" height="24" rx="8" fill="rgba(251,191,36,0.22)" />
+              <rect
+                x="6"
+                y="8"
+                width="36"
+                height="24"
+                rx="8"
+                fill="rgba(251,191,36,0.22)"
+              />
               <circle cx="17" cy="20" r="2" fill="#f8fafc" />
               <circle cx="31" cy="20" r="2" fill="#f8fafc" />
-              <path d="M16 27h16" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M16 27h16"
+                stroke="#f8fafc"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
           <div className="floating-character floating-character-3">
             <svg viewBox="0 0 48 48" className="h-11 w-11" fill="none">
-              <path d="M24 4l17 8v12c0 10-7.5 17-17 20C14.5 41 7 34 7 24V12l17-8z" fill="rgba(16,185,129,0.2)" />
+              <path
+                d="M24 4l17 8v12c0 10-7.5 17-17 20C14.5 41 7 34 7 24V12l17-8z"
+                fill="rgba(16,185,129,0.2)"
+              />
               <circle cx="18" cy="21" r="2" fill="#f8fafc" />
               <circle cx="30" cy="21" r="2" fill="#f8fafc" />
-              <path d="M17 29c2.2 2 4.5 3 7 3s4.8-1 7-3" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M17 29c2.2 2 4.5 3 7 3s4.8-1 7-3"
+                stroke="#f8fafc"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
         </div>
         <SiteHeader />
-        {children}
-        <ChatbotWidget />
+        <div className="relative z-10">{children}</div>
       </body>
     </html>
   );

@@ -10,20 +10,36 @@ const QUICK_PROMPTS = [
 ];
 
 const SOURCE_HINTS = [
-  { path: "system-design/topics/consistent-hashing", label: "Consistent Hashing" },
+  {
+    path: "system-design/topics/consistent-hashing",
+    label: "Consistent Hashing",
+  },
   { path: "react/topics/useeffect", label: "useEffect Deep Dive" },
   { path: "golang/topics/channels", label: "Go Channels" },
   { path: "javascript/topics/closures-and-scope", label: "Closures and Scope" },
   { path: "nextjs/topics/server-components", label: "Server Components" },
   { path: "postgresql/topics/indexing", label: "PostgreSQL Indexing" },
-  { path: "docker/topics/multi-stage-builds", label: "Docker Multi-stage Builds" },
-  { path: "kubernetes/topics/services-and-ingress", label: "K8s Services and Ingress" },
+  {
+    path: "docker/topics/multi-stage-builds",
+    label: "Docker Multi-stage Builds",
+  },
+  {
+    path: "kubernetes/topics/services-and-ingress",
+    label: "K8s Services and Ingress",
+  },
   { path: "system-design/topics/rate-limiter", label: "Rate Limiter Design" },
 ];
 
 const SOURCE_KEYWORDS = [
   {
-    keywords: ["react", "useeffect", "use effect", "hooks", "reconciliation", "jsx"],
+    keywords: [
+      "react",
+      "useeffect",
+      "use effect",
+      "hooks",
+      "reconciliation",
+      "jsx",
+    ],
     sources: [
       { path: "react/topics/useeffect", label: "useEffect Deep Dive" },
       { path: "react/topics/reconciliation", label: "React Reconciliation" },
@@ -37,21 +53,45 @@ const SOURCE_KEYWORDS = [
     ],
   },
   {
-    keywords: ["javascript", "js", "closure", "event loop", "debounce", "throttle"],
+    keywords: [
+      "javascript",
+      "js",
+      "closure",
+      "event loop",
+      "debounce",
+      "throttle",
+    ],
     sources: [
-      { path: "javascript/topics/closures-and-scope", label: "Closures and Scope" },
+      {
+        path: "javascript/topics/closures-and-scope",
+        label: "Closures and Scope",
+      },
       { path: "javascript/topics/event-loop", label: "Event Loop" },
     ],
   },
   {
-    keywords: ["next", "nextjs", "server component", "ssr", "isr", "middleware"],
+    keywords: [
+      "next",
+      "nextjs",
+      "server component",
+      "ssr",
+      "isr",
+      "middleware",
+    ],
     sources: [
       { path: "nextjs/topics/server-components", label: "Server Components" },
       { path: "nextjs/topics/ssr-vs-ssg-isr", label: "SSR vs SSG vs ISR" },
     ],
   },
   {
-    keywords: ["postgres", "postgresql", "sql", "index", "join", "window function"],
+    keywords: [
+      "postgres",
+      "postgresql",
+      "sql",
+      "index",
+      "join",
+      "window function",
+    ],
     sources: [
       { path: "postgresql/topics/indexing", label: "PostgreSQL Indexing" },
       { path: "postgresql/topics/window-functions", label: "Window Functions" },
@@ -60,7 +100,10 @@ const SOURCE_KEYWORDS = [
   {
     keywords: ["docker", "compose", "container", "image", "dockerfile"],
     sources: [
-      { path: "docker/topics/multi-stage-builds", label: "Docker Multi-stage Builds" },
+      {
+        path: "docker/topics/multi-stage-builds",
+        label: "Docker Multi-stage Builds",
+      },
       { path: "docker/topics/networking", label: "Docker Networking" },
     ],
   },
@@ -68,14 +111,29 @@ const SOURCE_KEYWORDS = [
     keywords: ["kubernetes", "k8s", "pod", "deployment", "service", "ingress"],
     sources: [
       { path: "kubernetes/topics/core-objects", label: "K8s Core Objects" },
-      { path: "kubernetes/topics/services-and-ingress", label: "Services and Ingress" },
+      {
+        path: "kubernetes/topics/services-and-ingress",
+        label: "Services and Ingress",
+      },
     ],
   },
   {
-    keywords: ["system design", "consistent hashing", "rate limiter", "scalability", "distributed"],
+    keywords: [
+      "system design",
+      "consistent hashing",
+      "rate limiter",
+      "scalability",
+      "distributed",
+    ],
     sources: [
-      { path: "system-design/topics/consistent-hashing", label: "Consistent Hashing" },
-      { path: "system-design/topics/rate-limiter", label: "Rate Limiter Design" },
+      {
+        path: "system-design/topics/consistent-hashing",
+        label: "Consistent Hashing",
+      },
+      {
+        path: "system-design/topics/rate-limiter",
+        label: "Rate Limiter Design",
+      },
     ],
   },
 ];
@@ -154,7 +212,9 @@ function pickSourcesForPrompt(prompt, count = 3) {
   const seen = new Set();
 
   for (const group of SOURCE_KEYWORDS) {
-    const matched = group.keywords.some((keyword) => normalizedPrompt.includes(keyword));
+    const matched = group.keywords.some((keyword) =>
+      normalizedPrompt.includes(keyword)
+    );
     if (!matched) continue;
 
     for (const source of group.sources) {
@@ -246,57 +306,60 @@ export default function ChatbotWidget() {
       .slice(-8);
   }, []);
 
-  const sendAssistantReply = useCallback(async (prompt, nextHistory) => {
-    setIsTyping(true);
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: prompt,
-          technology: technology || undefined,
-          history: normalizeHistoryForApi(nextHistory),
-        }),
-      });
+  const sendAssistantReply = useCallback(
+    async (prompt, nextHistory) => {
+      setIsTyping(true);
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: prompt,
+            technology: technology || undefined,
+            history: normalizeHistoryForApi(nextHistory),
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Chat API failed (${response.status})`);
+        if (!response.ok) {
+          throw new Error(`Chat API failed (${response.status})`);
+        }
+
+        const payload = await response.json();
+        const reply =
+          typeof payload?.reply === "string" && payload.reply.trim().length > 0
+            ? payload.reply.trim()
+            : "I couldn't generate a response right now. Please try again.";
+
+        setProvider(payload?.providerLabel || "AI");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: reply,
+            sources:
+              Array.isArray(payload?.sources) && payload.sources.length > 0
+                ? payload.sources
+                : pickSourcesForPrompt(prompt, 2),
+          },
+        ]);
+      } catch {
+        const fallbackReply = getMockResponse(technology, prompt);
+        setProvider("Local Fallback");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: fallbackReply,
+            sources: pickSourcesForPrompt(prompt, 2),
+          },
+        ]);
+      } finally {
+        setIsTyping(false);
+        if (!isOpen) setHasUnread(true);
       }
-
-      const payload = await response.json();
-      const reply =
-        typeof payload?.reply === "string" && payload.reply.trim().length > 0
-          ? payload.reply.trim()
-          : "I couldn't generate a response right now. Please try again.";
-
-      setProvider(payload?.providerLabel || "AI");
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: reply,
-          sources:
-            Array.isArray(payload?.sources) && payload.sources.length > 0
-              ? payload.sources
-              : pickSourcesForPrompt(prompt, 2),
-        },
-      ]);
-    } catch {
-      const fallbackReply = getMockResponse(technology, prompt);
-      setProvider("Local Fallback");
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: fallbackReply,
-          sources: pickSourcesForPrompt(prompt, 2),
-        },
-      ]);
-    } finally {
-      setIsTyping(false);
-      if (!isOpen) setHasUnread(true);
-    }
-  }, [isOpen, normalizeHistoryForApi, technology]);
+    },
+    [isOpen, normalizeHistoryForApi, technology]
+  );
 
   const handleSend = useCallback(async () => {
     const trimmed = input.trim();
@@ -333,15 +396,48 @@ export default function ChatbotWidget() {
         aria-label="Open AI chat"
       >
         {/* Animated ring */}
-        <span className="absolute inset-0 animate-ping rounded-2xl bg-amber-400/30 duration-1000 dark:bg-amber-500/20" style={{ animationDuration: "3s" }} />
+        <span
+          className="absolute inset-0 animate-ping rounded-2xl bg-amber-400/30 duration-1000 dark:bg-amber-500/20"
+          style={{ animationDuration: "3s" }}
+        />
         {/* Bot face icon */}
-        <svg viewBox="0 0 28 28" className="relative h-7 w-7 transition-transform duration-300 group-hover:rotate-6" fill="none">
-          <rect x="3" y="5" width="22" height="18" rx="6" fill="white" fillOpacity="0.25" />
-          <rect x="3" y="5" width="22" height="18" rx="6" stroke="white" strokeWidth="1.5" />
+        <svg
+          viewBox="0 0 28 28"
+          className="relative h-7 w-7 transition-transform duration-300 group-hover:rotate-6"
+          fill="none"
+        >
+          <rect
+            x="3"
+            y="5"
+            width="22"
+            height="18"
+            rx="6"
+            fill="white"
+            fillOpacity="0.25"
+          />
+          <rect
+            x="3"
+            y="5"
+            width="22"
+            height="18"
+            rx="6"
+            stroke="white"
+            strokeWidth="1.5"
+          />
           <circle cx="10.5" cy="14" r="2" fill="white" />
           <circle cx="17.5" cy="14" r="2" fill="white" />
-          <path d="M10 19c1.5 1.5 6.5 1.5 8 0" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M14 5V2" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+          <path
+            d="M10 19c1.5 1.5 6.5 1.5 8 0"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M14 5V2"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
           <circle cx="14" cy="1.5" r="1" fill="white" />
         </svg>
         {/* Unread badge */}
@@ -376,19 +472,41 @@ export default function ChatbotWidget() {
             {/* Bot avatar */}
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
-                <rect x="3" y="5" width="18" height="14" rx="5" stroke="white" strokeWidth="1.5" />
+                <rect
+                  x="3"
+                  y="5"
+                  width="18"
+                  height="14"
+                  rx="5"
+                  stroke="white"
+                  strokeWidth="1.5"
+                />
                 <circle cx="9" cy="12" r="1.5" fill="white" />
                 <circle cx="15" cy="12" r="1.5" fill="white" />
-                <path d="M9 16c1.2 1.2 4.8 1.2 6 0" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M12 5V3" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <path
+                  d="M9 16c1.2 1.2 4.8 1.2 6 0"
+                  stroke="white"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M12 5V3"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-white">Interview Buddy</h3>
+              <h3 className="text-sm font-bold tracking-tight text-white">
+                Interview Buddy
+              </h3>
               <div className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-sm shadow-emerald-400/50" />
                 <p className="text-[11px] font-medium text-white/80">
-                  {techLabel ? `${techLabel} · ${provider}` : `${provider} · Ready`}
+                  {techLabel
+                    ? `${techLabel} · ${provider}`
+                    : `${provider} · Ready`}
                 </p>
               </div>
             </div>
@@ -402,7 +520,11 @@ export default function ChatbotWidget() {
               title="Clear chat"
             >
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
-                <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             <button
@@ -421,7 +543,11 @@ export default function ChatbotWidget() {
         {/* ── Tech context pill ──────────────────────────────────────────── */}
         {techLabel && (
           <div className="flex items-center gap-2 border-b border-slate-100 bg-amber-50/60 px-4 py-1.5 dark:border-slate-800 dark:bg-amber-500/5">
-            <svg viewBox="0 0 16 16" className="h-3 w-3 text-amber-600 dark:text-amber-400" fill="currentColor">
+            <svg
+              viewBox="0 0 16 16"
+              className="h-3 w-3 text-amber-600 dark:text-amber-400"
+              fill="currentColor"
+            >
               <path d="M9.58 1.077a.75.75 0 01.405.82L8.77 6h4.48a.75.75 0 01.592 1.21l-5.5 7a.75.75 0 01-1.327-.74L8.23 9.5H3.75a.75.75 0 01-.592-1.21l5.5-7a.75.75 0 01.922-.213z" />
             </svg>
             <span className="text-[11px] font-medium text-amber-700 dark:text-amber-400">
@@ -442,11 +568,20 @@ export default function ChatbotWidget() {
                 {/* Avatar */}
                 {!isUser && (
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-400 shadow-sm dark:from-amber-500 dark:to-orange-500">
-                    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="white">
+                    <svg
+                      viewBox="0 0 16 16"
+                      className="h-3.5 w-3.5"
+                      fill="white"
+                    >
                       <rect x="2" y="4" width="12" height="9" rx="3.5" />
                       <circle cx="6" cy="8.5" r="1" fill="#f59e0b" />
                       <circle cx="10" cy="8.5" r="1" fill="#f59e0b" />
-                      <path d="M8 4V2.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                      <path
+                        d="M8 4V2.5"
+                        stroke="white"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
                 )}
@@ -458,27 +593,39 @@ export default function ChatbotWidget() {
                       : "rounded-2xl rounded-bl-md border border-slate-200/80 bg-white px-3.5 py-2.5 text-slate-700 shadow-sm dark:border-slate-700/60 dark:bg-slate-800 dark:text-slate-200"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-                  {!isUser && msg.sources?.length > 0 && msg.content.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-1.5 border-t border-slate-100 pt-2 dark:border-slate-700/60">
-                      {msg.sources.map((src) => (
-                        <a
-                          key={src.path}
-                          href={`/${src.path.split("/topics/")[0]}`}
-                          className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 transition hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
-                        >
-                          <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="currentColor">
-                            <path d="M5.25 1.5a.75.75 0 01.75.75v3h3a.75.75 0 010 1.5h-3v3a.75.75 0 01-1.5 0v-3h-3a.75.75 0 010-1.5h3v-3a.75.75 0 01.75-.75z" />
-                          </svg>
-                          {src.label}
-                        </a>
-                      ))}
-                    </div>
-                  )}
+                  <p className="whitespace-pre-wrap break-words">
+                    {msg.content}
+                  </p>
+                  {!isUser &&
+                    msg.sources?.length > 0 &&
+                    msg.content.length > 0 && (
+                      <div className="mt-2.5 flex flex-wrap gap-1.5 border-t border-slate-100 pt-2 dark:border-slate-700/60">
+                        {msg.sources.map((src) => (
+                          <a
+                            key={src.path}
+                            href={`/${src.path.split("/topics/")[0]}`}
+                            className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 transition hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
+                          >
+                            <svg
+                              viewBox="0 0 12 12"
+                              className="h-2.5 w-2.5"
+                              fill="currentColor"
+                            >
+                              <path d="M5.25 1.5a.75.75 0 01.75.75v3h3a.75.75 0 010 1.5h-3v3a.75.75 0 01-1.5 0v-3h-3a.75.75 0 010-1.5h3v-3a.75.75 0 01.75-.75z" />
+                            </svg>
+                            {src.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
                 </div>
                 {isUser && (
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700">
-                    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" fill="currentColor">
+                    <svg
+                      viewBox="0 0 16 16"
+                      className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400"
+                      fill="currentColor"
+                    >
                       <path d="M8 8a3 3 0 100-6 3 3 0 000 6zM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 00-11.215 0c-.22.578.254 1.139.872 1.139h9.47z" />
                     </svg>
                   </div>
@@ -495,13 +642,27 @@ export default function ChatbotWidget() {
                   <rect x="2" y="4" width="12" height="9" rx="3.5" />
                   <circle cx="6" cy="8.5" r="1" fill="#f59e0b" />
                   <circle cx="10" cy="8.5" r="1" fill="#f59e0b" />
-                  <path d="M8 4V2.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                  <path
+                    d="M8 4V2.5"
+                    stroke="white"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </div>
               <div className="flex items-center gap-1 rounded-2xl rounded-bl-md border border-slate-200/80 bg-white px-4 py-3 shadow-sm dark:border-slate-700/60 dark:bg-slate-800">
-                <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400" style={{ animationDelay: "0ms" }} />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400" style={{ animationDelay: "150ms" }} />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-amber-400" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="h-2 w-2 animate-bounce rounded-full bg-amber-400"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="h-2 w-2 animate-bounce rounded-full bg-amber-400"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="h-2 w-2 animate-bounce rounded-full bg-amber-400"
+                  style={{ animationDelay: "300ms" }}
+                />
               </div>
             </div>
           )}
@@ -521,15 +682,26 @@ export default function ChatbotWidget() {
                   type="button"
                   onClick={async () => {
                     setInput("");
-                    const nextHistory = [...messages, { role: "user", content: prompt }];
+                    const nextHistory = [
+                      ...messages,
+                      { role: "user", content: prompt },
+                    ];
                     setMessages(nextHistory);
                     await sendAssistantReply(prompt, nextHistory);
                   }}
                   className="group flex items-center gap-2 rounded-xl border border-slate-150 bg-slate-50/80 px-3 py-2 text-left text-xs text-slate-600 transition hover:border-amber-200 hover:bg-amber-50/80 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:border-amber-600/50 dark:hover:bg-amber-500/5"
                 >
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-600 transition group-hover:bg-amber-200 dark:bg-amber-500/15 dark:text-amber-400">
-                    <svg viewBox="0 0 12 12" className="h-3 w-3" fill="currentColor">
-                      <path fillRule="evenodd" d="M6 1.5a.75.75 0 01.75.75v3h3a.75.75 0 010 1.5h-3v3a.75.75 0 01-1.5 0v-3h-3a.75.75 0 010-1.5h3v-3A.75.75 0 016 1.5z" clipRule="evenodd" />
+                    <svg
+                      viewBox="0 0 12 12"
+                      className="h-3 w-3"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M6 1.5a.75.75 0 01.75.75v3h3a.75.75 0 010 1.5h-3v3a.75.75 0 01-1.5 0v-3h-3a.75.75 0 010-1.5h3v-3A.75.75 0 016 1.5z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </span>
                   <span className="truncate">{prompt}</span>
@@ -553,7 +725,11 @@ export default function ChatbotWidget() {
                   handleSend();
                 }
               }}
-              placeholder={techLabel ? `Ask about ${techLabel}...` : "Ask an interview question..."}
+              placeholder={
+                techLabel
+                  ? `Ask about ${techLabel}...`
+                  : "Ask an interview question..."
+              }
               disabled={isTyping}
               className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none disabled:opacity-50 dark:text-slate-200 dark:placeholder-slate-500"
             />
