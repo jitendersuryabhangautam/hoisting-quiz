@@ -48,6 +48,13 @@ const TRACKS = [
     href: "/backend",
   },
   {
+    name: "Node.js Theory",
+    icon: "NT",
+    color: "from-emerald-400 to-green-600",
+    desc: "Node.js theory fundamentals and interview-focused concepts.",
+    href: "/nodejs-theory",
+  },
+  {
     name: "Backend Implementation",
     icon: "BI",
     color: "from-sky-300 to-cyan-500",
@@ -309,7 +316,7 @@ export default function Home() {
 
           <div className="mx-auto mt-14 grid max-w-lg grid-cols-3 gap-6 sm:mt-20 sm:max-w-xl">
             {[
-              { value: "8", label: "Tracks" },
+              { value: "9", label: "Tracks" },
               { value: "300+", label: "Questions" },
               { value: "100%", label: "Practice Focus" },
             ].map((stat) => (
@@ -436,3 +443,4 @@ export default function Home() {
     </div>
   );
 }
+

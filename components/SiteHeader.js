@@ -18,13 +18,14 @@ const NAV_GROUPS = [
   },
   {
     label: "Backend",
-    icon: "🏗️",
+    icon: "BE",
     links: [
-      { href: "/backend", label: "Backend Theory", icon: "🏗️" },
+      { href: "/backend", label: "Backend Theory", icon: "BT" },
+      { href: "/nodejs-theory", label: "Node.js Theory", icon: "NT" },
       {
         href: "/backend-implementation",
         label: "Backend Implementation",
-        icon: "🔧",
+        icon: "BI",
       },
     ],
   },
@@ -252,3 +253,5 @@ export default function SiteHeader() {
     </nav>
   );
 }
+
+
