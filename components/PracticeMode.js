@@ -50,6 +50,15 @@ function progressValue(done, total) {
   return Math.round((done / total) * 100);
 }
 
+function renderBasicMarkdown(text) {
+  return (text ?? "").split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return <strong key={`md-bold-${index}`}>{part.slice(2, -2)}</strong>;
+    }
+    return <span key={`md-text-${index}`}>{part}</span>;
+  });
+}
+
 export default function PracticeMode({
   title,
   eyebrow,
@@ -1364,7 +1373,7 @@ export default function PracticeMode({
                           Problem statement
                         </p>
                         <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-200">
-                          {displayQuestion.prompt}
+                          {renderBasicMarkdown(displayQuestion.prompt)}
                         </p>
                         {displayQuestion.hint ? (
                           <div className="mt-4 rounded-2xl border border-amber-400/25 bg-amber-400/8 p-3">
@@ -1372,7 +1381,7 @@ export default function PracticeMode({
                               Hint
                             </p>
                             <p className="mt-2 text-sm leading-6 text-slate-200">
-                              {displayQuestion.hint}
+                              {renderBasicMarkdown(displayQuestion.hint)}
                             </p>
                           </div>
                         ) : null}
@@ -1795,10 +1804,10 @@ export default function PracticeMode({
                     Problem preview
                   </p>
                   <p className="mt-2 text-sm font-semibold text-white">
-                    {hoverPreviewQuestion.title}
+                    {renderBasicMarkdown(hoverPreviewQuestion.title)}
                   </p>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
-                    {hoverPreviewQuestion.prompt}
+                    {renderBasicMarkdown(hoverPreviewQuestion.prompt)}
                   </p>
                 </div>
               ) : null}
@@ -2654,13 +2663,18 @@ export default function PracticeMode({
                     Explanation
                   </p>
                   <div className="mt-3 space-y-2 text-sm leading-6 text-slate-200">
-                    {splitExplanation(displayQuestion.explanation).map(
-                      (line, index) => (
-                        <p key={`${displayQuestion.id}-modal-explain-${index}`}>
-                          {line}
+                    {(displayQuestion.explanation ?? "")
+                      .split("\n")
+                      .map((line, index) => (
+                        <p
+                          key={`${displayQuestion.id}-modal-explain-${index}`}
+                          className="whitespace-pre-wrap"
+                        >
+                          {line.trim()
+                            ? renderBasicMarkdown(line)
+                            : "\u00A0"}
                         </p>
-                      )
-                    )}
+                      ))}
                   </div>
                 </div>
               ) : null}

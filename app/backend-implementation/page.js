@@ -9,8 +9,14 @@ export default function BackendImplementationPage() {
       description="This mode contains backend implementation tasks only (Node.js, Go, PostgreSQL, Redis, system design), with optional serial/shuffle order and a collapsible question-list sidebar."
       questions={backendImplementationQuestions}
       storageKey="backend-implementation"
-      collapsibleSidebar
       enableQuestionListSidebar
+      alwaysShowQuestionSidebar
+      collapsibleLeftQuestionSidebar
+      defaultLeftQuestionSidebarCollapsed
+      overlayLeftQuestionSidebar
+      answerOnlySidebar
+      useReferenceModalForImplementation
+      hideDesktopRightSidebar
       enableOrderToggle
       defaultOrderMode="serial"
     />
