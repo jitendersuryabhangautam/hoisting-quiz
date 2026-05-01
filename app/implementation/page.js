@@ -9,8 +9,14 @@ export default function ImplementationPage() {
       description="This mode contains JavaScript implementation tasks, so you can focus on writing functions, logic, and algorithms."
       questions={implementationQuestions}
       storageKey="implementation"
-      collapsibleSidebar
       enableQuestionListSidebar
+      alwaysShowQuestionSidebar
+      collapsibleLeftQuestionSidebar
+      defaultLeftQuestionSidebarCollapsed
+      overlayLeftQuestionSidebar
+      answerOnlySidebar
+      useReferenceModalForImplementation
+      hideDesktopRightSidebar
       enableOrderToggle
       defaultOrderMode="serial"
     />

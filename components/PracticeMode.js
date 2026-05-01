@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import CodeBlockContent from "@/components/CodeBlockContent";
 import {
   isAnswerCorrect,
@@ -61,6 +61,13 @@ export default function PracticeMode({
   collapsibleSidebar = false,
   defaultSidebarCollapsed = false,
   enableQuestionListSidebar = false,
+  alwaysShowQuestionSidebar = false,
+  answerOnlySidebar = false,
+  useReferenceModalForImplementation = false,
+  hideDesktopRightSidebar = false,
+  collapsibleLeftQuestionSidebar = false,
+  defaultLeftQuestionSidebarCollapsed = false,
+  overlayLeftQuestionSidebar = false,
   enableOrderToggle = false,
   defaultOrderMode = "shuffle",
   renderQuestionTools = null,
@@ -81,6 +88,19 @@ export default function PracticeMode({
   );
   const [orderMode, setOrderMode] = useState(defaultOrderMode);
   const [questionSearch, setQuestionSearch] = useState("");
+  const [referenceModalOpen, setReferenceModalOpen] = useState(false);
+  const [hoverPreviewQuestion, setHoverPreviewQuestion] = useState(null);
+  const [hoverPreviewPosition, setHoverPreviewPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+  const [viewportSize, setViewportSize] = useState({
+    width: 1280,
+    height: 720,
+  });
+  const hoverPreviewTimerRef = useRef(null);
+  const [leftQuestionSidebarCollapsed, setLeftQuestionSidebarCollapsed] =
+    useState(defaultLeftQuestionSidebarCollapsed);
 
   const deck = useMemo(() => {
     const available = questions.filter((q) => !storedAttempted.has(q.id));
@@ -161,7 +181,7 @@ export default function PracticeMode({
   useEffect(() => {
     if (!displayQuestion) return;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [displayQuestion?.id]);
+  }, [displayQuestion]);
   const currentAnswer = answers[currentIdx] ?? "";
   const isChecked = checked[currentIdx];
   const isRevealed = revealed[currentIdx];
@@ -571,6 +591,25 @@ export default function PracticeMode({
         { id: "back", label: "Back to practice" },
       ]
     : sidebarTabsWithIndex;
+  const showLeftQuestionSidebar = alwaysShowQuestionSidebar;
+  const useFullWidthImplementationSections =
+    !showLeftQuestionSidebar ||
+    (collapsibleLeftQuestionSidebar && leftQuestionSidebarCollapsed);
+  const desktopGridClass = showLeftQuestionSidebar
+    ? overlayLeftQuestionSidebar
+      ? hideDesktopRightSidebar
+        ? "lg:grid-cols-1"
+        : "lg:grid-cols-[1.6fr_0.9fr]"
+      : collapsibleLeftQuestionSidebar && leftQuestionSidebarCollapsed
+        ? hideDesktopRightSidebar
+          ? "lg:grid-cols-1"
+          : "lg:grid-cols-[1.6fr_0.9fr]"
+        : hideDesktopRightSidebar
+          ? "lg:grid-cols-[0.9fr_1.6fr]"
+          : "lg:grid-cols-[0.85fr_1.45fr_0.85fr]"
+    : collapsibleSidebar && sidebarCollapsed
+      ? "lg:grid-cols-1"
+      : "lg:grid-cols-[1.45fr_0.85fr]";
   const showMobileAttemptedPanel = sidebarTab === "attempted";
   const showMobileQuestionPanel = sidebarTab === "questions";
   const closeMobileAttemptedPanel = () => {
@@ -588,6 +627,68 @@ export default function PracticeMode({
   const closeMobileQuestionPanel = () => {
     setSidebarTab(sidebarMode === "answers" ? "answers" : "help");
   };
+
+  const clearHoverPreview = () => {
+    if (hoverPreviewTimerRef.current) {
+      clearTimeout(hoverPreviewTimerRef.current);
+      hoverPreviewTimerRef.current = null;
+    }
+    setHoverPreviewQuestion(null);
+  };
+
+  const startHoverPreview = (question, event) => {
+    clearHoverPreview();
+    const x = event?.clientX ?? 0;
+    const y = event?.clientY ?? 0;
+    hoverPreviewTimerRef.current = setTimeout(() => {
+      setHoverPreviewPosition({ x, y });
+      setHoverPreviewQuestion(question);
+      hoverPreviewTimerRef.current = null;
+    }, 1000);
+  };
+
+  useEffect(
+    () => () => {
+      if (hoverPreviewTimerRef.current) {
+        clearTimeout(hoverPreviewTimerRef.current);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!hoverPreviewQuestion) return;
+    const closePreview = () => setHoverPreviewQuestion(null);
+    window.addEventListener("scroll", closePreview, true);
+    return () => window.removeEventListener("scroll", closePreview, true);
+  }, [hoverPreviewQuestion]);
+
+  useEffect(() => {
+    const updateViewport = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  useEffect(() => {
+    if (
+      useReferenceModalForImplementation &&
+      displayQuestion?.type === "implementation" &&
+      (isRevealed || isReviewingAttempted)
+    ) {
+      setReferenceModalOpen(true);
+    }
+  }, [
+    useReferenceModalForImplementation,
+    displayQuestion,
+    isRevealed,
+    isReviewingAttempted,
+  ]);
 
   const mobileFeedbackPopup = showMobilePopupFeedback ? (
     <div
@@ -885,7 +986,7 @@ export default function PracticeMode({
                       <p className="mt-1 text-sm font-semibold text-white">
                         {question.title}
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                      <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">
                         {question.prompt}
                       </p>
                       {question.code || question.starter ? (
@@ -1068,12 +1169,77 @@ export default function PracticeMode({
             </header>
 
             <section
-              className={`grid gap-6 lg:items-start ${
-                collapsibleSidebar && sidebarCollapsed
-                  ? "lg:grid-cols-1"
-                  : "lg:grid-cols-[1.45fr_0.85fr]"
-              }`}
+              className={`grid gap-6 lg:items-start ${desktopGridClass}`}
             >
+              {showLeftQuestionSidebar &&
+              !overlayLeftQuestionSidebar &&
+              !(
+                collapsibleLeftQuestionSidebar && leftQuestionSidebarCollapsed
+              ) ? (
+                <aside className="hidden smooth-scroll space-y-6 lg:sticky lg:top-20 lg:block lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1">
+                  <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                    <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
+                      All questions
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      Jump to any question directly.
+                    </p>
+                    <div className="mt-3">
+                      <label htmlFor="left-question-search" className="sr-only">
+                        Search questions
+                      </label>
+                      <input
+                        id="left-question-search"
+                        type="search"
+                        value={questionSearch}
+                        onChange={(event) =>
+                          setQuestionSearch(event.target.value)
+                        }
+                        placeholder="Search by title/topic..."
+                        className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                      />
+                    </div>
+                    <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                      {filteredDeckWithIndex.map(({ question, index }) => {
+                        const isActive =
+                          !isReviewingAttempted &&
+                          currentQuestion?.id === question.id;
+                        const isDone = attemptedIds.has(question.id);
+                        return (
+                          <button
+                            key={`left-sidebar-question-${index}-${question.id}-${question.title}`}
+                            type="button"
+                            onMouseEnter={(event) =>
+                              startHoverPreview(question, event)
+                            }
+                            onMouseLeave={clearHoverPreview}
+                            onClick={() => {
+                              clearHoverPreview();
+                              setReviewQuestionId(null);
+                              setCurrentIdx(index);
+                            }}
+                            className={`w-full rounded-2xl border p-3 text-left transition ${
+                              isActive
+                                ? "border-cyan-400/40 bg-cyan-400/10"
+                                : isDone
+                                  ? "border-emerald-400/25 bg-emerald-400/8 hover:bg-emerald-400/14"
+                                  : "border-white/10 bg-slate-950/50 hover:border-cyan-400/30 hover:bg-slate-950/80"
+                            }`}
+                          >
+                            <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                              Question {index + 1}
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-white">
+                              {question.title}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                </aside>
+              ) : null}
+
               <article className="self-start overflow-hidden rounded-4xl border border-white/10 bg-white/6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
                 <div className="border-b border-white/10 bg-slate-950/50 px-4 py-4 sm:px-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1089,6 +1255,50 @@ export default function PracticeMode({
                       <span className="text-sm text-slate-400">
                         Question {currentIdx + 1} of {deck.length}
                       </span>
+                      {collapsibleLeftQuestionSidebar &&
+                      showLeftQuestionSidebar ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setLeftQuestionSidebarCollapsed((prev) => !prev)
+                          }
+                          className="hidden lg:inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
+                          aria-label={
+                            leftQuestionSidebarCollapsed
+                              ? "Show question list"
+                              : "Hide question list"
+                          }
+                          title={
+                            leftQuestionSidebarCollapsed
+                              ? "Show question list"
+                              : "Hide question list"
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          >
+                            {leftQuestionSidebarCollapsed ? (
+                              <path
+                                d="M9 6l6 6-6 6M4 6h2M4 12h2M4 18h2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            ) : (
+                              <path
+                                d="M15 6l-6 6 6 6M18 6h2M18 12h2M18 18h2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            )}
+                          </svg>
+                        </button>
+                      ) : null}
                       {enableQuestionListSidebar ? (
                         <button
                           type="button"
@@ -1132,298 +1342,493 @@ export default function PracticeMode({
                       <div className="shrink-0">{questionTools}</div>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">
-                    {displayQuestion.prompt}
-                  </p>
+                  {displayQuestion.type !== "implementation" ? (
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-300">
+                      {displayQuestion.prompt}
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="space-y-6 px-4 py-5 sm:px-5">
-                  {displayQuestion.code ? (
-                    <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                        Code
-                      </p>
-                      <pre className="overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-200">
-                        <CodeBlockContent
-                          code={normalizeCodeBlock(displayQuestion.code)}
-                        />
-                      </pre>
-                    </div>
-                  ) : null}
-
-                  {isReviewingAttempted ? (
-                    <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5">
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-300">
-                          Attempted review
+                  {displayQuestion.type === "implementation" &&
+                  !isReviewingAttempted ? (
+                    <div
+                      className={`grid gap-4 ${
+                        useFullWidthImplementationSections
+                          ? "lg:grid-cols-[1fr_1fr]"
+                          : "lg:grid-cols-[1fr_1.25fr]"
+                      }`}
+                    >
+                      <section className="rounded-3xl border border-white/10 bg-slate-950/50 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                          Problem statement
                         </p>
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            onClick={goNextReviewedQuestion}
-                            className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
-                          >
-                            Next attempted
-                          </button>
-                          <button
-                            onClick={goPreviousReviewedQuestion}
-                            className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
-                          >
-                            Previous attempted
-                          </button>
-                        </div>
-                      </div>
-                      <p className="mt-3 text-xs uppercase tracking-[0.22em] text-slate-400">
-                        {reviewQuestion
-                          ? `${currentReviewIndex + 1} / ${attemptedQuestions.length}`
-                          : ""}
-                      </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
-                        The answer and explanation are shown in the sidebar.
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        <label className="mb-3 block text-sm font-semibold text-slate-100">
-                          {answerLabel}
-                        </label>
-                        {displayQuestion.type === "implementation" ? (
-                          <div
-                            className="mb-3 rounded-3xl border p-4"
-                            style={{
-                              borderColor:
-                                "color-mix(in srgb, var(--brand-secondary) 35%, var(--border))",
-                              background:
-                                "color-mix(in srgb, var(--brand-secondary) 10%, var(--surface-muted))",
-                            }}
-                          >
-                            <p
-                              className="text-xs font-semibold uppercase tracking-[0.3em]"
-                              style={{ color: "var(--foreground)" }}
-                            >
-                              Starter included
+                        <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-200">
+                          {displayQuestion.prompt}
+                        </p>
+                        {displayQuestion.hint ? (
+                          <div className="mt-4 rounded-2xl border border-amber-400/25 bg-amber-400/8 p-3">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-300">
+                              Hint
                             </p>
-                            <p className="mt-2 text-sm leading-6 text-foreground">
-                              The starter code is already loaded into the editor
-                              below, so you can edit it directly.
+                            <p className="mt-2 text-sm leading-6 text-slate-200">
+                              {displayQuestion.hint}
                             </p>
                           </div>
                         ) : null}
+                        {displayQuestion.code ? (
+                          <pre className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-200">
+                            <CodeBlockContent
+                              code={normalizeCodeBlock(displayQuestion.code)}
+                            />
+                          </pre>
+                        ) : null}
+                      </section>
+
+                      <section className="rounded-3xl border border-white/10 bg-slate-950/50 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                          Write code
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-slate-300">
+                          Starter code is loaded below. Edit and run your
+                          approach.
+                        </p>
                         <textarea
                           value={currentAnswer}
                           onChange={(event) => updateAnswer(event.target.value)}
                           onKeyDown={handleCodeEditorKeyDown}
-                          className="min-h-32 w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20"
+                          className="mt-3 min-h-72 w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20"
                           placeholder={placeholder}
                           spellCheck={false}
                           autoCapitalize="off"
                           autoComplete="off"
                           autoCorrect="off"
                         />
-                        <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
-                          {displayQuestion.type === "output" ? (
-                            <span>
-                              For multiline output, separate lines with Enter.
-                            </span>
-                          ) : null}
-                          {displayQuestion.type === "implementation" ? (
-                            <span>
-                              Compare your approach with the reference solution.
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div
-                        className={`flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0 ${isOutputOnlyPage ? "hidden sm:flex" : ""}`}
-                      >
-                        <button
-                          onClick={actionHandler}
-                          className="shrink-0 whitespace-nowrap rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110 sm:px-5 sm:py-3 sm:text-sm"
-                        >
-                          <span className="sm:hidden">
-                            {currentQuestion?.type === "implementation"
-                              ? "Show ref"
-                              : "Check"}
-                          </span>
-                          <span className="hidden sm:inline">
-                            {actionLabel}
-                          </span>
-                        </button>
-                        {secondaryActionLabel ? (
+                        <div className="mt-3 flex flex-wrap gap-2">
                           <button
-                            onClick={secondaryActionHandler}
-                            className="shrink-0 whitespace-nowrap rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-400/20 sm:px-5 sm:py-3 sm:text-sm"
+                            onClick={actionHandler}
+                            className="rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
                           >
-                            <span className="sm:hidden">Reveal</span>
-                            <span className="hidden sm:inline">
-                              {secondaryActionLabel}
-                            </span>
+                            SHOW REFERENCE
                           </button>
-                        ) : null}
-                        <button
-                          onClick={goNext}
-                          className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
-                        >
-                          <span className="sm:hidden">Next</span>
-                          <span className="hidden sm:inline">
+                          <button
+                            onClick={goNext}
+                            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+                          >
                             Next question
-                          </span>
-                        </button>
-                        <button
-                          onClick={goPrev}
-                          className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
-                        >
-                          <span className="sm:hidden">Prev</span>
-                          <span className="hidden sm:inline">Previous</span>
-                        </button>
-                        <button
-                          onClick={resetCurrentAnswer}
-                          className="shrink-0 whitespace-nowrap rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/20 sm:px-5 sm:py-3 sm:text-sm"
-                        >
-                          <span className="sm:hidden">Clear</span>
-                          <span className="hidden sm:inline">
+                          </button>
+                          <button
+                            onClick={goPrev}
+                            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
+                          >
+                            Previous
+                          </button>
+                          <button
+                            onClick={resetCurrentAnswer}
+                            className="rounded-full border border-rose-400/20 bg-rose-400/10 px-4 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/20"
+                          >
                             Clear current
-                          </span>
-                        </button>
-                      </div>
-                    </>
-                  )}
+                          </button>
+                        </div>
+                      </section>
+                    </div>
+                  ) : null}
 
-                  {showFeedback && !useOverlayFeedback && !useSidebarAnswers ? (
-                    <div className="hidden rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5 sm:block">
-                      {currentQuestion.type === "implementation" ? (
-                        <>
-                          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300">
-                            Reference moved to sidebar
+                  {!(
+                    displayQuestion.type === "implementation" &&
+                    !isReviewingAttempted
+                  ) ? (
+                    <>
+                      {displayQuestion.code ? (
+                        <div>
+                          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                            Code
+                          </p>
+                          <pre className="overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-200">
+                            <CodeBlockContent
+                              code={normalizeCodeBlock(displayQuestion.code)}
+                            />
+                          </pre>
+                        </div>
+                      ) : null}
+
+                      {isReviewingAttempted ? (
+                        <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                              Attempted review
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={goNextReviewedQuestion}
+                                className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
+                              >
+                                Next attempted
+                              </button>
+                              <button
+                                onClick={goPreviousReviewedQuestion}
+                                className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
+                              >
+                                Previous attempted
+                              </button>
+                            </div>
+                          </div>
+                          <p className="mt-3 text-xs uppercase tracking-[0.22em] text-slate-400">
+                            {reviewQuestion
+                              ? `${currentReviewIndex + 1} / ${attemptedQuestions.length}`
+                              : ""}
                           </p>
                           <p className="mt-3 text-sm leading-6 text-slate-300">
-                            The reference solution is shown in the sidebar so
-                            the main card stays focused on the question.
+                            The answer and explanation are shown in the sidebar.
                           </p>
-                        </>
+                        </div>
                       ) : (
                         <>
-                          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-300">
-                            {isChecked
-                              ? questionIsCorrect
-                                ? "Correct"
-                                : "Review this answer"
-                              : "Reveal mode"}
-                          </p>
-                          <p className="mt-3 text-base font-semibold text-white">
-                            Expected answer:
-                          </p>
-                          <p className="mt-1 whitespace-pre-wrap rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-cyan-50">
-                            {currentQuestion.expected}
-                          </p>
-                          <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
-                            {splitExplanation(currentQuestion.explanation).map(
-                              (line, index) => (
+                          <div>
+                            <label className="mb-3 block text-sm font-semibold text-slate-100">
+                              {answerLabel}
+                            </label>
+                            {displayQuestion.type === "implementation" ? (
+                              <div
+                                className="mb-3 rounded-3xl border p-4"
+                                style={{
+                                  borderColor:
+                                    "color-mix(in srgb, var(--brand-secondary) 35%, var(--border))",
+                                  background:
+                                    "color-mix(in srgb, var(--brand-secondary) 10%, var(--surface-muted))",
+                                }}
+                              >
                                 <p
-                                  key={`inline-explanation-${currentQuestion.id}-${index}`}
+                                  className="text-xs font-semibold uppercase tracking-[0.3em]"
+                                  style={{ color: "var(--foreground)" }}
                                 >
-                                  {line}
+                                  Starter included
                                 </p>
-                              )
-                            )}
+                                <p className="mt-2 text-sm leading-6 text-foreground">
+                                  The starter code is already loaded into the
+                                  editor below, so you can edit it directly.
+                                </p>
+                              </div>
+                            ) : null}
+                            <textarea
+                              value={currentAnswer}
+                              onChange={(event) =>
+                                updateAnswer(event.target.value)
+                              }
+                              onKeyDown={handleCodeEditorKeyDown}
+                              className="min-h-32 w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20"
+                              placeholder={placeholder}
+                              spellCheck={false}
+                              autoCapitalize="off"
+                              autoComplete="off"
+                              autoCorrect="off"
+                            />
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
+                              {displayQuestion.type === "output" ? (
+                                <span>
+                                  For multiline output, separate lines with
+                                  Enter.
+                                </span>
+                              ) : null}
+                              {displayQuestion.type === "implementation" ? (
+                                <span>
+                                  Compare your approach with the reference
+                                  solution.
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          <div
+                            className={`flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0 ${isOutputOnlyPage ? "hidden sm:flex" : ""}`}
+                          >
+                            <button
+                              onClick={actionHandler}
+                              className="shrink-0 whitespace-nowrap rounded-full border border-cyan-400/30 bg-linear-to-r from-cyan-500 to-sky-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:brightness-110 sm:px-5 sm:py-3 sm:text-sm"
+                            >
+                              <span className="sm:hidden">
+                                {currentQuestion?.type === "implementation"
+                                  ? "Show ref"
+                                  : "Check"}
+                              </span>
+                              <span className="hidden sm:inline">
+                                {actionLabel}
+                              </span>
+                            </button>
+                            {secondaryActionLabel ? (
+                              <button
+                                onClick={secondaryActionHandler}
+                                className="shrink-0 whitespace-nowrap rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-400/20 sm:px-5 sm:py-3 sm:text-sm"
+                              >
+                                <span className="sm:hidden">Reveal</span>
+                                <span className="hidden sm:inline">
+                                  {secondaryActionLabel}
+                                </span>
+                              </button>
+                            ) : null}
+                            <button
+                              onClick={goNext}
+                              className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
+                            >
+                              <span className="sm:hidden">Next</span>
+                              <span className="hidden sm:inline">
+                                Next question
+                              </span>
+                            </button>
+                            <button
+                              onClick={goPrev}
+                              className="shrink-0 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 sm:px-5 sm:py-3 sm:text-sm"
+                            >
+                              <span className="sm:hidden">Prev</span>
+                              <span className="hidden sm:inline">Previous</span>
+                            </button>
+                            <button
+                              onClick={resetCurrentAnswer}
+                              className="shrink-0 whitespace-nowrap rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/20 sm:px-5 sm:py-3 sm:text-sm"
+                            >
+                              <span className="sm:hidden">Clear</span>
+                              <span className="hidden sm:inline">
+                                Clear current
+                              </span>
+                            </button>
                           </div>
                         </>
                       )}
-                    </div>
-                  ) : null}
 
-                  {!useOverlayFeedback &&
-                  !useSidebarAnswers &&
-                  currentQuestion.type !== "implementation" &&
-                  isChecked ? (
-                    <div
-                      className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
-                        questionIsCorrect
-                          ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
-                          : "border-rose-400/20 bg-rose-400/10 text-rose-100"
-                      }`}
-                    >
-                      {questionIsCorrect
-                        ? "Correct. Your answer matches the expected result."
-                        : "Not quite. Use the explanation below to understand the rule."}
-                    </div>
-                  ) : null}
-
-                  {showFeedback && useOverlayFeedback && !useSidebarAnswers ? (
-                    <div
-                      className={`fixed bottom-4 left-1/2 z-50 w-[min(92vw,760px)] -translate-x-1/2 rounded-3xl border px-4 py-4 shadow-2xl backdrop-blur ${
-                        currentQuestion.type === "implementation"
-                          ? "border-amber-400/20 bg-slate-950/95"
-                          : isChecked && questionIsCorrect
-                            ? "border-emerald-400/20 bg-slate-950/95"
-                            : isChecked
-                              ? "border-rose-400/20 bg-slate-950/95"
-                              : "border-cyan-400/20 bg-slate-950/95"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p
-                            className={`text-xs font-semibold uppercase tracking-[0.28em] ${
-                              currentQuestion.type === "implementation"
-                                ? "text-amber-300"
-                                : isChecked && questionIsCorrect
-                                  ? "text-emerald-300"
-                                  : isChecked
-                                    ? "text-rose-300"
-                                    : "text-cyan-300"
-                            }`}
-                          >
-                            {verdictLabel}
-                          </p>
-                          <p className="mt-2 text-sm leading-6 text-slate-200">
-                            {currentQuestion.type === "implementation"
-                              ? "Scroll-free reference preview is shown here."
-                              : isChecked
-                                ? questionIsCorrect
-                                  ? "Your answer matches the expected output."
-                                  : "Your answer does not match the expected output."
-                                : "Correct answer preview is shown here."}
-                          </p>
-                          {currentQuestion.type !== "implementation" ? (
-                            <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3">
-                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                                Actual answer
+                      {showFeedback &&
+                      !useOverlayFeedback &&
+                      !useSidebarAnswers ? (
+                        <div className="hidden rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5 sm:block">
+                          {currentQuestion.type === "implementation" ? (
+                            <>
+                              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300">
+                                Reference moved to sidebar
                               </p>
-                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-100">
+                              <p className="mt-3 text-sm leading-6 text-slate-300">
+                                The reference solution is shown in the sidebar
+                                so the main card stays focused on the question.
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                                {isChecked
+                                  ? questionIsCorrect
+                                    ? "Correct"
+                                    : "Review this answer"
+                                  : "Reveal mode"}
+                              </p>
+                              <p className="mt-3 text-base font-semibold text-white">
+                                Expected answer:
+                              </p>
+                              <p className="mt-1 whitespace-pre-wrap rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-cyan-50">
                                 {currentQuestion.expected}
                               </p>
-                              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+                              <div className="mt-4 space-y-2 text-sm leading-6 text-slate-300">
                                 {splitExplanation(
                                   currentQuestion.explanation
                                 ).map((line, index) => (
                                   <p
-                                    key={`${currentQuestion.id}-overlay-explain-${index}`}
+                                    key={`inline-explanation-${currentQuestion.id}-${index}`}
                                   >
                                     {line}
                                   </p>
                                 ))}
                               </div>
+                            </>
+                          )}
+                        </div>
+                      ) : null}
+
+                      {!useOverlayFeedback &&
+                      !useSidebarAnswers &&
+                      currentQuestion.type !== "implementation" &&
+                      isChecked ? (
+                        <div
+                          className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                            questionIsCorrect
+                              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                              : "border-rose-400/20 bg-rose-400/10 text-rose-100"
+                          }`}
+                        >
+                          {questionIsCorrect
+                            ? "Correct. Your answer matches the expected result."
+                            : "Not quite. Use the explanation below to understand the rule."}
+                        </div>
+                      ) : null}
+
+                      {showFeedback &&
+                      useOverlayFeedback &&
+                      !useSidebarAnswers ? (
+                        <div
+                          className={`fixed bottom-4 left-1/2 z-50 w-[min(92vw,760px)] -translate-x-1/2 rounded-3xl border px-4 py-4 shadow-2xl backdrop-blur ${
+                            currentQuestion.type === "implementation"
+                              ? "border-amber-400/20 bg-slate-950/95"
+                              : isChecked && questionIsCorrect
+                                ? "border-emerald-400/20 bg-slate-950/95"
+                                : isChecked
+                                  ? "border-rose-400/20 bg-slate-950/95"
+                                  : "border-cyan-400/20 bg-slate-950/95"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <p
+                                className={`text-xs font-semibold uppercase tracking-[0.28em] ${
+                                  currentQuestion.type === "implementation"
+                                    ? "text-amber-300"
+                                    : isChecked && questionIsCorrect
+                                      ? "text-emerald-300"
+                                      : isChecked
+                                        ? "text-rose-300"
+                                        : "text-cyan-300"
+                                }`}
+                              >
+                                {verdictLabel}
+                              </p>
+                              <p className="mt-2 text-sm leading-6 text-slate-200">
+                                {currentQuestion.type === "implementation"
+                                  ? "Scroll-free reference preview is shown here."
+                                  : isChecked
+                                    ? questionIsCorrect
+                                      ? "Your answer matches the expected output."
+                                      : "Your answer does not match the expected output."
+                                    : "Correct answer preview is shown here."}
+                              </p>
+                              {currentQuestion.type !== "implementation" ? (
+                                <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3">
+                                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                    Actual answer
+                                  </p>
+                                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-100">
+                                    {currentQuestion.expected}
+                                  </p>
+                                  <div className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+                                    {splitExplanation(
+                                      currentQuestion.explanation
+                                    ).map((line, index) => (
+                                      <p
+                                        key={`${currentQuestion.id}-overlay-explain-${index}`}
+                                      >
+                                        {line}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : null}
                             </div>
-                          ) : null}
+                            <button
+                              type="button"
+                              aria-label="Close overlay"
+                              onClick={() => {
+                                setChecked((prev) => {
+                                  const next = [...prev];
+                                  next[currentIdx] = false;
+                                  return next;
+                                });
+                                setRevealed((prev) => {
+                                  const next = [...prev];
+                                  next[currentIdx] = false;
+                                  return next;
+                                });
+                              }}
+                              className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M6 6l12 12M18 6L6 18"
+                                  strokeLinecap="round"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {showFeedback &&
+                      useOverlayFeedback &&
+                      !useSidebarAnswers ? (
+                        <div className="h-24 sm:h-20" aria-hidden="true" />
+                      ) : null}
+                    </>
+                  ) : null}
+                </div>
+              </article>
+
+              {mobileFeedbackPopup}
+
+              {hoverPreviewQuestion ? (
+                <div
+                  className="pointer-events-none fixed z-50 hidden max-h-[50vh] max-w-md overflow-y-auto rounded-2xl border border-cyan-400/30 bg-slate-950/95 p-4 shadow-2xl backdrop-blur lg:block"
+                  style={(() => {
+                    const margin = 16;
+                    const previewWidth = 420;
+                    const estimatedHeight = 360;
+                    const left = Math.min(
+                      Math.max(hoverPreviewPosition.x + 14, margin),
+                      Math.max(margin, viewportSize.width - previewWidth - margin)
+                    );
+                    const shouldPinBottom =
+                      hoverPreviewPosition.y + estimatedHeight >
+                      viewportSize.height - margin;
+
+                    if (shouldPinBottom) {
+                      return { left: `${left}px`, bottom: `${margin}px` };
+                    }
+
+                    const top = Math.min(
+                      Math.max(hoverPreviewPosition.y + 14, margin),
+                      Math.max(margin, viewportSize.height - estimatedHeight - margin)
+                    );
+                    return { left: `${left}px`, top: `${top}px` };
+                  })()}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                    Problem preview
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-white">
+                    {hoverPreviewQuestion.title}
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
+                    {hoverPreviewQuestion.prompt}
+                  </p>
+                </div>
+              ) : null}
+
+              {showLeftQuestionSidebar &&
+              overlayLeftQuestionSidebar &&
+              !leftQuestionSidebarCollapsed ? (
+                <div className="pointer-events-none fixed inset-0 z-40 hidden lg:block">
+                  <button
+                    type="button"
+                    className="pointer-events-auto absolute inset-0 bg-black/45"
+                    aria-label="Close question sidebar"
+                    onClick={() => setLeftQuestionSidebarCollapsed(true)}
+                  />
+                  <aside className="pointer-events-auto absolute left-4 top-20 h-[calc(100vh-6rem)] w-[min(28rem,44vw)] rounded-4xl border border-white/10 bg-slate-950/96 p-5 shadow-2xl backdrop-blur">
+                    <section className="flex h-full flex-col">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.28em] text-cyan-300">
+                            All questions
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-300">
+                            Jump to any question directly.
+                          </p>
                         </div>
                         <button
                           type="button"
-                          aria-label="Close overlay"
-                          onClick={() => {
-                            setChecked((prev) => {
-                              const next = [...prev];
-                              next[currentIdx] = false;
-                              return next;
-                            });
-                            setRevealed((prev) => {
-                              const next = [...prev];
-                              next[currentIdx] = false;
-                              return next;
-                            });
-                          }}
-                          className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
+                          onClick={() => setLeftQuestionSidebarCollapsed(true)}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
+                          aria-label="Close question list"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1441,16 +1846,66 @@ export default function PracticeMode({
                           </svg>
                         </button>
                       </div>
-                    </div>
-                  ) : null}
-
-                  {showFeedback && useOverlayFeedback && !useSidebarAnswers ? (
-                    <div className="h-24 sm:h-20" aria-hidden="true" />
-                  ) : null}
+                      <div className="mt-3">
+                        <label
+                          htmlFor="overlay-left-question-search"
+                          className="sr-only"
+                        >
+                          Search questions
+                        </label>
+                        <input
+                          id="overlay-left-question-search"
+                          type="search"
+                          value={questionSearch}
+                          onChange={(event) =>
+                            setQuestionSearch(event.target.value)
+                          }
+                          placeholder="Search by title/topic..."
+                          className="w-full rounded-xl border border-white/15 bg-slate-900/75 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                        />
+                      </div>
+                      <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                        {filteredDeckWithIndex.map(({ question, index }) => {
+                          const isActive =
+                            !isReviewingAttempted &&
+                            currentQuestion?.id === question.id;
+                          const isDone = attemptedIds.has(question.id);
+                          return (
+                            <button
+                              key={`overlay-left-sidebar-question-${index}-${question.id}-${question.title}`}
+                              type="button"
+                              onMouseEnter={(event) =>
+                                startHoverPreview(question, event)
+                              }
+                              onMouseLeave={clearHoverPreview}
+                              onClick={() => {
+                                clearHoverPreview();
+                                setReviewQuestionId(null);
+                                setCurrentIdx(index);
+                                setLeftQuestionSidebarCollapsed(true);
+                              }}
+                              className={`w-full rounded-2xl border p-3 text-left transition ${
+                                isActive
+                                  ? "border-cyan-400/40 bg-cyan-400/10"
+                                  : isDone
+                                    ? "border-emerald-400/25 bg-emerald-400/8 hover:bg-emerald-400/14"
+                                    : "border-white/10 bg-slate-950/50 hover:border-cyan-400/30 hover:bg-slate-950/80"
+                              }`}
+                            >
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                                Question {index + 1}
+                              </p>
+                              <p className="mt-1 text-sm font-semibold text-white">
+                                {question.title}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  </aside>
                 </div>
-              </article>
-
-              {mobileFeedbackPopup}
+              ) : null}
 
               {showMobileQuestionPanel ? (
                 <div
@@ -1508,7 +1963,12 @@ export default function PracticeMode({
                         <button
                           key={`mobile-questions-${index}-${question.id}-${question.title}`}
                           type="button"
+                          onMouseEnter={(event) =>
+                            startHoverPreview(question, event)
+                          }
+                          onMouseLeave={clearHoverPreview}
                           onClick={() => {
+                            clearHoverPreview();
                             setReviewQuestionId(null);
                             setCurrentIdx(index);
                             closeMobileQuestionPanel();
@@ -1732,7 +2192,7 @@ export default function PracticeMode({
                                     Attempted
                                   </span>
                                 </div>
-                                <p className="mt-3 text-sm leading-6 text-slate-300">
+                                <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">
                                   {question.prompt}
                                 </p>
                                 {question.code || question.starter ? (
@@ -1801,11 +2261,16 @@ export default function PracticeMode({
 
               <aside
                 className={`hidden smooth-scroll space-y-6 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-hidden lg:pr-1 ${
-                  collapsibleSidebar && sidebarCollapsed ? "" : "lg:block"
+                  hideDesktopRightSidebar
+                    ? ""
+                    : collapsibleSidebar && sidebarCollapsed
+                      ? ""
+                      : "lg:block"
                 }`}
               >
                 <section className="flex h-full flex-col rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-                  {displayQuestion.type === "implementation" &&
+                  {!useReferenceModalForImplementation &&
+                  displayQuestion.type === "implementation" &&
                   (isReviewingAttempted || isRevealed) ? (
                     <div className="mb-4 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
@@ -1830,7 +2295,10 @@ export default function PracticeMode({
                   ) : null}
 
                   <div className="flex flex-wrap gap-2">
-                    {sidebarActionTabs.map((tab, index) => {
+                    {(answerOnlySidebar
+                      ? [{ id: "answers", label: "Answer" }]
+                      : sidebarActionTabs
+                    ).map((tab, index) => {
                       const active = sidebarTab === tab.id;
                       return (
                         <button
@@ -1893,7 +2361,12 @@ export default function PracticeMode({
                             <button
                               key={`sidebar-question-${index}-${question.id}-${question.title}`}
                               type="button"
+                              onMouseEnter={(event) =>
+                                startHoverPreview(question, event)
+                              }
+                              onMouseLeave={clearHoverPreview}
                               onClick={() => {
+                                clearHoverPreview();
                                 setReviewQuestionId(null);
                                 setCurrentIdx(index);
                               }}
@@ -1953,7 +2426,7 @@ export default function PracticeMode({
                                   Attempted
                                 </span>
                               </div>
-                              <p className="mt-3 text-sm leading-6 text-slate-300">
+                              <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">
                                 {question.prompt}
                               </p>
                               {question.code || question.starter ? (
@@ -2141,6 +2614,60 @@ export default function PracticeMode({
           </>
         )}
       </div>
+      {useReferenceModalForImplementation &&
+      displayQuestion?.type === "implementation" &&
+      referenceModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-amber-400/30 bg-slate-950 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
+                Reference solution
+              </p>
+              <button
+                type="button"
+                onClick={() => setReferenceModalOpen(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10"
+                aria-label="Close reference solution modal"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[calc(85vh-4.5rem)] overflow-y-auto p-5">
+              <pre className="overflow-x-auto rounded-2xl border border-amber-400/10 bg-slate-900/80 p-4 text-sm leading-6 text-amber-50">
+                <CodeBlockContent
+                  code={normalizeCodeBlock(displayQuestion.referenceSolution)}
+                />
+              </pre>
+              {displayQuestion.explanation ? (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Explanation
+                  </p>
+                  <div className="mt-3 space-y-2 text-sm leading-6 text-slate-200">
+                    {splitExplanation(displayQuestion.explanation).map(
+                      (line, index) => (
+                        <p key={`${displayQuestion.id}-modal-explain-${index}`}>
+                          {line}
+                        </p>
+                      )
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
