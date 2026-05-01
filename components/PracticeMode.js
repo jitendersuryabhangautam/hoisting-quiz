@@ -59,6 +59,13 @@ function renderBasicMarkdown(text) {
   });
 }
 
+function normalizeExplanationLines(text) {
+  const raw = text ?? "";
+  return raw
+    .replace(/([.?!])\s+(\d+\.\s)/g, "$1\n$2")
+    .split("\n");
+}
+
 export default function PracticeMode({
   title,
   eyebrow,
@@ -238,6 +245,14 @@ export default function PracticeMode({
   const closeNotice = () => {
     setNotice(null);
   };
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => {
+      setNotice(null);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   const goNextReviewedQuestion = () => {
     if (!attemptedQuestions.length) return;
@@ -2663,9 +2678,9 @@ export default function PracticeMode({
                     Explanation
                   </p>
                   <div className="mt-3 space-y-2 text-sm leading-6 text-slate-200">
-                    {(displayQuestion.explanation ?? "")
-                      .split("\n")
-                      .map((line, index) => (
+                    {normalizeExplanationLines(
+                      displayQuestion.explanation
+                    ).map((line, index) => (
                         <p
                           key={`${displayQuestion.id}-modal-explain-${index}`}
                           className="whitespace-pre-wrap"
