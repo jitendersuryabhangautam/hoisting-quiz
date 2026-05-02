@@ -278,6 +278,7 @@ export default function PracticeMode({
   };
 
   const goNext = () => {
+    setReferenceModalOpen(false);
     setCurrentIdx((idx) => {
       if (idx + 1 < deck.length) return idx + 1;
       setNotice(
@@ -290,6 +291,7 @@ export default function PracticeMode({
   };
 
   const goPrev = () => {
+    setReferenceModalOpen(false);
     setCurrentIdx((idx) => {
       if (idx - 1 >= 0) return idx - 1;
       setNotice("This is the first question in the deck.");
@@ -315,18 +317,45 @@ export default function PracticeMode({
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         if (isReviewingAttempted) {
-          goPreviousReviewedQuestion();
+          if (!attemptedQuestions.length) return;
+          const previousIndex =
+            currentReviewIndex >= 0
+              ? (currentReviewIndex - 1 + attemptedQuestions.length) %
+                attemptedQuestions.length
+              : attemptedQuestions.length - 1;
+          setSidebarTab("attempted");
+          setReviewQuestionId(attemptedQuestions[previousIndex].id);
         } else {
-          goPrev();
+          setReferenceModalOpen(false);
+          setCurrentIdx((idx) => {
+            if (idx - 1 >= 0) return idx - 1;
+            setNotice("This is the first question in the deck.");
+            return idx;
+          });
         }
       }
 
       if (event.key === "ArrowRight") {
         event.preventDefault();
         if (isReviewingAttempted) {
-          goNextReviewedQuestion();
+          if (!attemptedQuestions.length) return;
+          const nextIndex =
+            currentReviewIndex >= 0
+              ? (currentReviewIndex + 1) % attemptedQuestions.length
+              : 0;
+          setSidebarTab("attempted");
+          setReviewQuestionId(attemptedQuestions[nextIndex].id);
         } else {
-          goNext();
+          setReferenceModalOpen(false);
+          setCurrentIdx((idx) => {
+            if (idx + 1 < deck.length) return idx + 1;
+            setNotice(
+              orderMode === "shuffle"
+                ? "You have reached the end of this shuffled deck. Shuffle again to get a new order."
+                : "You have reached the last question in serial order."
+            );
+            return idx;
+          });
         }
       }
     };
@@ -334,11 +363,11 @@ export default function PracticeMode({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [
-    goNext,
-    goNextReviewedQuestion,
-    goPrev,
-    goPreviousReviewedQuestion,
+    attemptedQuestions,
+    currentReviewIndex,
+    deck.length,
     isReviewingAttempted,
+    orderMode,
     resetModalOpen,
   ]);
 
@@ -492,6 +521,12 @@ export default function PracticeMode({
       next.add(deck[currentIdx].id);
       return next;
     });
+    if (
+      useReferenceModalForImplementation &&
+      currentQuestion?.type === "implementation"
+    ) {
+      setReferenceModalOpen(true);
+    }
   };
 
   const resetCurrentAnswer = () => {
@@ -698,21 +733,6 @@ export default function PracticeMode({
     window.addEventListener("resize", updateViewport);
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
-
-  useEffect(() => {
-    if (
-      useReferenceModalForImplementation &&
-      displayQuestion?.type === "implementation" &&
-      (isRevealed || isReviewingAttempted)
-    ) {
-      setReferenceModalOpen(true);
-    }
-  }, [
-    useReferenceModalForImplementation,
-    displayQuestion,
-    isRevealed,
-    isReviewingAttempted,
-  ]);
 
   const mobileFeedbackPopup = showMobilePopupFeedback ? (
     <div
