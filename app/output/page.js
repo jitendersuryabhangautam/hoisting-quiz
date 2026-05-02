@@ -10,6 +10,11 @@ export default function OutputPage() {
       questions={outputQuestions}
       sidebarMode="answers"
       storageKey="output"
+      enableQuestionListSidebar
+      alwaysShowQuestionSidebar
+      collapsibleLeftQuestionSidebar
+      defaultLeftQuestionSidebarCollapsed
+      overlayLeftQuestionSidebar
       enableOrderToggle
       defaultOrderMode="shuffle"
     />

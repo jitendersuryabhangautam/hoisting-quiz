@@ -1612,8 +1612,10 @@ export default function PracticeMode({
                                   const optionId = `${displayQuestion.id}-option-${index}`;
                                   const hasMcqSelection = Boolean(currentAnswer);
                                   const isSelected = currentAnswer === option;
-                                  const isCorrectOption =
-                                    option === displayQuestion.expected;
+                                  const isCorrectOption = isAnswerCorrect(
+                                    displayQuestion,
+                                    option
+                                  );
                                   const isSelectedWrong =
                                     hasMcqSelection && isSelected && !isCorrectOption;
                                   const isSelectedCorrect =
