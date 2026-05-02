@@ -28,7 +28,12 @@ function createDraftStateFromDeck(deck) {
 }
 
 function splitExplanation(text) {
-  return (text ?? "")
+  const normalized = (text ?? "")
+    .replace(/(\*\*[^*]+\*\*:)\s*(\d+\.\s)/g, "$1\n$2")
+    .replace(/([.?!])\s+(\d+\.\s)/g, "$1\n$2")
+    .replace(/(:)\s+(\d+\.\s)/g, "$1\n$2");
+
+  return normalized
     .split(/\n+/)
     .map((line) => line.trim())
     .filter(Boolean);
@@ -62,7 +67,9 @@ function renderBasicMarkdown(text) {
 function normalizeExplanationLines(text) {
   const raw = text ?? "";
   return raw
+    .replace(/(\*\*[^*]+\*\*:)\s*(\d+\.\s)/g, "$1\n$2")
     .replace(/([.?!])\s+(\d+\.\s)/g, "$1\n$2")
+    .replace(/(:)\s+(\d+\.\s)/g, "$1\n$2")
     .split("\n");
 }
 
@@ -592,6 +599,16 @@ export default function PracticeMode({
     currentQuestion &&
     currentQuestion.type !== "implementation" &&
     isAnswerCorrect(currentQuestion, currentAnswer);
+  const isMcqModeForCurrentOutputQuestion =
+    answerFormat === "mcq" &&
+    currentQuestion?.type === "output" &&
+    Array.isArray(currentQuestion?.options) &&
+    currentQuestion.options.length > 0;
+  const hasMcqSelection =
+    isMcqModeForCurrentOutputQuestion && Boolean(currentAnswer?.trim());
+  const mcqSelectionIsCorrect = hasMcqSelection
+    ? isAnswerCorrect(currentQuestion, currentAnswer)
+    : false;
 
   const answerLabel =
     currentQuestion?.type === "implementation"
@@ -627,6 +644,10 @@ export default function PracticeMode({
   const verdictLabel =
     currentQuestion?.type === "implementation"
       ? "Reference solution"
+      : hasMcqSelection
+        ? mcqSelectionIsCorrect
+          ? "Correct"
+          : "Wrong answer"
       : isChecked
         ? questionIsCorrect
           ? "Correct"
@@ -801,6 +822,10 @@ export default function PracticeMode({
           <p className="mt-2 text-sm leading-6 text-slate-200">
             {currentQuestion.type === "implementation"
               ? "Reference solution is shown here."
+              : hasMcqSelection
+                ? mcqSelectionIsCorrect
+                  ? "Your selected option is correct."
+                  : "Your selected option is not correct."
               : isChecked
                 ? questionIsCorrect
                   ? "Your answer matches the expected output."
@@ -842,12 +867,31 @@ export default function PracticeMode({
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
         {currentQuestion.type !== "implementation" ? (
           <div className="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-              Actual answer
-            </p>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
-              {currentQuestion.expected}
-            </p>
+            {hasMcqSelection && !mcqSelectionIsCorrect ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Your selected option
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                  {currentAnswer}
+                </p>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Correct option
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                  {currentQuestion.expected}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Actual answer
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                  {currentQuestion.expected}
+                </p>
+              </>
+            )}
             <div className="mt-3 space-y-1 text-sm leading-6 text-slate-300">
               {splitExplanation(currentQuestion.explanation).map(
                 (line, index) => (
@@ -855,7 +899,7 @@ export default function PracticeMode({
                     <span className="mr-1 font-semibold text-slate-200">
                       {index + 1})
                     </span>
-                    <span>{line}</span>
+                    <span>{renderBasicMarkdown(line)}</span>
                   </p>
                 )
               )}
@@ -881,22 +925,7 @@ export default function PracticeMode({
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
-        <button
-          type="button"
-          onClick={goPrev}
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
-        >
-          Previous
-        </button>
-        <button
-          type="button"
-          onClick={goNext}
-          className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-400/20"
-        >
-          Next
-        </button>
-      </div>
+      <div className="mt-3 border-t border-white/10 pt-3" />
     </div>
   ) : null;
 
@@ -1744,8 +1773,8 @@ export default function PracticeMode({
                       !useOverlayFeedback &&
                       !useSidebarAnswers ? (
                         <div className="hidden rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5 sm:block">
-                          {currentQuestion.type === "implementation" ? (
-                            <>
+                        {currentQuestion.type === "implementation" ? (
+                          <>
                               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300">
                                 Reference moved to sidebar
                               </p>
@@ -1776,7 +1805,7 @@ export default function PracticeMode({
                                   <p
                                     key={`inline-explanation-${currentQuestion.id}-${index}`}
                                   >
-                                    {line}
+                                    {renderBasicMarkdown(line)}
                                   </p>
                                 ))}
                               </div>
@@ -1855,7 +1884,7 @@ export default function PracticeMode({
                                       <p
                                         key={`${currentQuestion.id}-overlay-explain-${index}`}
                                       >
-                                        {line}
+                                        {renderBasicMarkdown(line)}
                                       </p>
                                     ))}
                                   </div>
@@ -2252,7 +2281,7 @@ export default function PracticeMode({
                                       <span className="mr-1 font-semibold text-slate-200">
                                         {index + 1})
                                       </span>
-                                      <span>{line}</span>
+                                      <span>{renderBasicMarkdown(line)}</span>
                                     </p>
                                   ))}
                                 </div>
@@ -2623,17 +2652,15 @@ export default function PracticeMode({
                                 Explanation
                               </p>
                               <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
-                                {displayQuestion.explanation
-                                  .split("\n")
-                                  .map((line, index) =>
-                                    line.trim() ? (
-                                      <p
-                                        key={`${displayQuestion.id}-review-explain-${index}`}
-                                      >
-                                        {line}
-                                      </p>
-                                    ) : null
-                                  )}
+                                {splitExplanation(
+                                  displayQuestion.explanation
+                                ).map((line, index) => (
+                                  <p
+                                    key={`${displayQuestion.id}-review-explain-${index}`}
+                                  >
+                                    {renderBasicMarkdown(line)}
+                                  </p>
+                                ))}
                               </div>
                             </div>
                           </>
@@ -2652,20 +2679,62 @@ export default function PracticeMode({
                                 Explanation
                               </p>
                               <div className="mt-3 space-y-3 text-sm leading-6 text-slate-200">
-                                {currentQuestion.explanation
-                                  .split("\n")
-                                  .map((line, index) =>
-                                    line.trim() ? (
-                                      <p
-                                        key={`${currentQuestion.id}-explain-${index}`}
-                                      >
-                                        {line}
-                                      </p>
-                                    ) : null
-                                  )}
+                                {splitExplanation(
+                                  currentQuestion.explanation
+                                ).map((line, index) => (
+                                  <p key={`${currentQuestion.id}-explain-${index}`}>
+                                    {renderBasicMarkdown(line)}
+                                  </p>
+                                ))}
                               </div>
                             </div>
                           </>
+                        ) : hasMcqSelection ? (
+                          <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                            <div
+                              className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                                mcqSelectionIsCorrect
+                                  ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                                  : "border-rose-400/20 bg-rose-400/10 text-rose-100"
+                              }`}
+                            >
+                              {mcqSelectionIsCorrect
+                                ? "Correct. Your selected option matches the expected output."
+                                : "Not quite. Your selected option does not match the expected output."}
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Your selected option
+                              </p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                                {currentAnswer}
+                              </p>
+                            </div>
+                            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Correct option
+                              </p>
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white">
+                                {currentQuestion.expected}
+                              </p>
+                            </div>
+                            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                                Explanation
+                              </p>
+                              <div className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
+                                {splitExplanation(
+                                  currentQuestion.explanation
+                                ).map((line, index) => (
+                                  <p
+                                    key={`${currentQuestion.id}-mcq-explain-${index}`}
+                                  >
+                                    {renderBasicMarkdown(line)}
+                                  </p>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                         ) : isChecked ? (
                           <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                             <div
@@ -2698,7 +2767,7 @@ export default function PracticeMode({
                                   <p
                                     key={`${currentQuestion.id}-checked-explain-${index}`}
                                   >
-                                    {line}
+                                    {renderBasicMarkdown(line)}
                                   </p>
                                 ))}
                               </div>
