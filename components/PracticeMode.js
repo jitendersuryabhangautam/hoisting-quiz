@@ -103,6 +103,7 @@ export default function PracticeMode({
     defaultSidebarCollapsed
   );
   const [orderMode, setOrderMode] = useState(defaultOrderMode);
+  const [answerFormat, setAnswerFormat] = useState("typed");
   const [questionSearch, setQuestionSearch] = useState("");
   const [referenceModalOpen, setReferenceModalOpen] = useState(false);
   const [hoverPreviewQuestion, setHoverPreviewQuestion] = useState(null);
@@ -127,6 +128,14 @@ export default function PracticeMode({
     () =>
       questions.length > 0 &&
       questions.every((question) => question.type === "output"),
+    [questions]
+  );
+  const hasQuestionOptions = useMemo(
+    () =>
+      questions.some(
+        (question) =>
+          Array.isArray(question.options) && question.options.length > 0
+      ),
     [questions]
   );
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -213,6 +222,14 @@ export default function PracticeMode({
         (question) => question.id === reviewQuestion.id
       )
     : -1;
+  const displayQuestionHasOptions =
+    Array.isArray(displayQuestion?.options) &&
+    displayQuestion.options.length > 0;
+  const useMcqForCurrentQuestion =
+    answerFormat === "mcq" &&
+    displayQuestion?.type === "output" &&
+    displayQuestionHasOptions &&
+    !isReviewingAttempted;
 
   const resetSession = () => {
     if (orderMode === "serial") {
@@ -375,6 +392,26 @@ export default function PracticeMode({
     setAnswers((prev) => {
       const next = [...prev];
       next[currentIdx] = value;
+      return next;
+    });
+  };
+
+  const handleMcqOptionSelect = (option) => {
+    updateAnswer(option);
+    setSidebarTab("answers");
+    setRevealed((prev) => {
+      const next = [...prev];
+      next[currentIdx] = true;
+      return next;
+    });
+    setChecked((prev) => {
+      const next = [...prev];
+      next[currentIdx] = false;
+      return next;
+    });
+    setAttempted((prev) => {
+      const next = new Set(prev);
+      next.add(deck[currentIdx].id);
       return next;
     });
   };
@@ -1102,6 +1139,21 @@ export default function PracticeMode({
                       </select>
                     </label>
                   ) : null}
+                  {hasQuestionOptions ? (
+                    <label className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100">
+                      <span className="text-xs uppercase tracking-[0.18em] text-slate-300">
+                        Answer mode
+                      </span>
+                      <select
+                        value={answerFormat}
+                        onChange={(event) => setAnswerFormat(event.target.value)}
+                        className="rounded border border-white/10 bg-slate-950/60 px-2 py-1 text-xs text-slate-100 outline-none"
+                      >
+                        <option value="typed">Typed</option>
+                        <option value="mcq">MCQ</option>
+                      </select>
+                    </label>
+                  ) : null}
                   <button
                     onClick={resetSession}
                     className="inline-flex items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/20"
@@ -1554,24 +1606,71 @@ export default function PracticeMode({
                                 </p>
                               </div>
                             ) : null}
-                            <textarea
-                              value={currentAnswer}
-                              onChange={(event) =>
-                                updateAnswer(event.target.value)
-                              }
-                              onKeyDown={handleCodeEditorKeyDown}
-                              className="min-h-32 w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20"
-                              placeholder={placeholder}
-                              spellCheck={false}
-                              autoCapitalize="off"
-                              autoComplete="off"
-                              autoCorrect="off"
-                            />
+                            {useMcqForCurrentQuestion ? (
+                              <div className="space-y-2">
+                                {displayQuestion.options.map((option, index) => {
+                                  const optionId = `${displayQuestion.id}-option-${index}`;
+                                  const hasMcqSelection = Boolean(currentAnswer);
+                                  const isSelected = currentAnswer === option;
+                                  const isCorrectOption =
+                                    option === displayQuestion.expected;
+                                  const isSelectedWrong =
+                                    hasMcqSelection && isSelected && !isCorrectOption;
+                                  const isSelectedCorrect =
+                                    hasMcqSelection && isSelected && isCorrectOption;
+                                  const shouldHighlightCorrect =
+                                    hasMcqSelection && isCorrectOption;
+                                  const optionClassName = isSelectedWrong
+                                    ? "border-rose-400/60 bg-rose-500/15"
+                                    : isSelectedCorrect
+                                      ? "border-emerald-400/60 bg-emerald-500/15"
+                                      : shouldHighlightCorrect
+                                        ? "border-emerald-400/45 bg-emerald-500/10"
+                                        : "border-white/10 bg-slate-950/40 hover:border-cyan-400/30 hover:bg-slate-950/60";
+                                  return (
+                                    <label
+                                      key={optionId}
+                                      htmlFor={optionId}
+                                      className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-3 py-3 text-sm text-slate-100 transition ${optionClassName}`}
+                                    >
+                                      <input
+                                        id={optionId}
+                                        type="radio"
+                                        name={`answer-option-${displayQuestion.id}`}
+                                        checked={currentAnswer === option}
+                                        onChange={() =>
+                                          handleMcqOptionSelect(option)
+                                        }
+                                        className="mt-1 h-4 w-4 shrink-0 accent-cyan-400"
+                                      />
+                                      <span className="whitespace-pre-wrap leading-6">
+                                        {option}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <textarea
+                                value={currentAnswer}
+                                onChange={(event) =>
+                                  updateAnswer(event.target.value)
+                                }
+                                onKeyDown={handleCodeEditorKeyDown}
+                                className="min-h-32 w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20"
+                                placeholder={placeholder}
+                                spellCheck={false}
+                                autoCapitalize="off"
+                                autoComplete="off"
+                                autoCorrect="off"
+                              />
+                            )}
                             <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
                               {displayQuestion.type === "output" ? (
                                 <span>
-                                  For multiline output, separate lines with
-                                  Enter.
+                                  {useMcqForCurrentQuestion
+                                    ? "Pick the option that best matches the output."
+                                    : "For multiline output, separate lines with Enter."}
                                 </span>
                               ) : null}
                               {displayQuestion.type === "implementation" ? (
