@@ -75,6 +75,13 @@ const TRACKS = [
     desc: "PostgreSQL schema and implementation-oriented practice.",
     href: "/postgresql-implementation",
   },
+  {
+    name: "AI Roadmap",
+    icon: "AR",
+    color: "from-violet-400 to-fuchsia-500",
+    desc: "Step-by-step roadmap from fullstack developer to AI engineer.",
+    href: "/roadmap",
+  },
 ];
 
 const FEATURES = [
@@ -443,4 +450,5 @@ export default function Home() {
     </div>
   );
 }
+
 
