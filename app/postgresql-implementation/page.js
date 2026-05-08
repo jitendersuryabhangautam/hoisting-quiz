@@ -89,8 +89,14 @@ export default function PostgresqlImplementationPage() {
       description="Practice PostgreSQL implementation tasks in serial order, and open schema snippets relevant to the current question."
       questions={formattedQuestions}
       storageKey="postgresql-implementation"
-      collapsibleSidebar
       enableQuestionListSidebar
+      alwaysShowQuestionSidebar
+      collapsibleLeftQuestionSidebar
+      defaultLeftQuestionSidebarCollapsed
+      overlayLeftQuestionSidebar
+      answerOnlySidebar
+      useReferenceModalForImplementation
+      hideDesktopRightSidebar
       enableOrderToggle
       defaultOrderMode="serial"
       onDisplayQuestionChange={closeSchemaModal}

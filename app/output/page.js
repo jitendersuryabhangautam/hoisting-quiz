@@ -16,7 +16,7 @@ export default function OutputPage() {
       defaultLeftQuestionSidebarCollapsed
       overlayLeftQuestionSidebar
       enableOrderToggle
-      defaultOrderMode="shuffle"
+      defaultOrderMode="serial"
     />
   );
 }

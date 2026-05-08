@@ -2,147 +2,323 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { roadmapData as roadmapSource } from "../../lib/roadmapTopics";
+import * as roadmapChunks from "../../lib/roadmapTopics";
 
-const roadmapData = Object.entries(roadmapSource?.tracks || {}).reduce(
-  (acc, [duration, track]) => {
-    if (!track || !Array.isArray(track.phases)) return acc;
+function getChunkOrder(item, fallback) {
+  const value = item?.chunk_id;
+  if (typeof value !== "string") return fallback;
+  const match = value.match(/chunk_(\d+)/i);
+  return match ? Number(match[1]) : fallback;
+}
 
-    acc[duration] = {
-      title: track.title || `${duration}-Month Plan`,
-      phases: track.phases.map((phase) => ({
-        id: phase.id,
-        name: phase.title || phase.name || "Untitled Phase",
-        weeks: phase.weeks || "",
-        topics: (phase.topics || []).map((topic) => ({
-          id: `${phase.id}_${(topic.name || topic.title || "topic").replace(/\s+/g, "_")}`,
-          title: topic.name || topic.title || "Untitled Topic",
-          questions: (topic.concepts || []).flatMap((concept) =>
-            Array.isArray(concept.questions) ? concept.questions : []
-          ),
-        })),
-      })),
-    };
+function getChunkNumber(item, fallback) {
+  const value = item?.chunk_id;
+  if (typeof value !== "string") return fallback;
+  const match = value.match(/chunk_(\d+)/i);
+  return match ? Number(match[1]) : fallback;
+}
 
-    return acc;
-  },
-  {}
-);
+function formatKey(key) {
+  return String(key)
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
 
-function loadProgress(duration) {
-  if (typeof window === "undefined") return new Map();
-  try {
-    const raw = localStorage.getItem(`roadmap_progress_${duration}`);
-    if (!raw) return new Map();
-    return new Map(Object.entries(JSON.parse(raw)));
-  } catch {
-    return new Map();
+function depthStyles(depth) {
+  const palette = [
+    {
+      rail: "border-cyan-500",
+      label: "text-cyan-800",
+      panel: "border-cyan-400 bg-cyan-50 shadow-md",
+    },
+    {
+      rail: "border-emerald-500",
+      label: "text-emerald-800",
+      panel: "border-emerald-400 bg-emerald-50 shadow-md",
+    },
+    {
+      rail: "border-amber-500",
+      label: "text-amber-800",
+      panel: "border-amber-400 bg-amber-50 shadow-md",
+    },
+    {
+      rail: "border-rose-500",
+      label: "text-rose-800",
+      panel: "border-rose-400 bg-rose-50 shadow-md",
+    },
+  ];
+  return palette[depth % palette.length];
+}
+
+function PrimitiveValue({ value }) {
+  if (typeof value === "string") {
+    const markdownLinkMatch = value.match(
+      /^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/i
+    );
+    if (markdownLinkMatch) {
+      const [, text, href] = markdownLinkMatch;
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="break-words text-sky-700 underline underline-offset-2 hover:text-sky-800"
+        >
+          {text}
+        </a>
+      );
+    }
+
+    if (/^https?:\/\/\S+$/i.test(value)) {
+      return (
+        <a
+          href={value}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="break-all text-sky-700 underline underline-offset-2 hover:text-sky-800"
+        >
+          {value}
+        </a>
+      );
+    }
+
+    return <span className="break-words">{value}</span>;
   }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return <span>{String(value)}</span>;
+  }
+  if (value === null) {
+    return <span className="text-slate-500">null</span>;
+  }
+  return <span className="text-slate-500">-</span>;
 }
 
-function questionId(phaseId, topicId, idx) {
-  return `${phaseId}_${topicId}_${idx}`;
-}
-
-function TopicCard({ phaseId, topic, completedMap, onToggle, onMarkAll }) {
-  const [open, setOpen] = useState(false);
-  const total = topic.questions.length;
-  const done = topic.questions.reduce(
-    (count, _q, idx) => count + (completedMap.get(questionId(phaseId, topic.id, idx)) ? 1 : 0),
-    0
-  );
-  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-
+function isTrackableLabel(label) {
+  const normalized = String(label).toLowerCase();
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{topic.title}</h4>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{done}/{total} completed</p>
-        </div>
-        <span className="rounded-md bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
-          {percent}%
-        </span>
-      </div>
-
-      <div className="mt-3 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700">
-        <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${percent}%` }} />
-      </div>
-
-      <div className="mt-3 flex items-center gap-2">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          {open ? "Hide" : "View"} tasks
-        </button>
-        <button
-          onClick={() => onMarkAll(phaseId, topic.id, topic.questions)}
-          className="rounded-md border border-emerald-300 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-300 dark:hover:bg-emerald-900/20"
-        >
-          Mark all done
-        </button>
-      </div>
-
-      {open ? (
-        <ul className="mt-3 space-y-2">
-          {topic.questions.map((q, idx) => {
-            const id = questionId(phaseId, topic.id, idx);
-            const checked = Boolean(completedMap.get(id));
-            return (
-              <li key={id} className="flex items-start justify-between gap-3 text-xs">
-                <span className={checked ? "line-through text-slate-400" : "text-slate-600 dark:text-slate-300"}>{q}</span>
-                <button
-                  onClick={() => onToggle(id)}
-                  className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${
-                    checked
-                      ? "border border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-900"
-                  }`}
-                >
-                  {checked ? "Undo" : "Done"}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </article>
+    normalized.includes("practice question") ||
+    normalized.includes("interview question") ||
+    normalized.includes("revision checklist")
   );
+}
+
+function DataNode({
+  label,
+  value,
+  depth = 0,
+  path = "",
+  completedMap,
+  onToggleDone,
+}) {
+  const style = depthStyles(depth);
+  const [expanded, setExpanded] = useState(true);
+  const isDeep = depth >= 3;
+  const blockClass = isDeep
+    ? "space-y-2"
+    : `rounded-xl border bg-white p-2.5 sm:p-3 shadow-sm ${
+        depth <= 2 ? style.panel : "border-slate-200"
+      }`;
+
+  if (
+    value === null ||
+    ["string", "number", "boolean"].includes(typeof value)
+  ) {
+    return (
+      <div className={blockClass}>
+        <p
+          className={`text-xs font-semibold uppercase tracking-[0.14em] ${style.label}`}
+        >
+          {label}
+        </p>
+        <p className="mt-1 text-sm text-slate-700">
+          <PrimitiveValue value={value} />
+        </p>
+      </div>
+    );
+  }
+
+  if (Array.isArray(value)) {
+    const allPrimitive = value.every(
+      (item) =>
+        item === null || ["string", "number", "boolean"].includes(typeof item)
+    );
+
+    if (allPrimitive) {
+      const isTrackable = isTrackableLabel(label);
+      return (
+        <div className={blockClass}>
+          <p
+            className={`text-xs font-semibold uppercase tracking-[0.14em] ${style.label}`}
+          >
+            {label} ({value.length})
+          </p>
+          <ul className="mt-2 space-y-2 text-sm text-slate-700">
+            {value.map((item, index) => (
+              <li
+                key={`${label}_${index}`}
+                className="flex items-start justify-between gap-2 sm:gap-3"
+              >
+                <span
+                  className={
+                    isTrackable && completedMap?.get(`${path}__${index}`)
+                      ? "min-w-0 flex-1 break-words line-through text-slate-400"
+                      : "min-w-0 flex-1 break-words"
+                  }
+                >
+                  <span className="mr-2">{index + 1}.</span>
+                  <PrimitiveValue value={item} />
+                </span>
+                {isTrackable ? (
+                  <button
+                    type="button"
+                    onClick={() => onToggleDone(`${path}__${index}`)}
+                    className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold sm:px-2.5 ${
+                      completedMap?.get(`${path}__${index}`)
+                        ? "border border-slate-300 text-slate-600 hover:bg-slate-100"
+                        : "bg-emerald-600 text-white hover:bg-emerald-700"
+                    }`}
+                  >
+                    {completedMap?.get(`${path}__${index}`) ? "Undo" : "Done"}
+                  </button>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    return (
+      <section className={blockClass}>
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className={`inline-flex items-center gap-2 text-left text-xs font-semibold uppercase tracking-[0.14em] ${style.label}`}
+        >
+          <span>{expanded ? "-" : "+"}</span>
+          <span>
+            {label} ({value.length})
+          </span>
+        </button>
+        {expanded ? (
+          <div className={`mt-3 space-y-2.5 ${isDeep ? "" : ""}`}>
+            {value.map((item, index) => {
+              const itemTitle =
+                item && typeof item === "object"
+                  ? item.title ||
+                    item.name ||
+                    item.id ||
+                    `${label} ${index + 1}`
+                  : `${label} ${index + 1}`;
+
+              return (
+                <div key={`${label}_${index}`} className={isDeep ? "" : "pl-2"}>
+                  <p className="text-sm font-semibold text-slate-800">
+                    {index + 1}. {String(itemTitle)}
+                  </p>
+                  <div className="mt-2 space-y-2">
+                    <DataNode
+                      label={formatKey(itemTitle)}
+                      value={item}
+                      depth={depth + 1}
+                      path={`${path}__${index}`}
+                      completedMap={completedMap}
+                      onToggleDone={onToggleDone}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </section>
+    );
+  }
+
+  if (typeof value === "object") {
+    const isRootNode = label === "Roadmap Data";
+    const entries = Object.entries(value).filter(([key]) => {
+      if (key === "id" || key === "chunk_id") return false;
+      if (key === "title") return false;
+      if (isRootNode && (key === "version" || key === "description")) {
+        return false;
+      }
+      return true;
+    });
+    return (
+      <section className={`${blockClass} space-y-2.5`}>
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className={`inline-flex items-center gap-2 text-left text-xs font-semibold uppercase tracking-[0.14em] ${style.label}`}
+        >
+          <span>{expanded ? "-" : "+"}</span>
+          <span>{label}</span>
+        </button>
+        {expanded
+          ? entries.map(([key, nestedValue]) => (
+              <DataNode
+                key={`${label}_${key}`}
+                label={formatKey(key)}
+                value={nestedValue}
+                depth={depth + 1}
+                path={`${path}__${key}`}
+                completedMap={completedMap}
+                onToggleDone={onToggleDone}
+              />
+            ))
+          : null}
+      </section>
+    );
+  }
+
+  return null;
 }
 
 export default function RoadmapTrackerPage() {
-  const [selectedDuration, setSelectedDuration] = useState("6");
-  const [completedMap, setCompletedMap] = useState(() => loadProgress("6"));
+  const chunks = useMemo(() => {
+    return Object.entries(roadmapChunks)
+      .map(([exportName, data], index) => ({
+        exportName,
+        data,
+        index,
+      }))
+      .filter(({ data }) => data && typeof data === "object")
+      .sort(
+        (a, b) =>
+          getChunkOrder(a.data, a.index) - getChunkOrder(b.data, b.index)
+      );
+  }, []);
 
-  useEffect(() => {
-    const key = `roadmap_progress_${selectedDuration}`;
-    localStorage.setItem(key, JSON.stringify(Object.fromEntries(completedMap)));
-  }, [completedMap, selectedDuration]);
+  const [selectedExportName, setSelectedExportName] = useState("");
+  const [completedMap, setCompletedMap] = useState(() => new Map());
 
-  const currentData = roadmapData[selectedDuration];
-  const phases = currentData?.phases || [];
-
-  const summary = useMemo(() => {
-    let total = 0;
-    let done = 0;
-    phases.forEach((phase) => {
-      phase.topics.forEach((topic) => {
-        topic.questions.forEach((_q, idx) => {
-          total += 1;
-          if (completedMap.get(questionId(phase.id, topic.id, idx))) done += 1;
-        });
-      });
-    });
-    return { total, done, percent: total ? Math.round((done / total) * 100) : 0 };
-  }, [phases, completedMap]);
-
-  const changeDuration = (dur) => {
-    setSelectedDuration(dur);
-    setCompletedMap(loadProgress(dur));
+  const loadDoneMap = (exportName) => {
+    if (!exportName || typeof window === "undefined") return new Map();
+    try {
+      const raw = localStorage.getItem(`roadmap_done_${exportName}`);
+      if (!raw) return new Map();
+      return new Map(Object.entries(JSON.parse(raw)));
+    } catch {
+      return new Map();
+    }
   };
 
-  const toggleQuestion = (id) => {
+  const selectedChunk = useMemo(
+    () =>
+      chunks.find((chunk) => chunk.exportName === selectedExportName) || null,
+    [chunks, selectedExportName]
+  );
+
+  useEffect(() => {
+    if (!selectedExportName) return;
+    localStorage.setItem(
+      `roadmap_done_${selectedExportName}`,
+      JSON.stringify(Object.fromEntries(completedMap))
+    );
+  }, [completedMap, selectedExportName]);
+
+  const toggleDone = (id) => {
     setCompletedMap((prev) => {
       const next = new Map(prev);
       next.set(id, !prev.get(id));
@@ -150,72 +326,81 @@ export default function RoadmapTrackerPage() {
     });
   };
 
-  const markAllInTopic = (phaseId, topicId, questions) => {
-    setCompletedMap((prev) => {
-      const next = new Map(prev);
-      questions.forEach((_q, idx) => next.set(questionId(phaseId, topicId, idx), true));
-      return next;
-    });
-  };
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <div className="w-full px-4 py-8 sm:px-6 sm:py-12 lg:px-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Fullstack to AI Engineer Roadmap</h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Card-based roadmap with individual technology progress.</p>
-        </div>
+    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 px-3 py-6 sm:px-6 sm:py-12 lg:px-10">
+      <div className="w-full">
+        {!selectedChunk ? (
+          <>
+            <div className="mb-6 text-center sm:mb-8">
+              <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                AI Engineer Roadmap
+              </h1>
+              <p className="mt-2 text-sm text-slate-600">
+                Select a roadmap card to view complete details.
+              </p>
+            </div>
 
-        <div className="mb-6 flex flex-wrap justify-center gap-2">
-          {Object.keys(roadmapData).map((dur) => (
-            <button
-              key={dur}
-              onClick={() => changeDuration(dur)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${selectedDuration === dur ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"}`}
-            >
-              {dur}-Month Plan
-            </button>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {chunks.map((chunk, index) => (
+                <button
+                  key={chunk.exportName}
+                  type="button"
+                  onClick={() => {
+                    setSelectedExportName(chunk.exportName);
+                    setCompletedMap(loadDoneMap(chunk.exportName));
+                  }}
+                  className="rounded-2xl border-2 border-cyan-400 bg-white p-3.5 text-left shadow-md transition hover:-translate-y-0.5 hover:bg-cyan-50 hover:shadow-lg sm:p-4"
+                >
+                  <p className="text-sm font-bold text-slate-900">
+                    {chunk.data?.title || `Roadmap Card ${index + 1}`}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="mb-4 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedExportName("");
+                  setCompletedMap(new Map());
+                }}
+                className="inline-flex w-full items-center justify-center rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-cyan-50 sm:w-auto"
+              >
+                Back to Cards
+              </button>
+              <Link
+                href="/"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
+              >
+                Back to Home
+              </Link>
+            </div>
 
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/70">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{currentData?.title}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-300">{summary.done}/{summary.total} done ({summary.percent}%)</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${summary.percent}%` }} />
-          </div>
-        </div>
+            <section className="rounded-2xl border-2 border-cyan-400 bg-white p-3.5 shadow-md sm:p-5">
+              <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                {selectedChunk.data?.title || "Roadmap Details"}
+              </h2>
+              {selectedChunk.data?.description ? (
+                <p className="mt-2 text-sm text-slate-600">
+                  {selectedChunk.data.description}
+                </p>
+              ) : null}
 
-        <div className="space-y-6">
-          {phases.map((phase) => (
-            <section key={phase.id} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/70">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{phase.name}</h2>
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{phase.weeks}</span>
-              </div>
-              <div className="grid gap-3 grid-cols-1">
-                {phase.topics.map((topic) => (
-                  <TopicCard
-                    key={topic.id}
-                    phaseId={phase.id}
-                    topic={topic}
-                    completedMap={completedMap}
-                    onToggle={toggleQuestion}
-                    onMarkAll={markAllInTopic}
-                  />
-                ))}
+              <div className="mt-5 space-y-4">
+                <DataNode
+                  label="Roadmap Data"
+                  value={selectedChunk.data}
+                  path={selectedChunk.exportName}
+                  completedMap={completedMap}
+                  onToggleDone={toggleDone}
+                />
               </div>
             </section>
-          ))}
-        </div>
-
-        <div className="mt-10 text-center">
-          <Link href="/" className="inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-slate-100 dark:text-slate-900">
-            Back to Home
-          </Link>
-        </div>
+          </>
+        )}
       </div>
     </main>
   );

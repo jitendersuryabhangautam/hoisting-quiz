@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   normalizeCodeBlock,
   shuffleQuestions,
@@ -102,7 +102,7 @@ export default function QuestionIndexPage({
   sidebarShowPrompt = false,
   enableOrderToggle = false,
   enableDifficultyFilter = false,
-  defaultOrderMode = "shuffle",
+  defaultOrderMode = "serial",
   showAnswerAndExplanation = true,
   collapsibleSidebar = false,
   defaultSidebarCollapsed = false,
@@ -125,6 +125,7 @@ export default function QuestionIndexPage({
     defaultSidebarCollapsed
   );
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const activeQuestionIdRef = useRef(null);
 
   const questionMap = useMemo(
     () => new Map(questions.map((question) => [question.id, question])),
@@ -165,11 +166,28 @@ export default function QuestionIndexPage({
 
   useEffect(() => {
     const initialSeen = loadSeenIds(storageKey, storageScope, validIds);
-    setSeenIds(initialSeen); // eslint-disable-line react-hooks/set-state-in-effect
-    setDeck(
-      buildDeck(questionsByDifficulty, initialSeen, orderMode, shuffleSeed)
+    const activeQuestionId = activeQuestionIdRef.current;
+    const rebuiltDeck = buildDeck(
+      questionsByDifficulty,
+      initialSeen,
+      orderMode,
+      shuffleSeed
     );
-    setCurrentIndex(0);
+
+    setSeenIds(initialSeen); // eslint-disable-line react-hooks/set-state-in-effect
+    setDeck(rebuiltDeck);
+    if (activeQuestionId) {
+      const preservedIndex = rebuiltDeck.findIndex(
+        (question) => question.id === activeQuestionId
+      );
+      if (preservedIndex >= 0) {
+        setCurrentIndex(preservedIndex);
+      } else {
+        setCurrentIndex(0);
+      }
+    } else {
+      setCurrentIndex(0);
+    }
     setSelectedQuestionId(null);
     setHydrated(true);
   }, [
@@ -222,6 +240,9 @@ export default function QuestionIndexPage({
     selectedQuestionId && questionMap.has(selectedQuestionId)
       ? questionMap.get(selectedQuestionId)
       : (deck[currentIndex] ?? null);
+  useEffect(() => {
+    activeQuestionIdRef.current = currentQuestion?.id ?? null;
+  }, [currentQuestion]);
   useEffect(() => {
     if (!currentQuestion) return;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });

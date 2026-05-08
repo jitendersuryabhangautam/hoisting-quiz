@@ -11,7 +11,7 @@ export default function GoOutputPage() {
       sidebarMode="answers"
       storageKey="go-output"
       enableOrderToggle
-      defaultOrderMode="shuffle"
+      defaultOrderMode="serial"
     />
   );
 }

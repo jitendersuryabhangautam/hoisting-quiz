@@ -92,7 +92,7 @@ export default function PracticeMode({
   defaultLeftQuestionSidebarCollapsed = false,
   overlayLeftQuestionSidebar = false,
   enableOrderToggle = false,
-  defaultOrderMode = "shuffle",
+  defaultOrderMode = "serial",
   renderQuestionTools = null,
   onDisplayQuestionChange = null,
 }) {
@@ -123,6 +123,7 @@ export default function PracticeMode({
     height: 720,
   });
   const hoverPreviewTimerRef = useRef(null);
+  const currentQuestionIdRef = useRef(null);
   const [leftQuestionSidebarCollapsed, setLeftQuestionSidebarCollapsed] =
     useState(defaultLeftQuestionSidebarCollapsed);
 
@@ -193,10 +194,26 @@ export default function PracticeMode({
     setAnswers(createDraftStateFromDeck(deck));
     setChecked(createFlagState(deck.length));
     setRevealed(createFlagState(deck.length));
-    setCurrentIdx(0);
+    setCurrentIdx((prevIdx) => {
+      const clampedPrevIdx = Math.min(prevIdx, deck.length - 1);
+      const activeQuestionId = currentQuestionIdRef.current;
+
+      if (activeQuestionId) {
+        const preservedIndex = deck.findIndex(
+          (question) => question.id === activeQuestionId
+        );
+        if (preservedIndex >= 0) return preservedIndex;
+      }
+
+      if (clampedPrevIdx >= 0) return clampedPrevIdx;
+      return 0;
+    });
   }, [deck]);
 
   const currentQuestion = deck[currentIdx];
+  useEffect(() => {
+    currentQuestionIdRef.current = currentQuestion?.id ?? null;
+  }, [currentQuestion]);
   const reviewQuestion = reviewQuestionId
     ? (questions.find((question) => question.id === reviewQuestionId) ?? null)
     : null;
@@ -1160,7 +1177,10 @@ export default function PracticeMode({
                       </span>
                       <select
                         value={orderMode}
-                        onChange={(event) => setOrderMode(event.target.value)}
+                        onChange={(event) => {
+                          const nextMode = event.target.value;
+                          setOrderMode(nextMode);
+                        }}
                         className="rounded border border-white/10 bg-slate-950/60 px-2 py-1 text-xs text-slate-100 outline-none"
                       >
                         <option value="serial">Serial</option>
