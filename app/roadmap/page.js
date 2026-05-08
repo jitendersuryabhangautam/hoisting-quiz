@@ -27,24 +27,24 @@ function formatKey(key) {
 function depthStyles(depth) {
   const palette = [
     {
-      rail: "border-cyan-500",
-      label: "text-cyan-800",
-      panel: "border-cyan-400 bg-cyan-50 shadow-md",
+      rail: "border-cyan-500 dark:border-cyan-400",
+      label: "text-cyan-800 dark:text-cyan-200",
+      panel: "border-cyan-400 bg-cyan-50 dark:border-cyan-500 dark:bg-cyan-950/40 shadow-md",
     },
     {
-      rail: "border-emerald-500",
-      label: "text-emerald-800",
-      panel: "border-emerald-400 bg-emerald-50 shadow-md",
+      rail: "border-emerald-500 dark:border-emerald-400",
+      label: "text-emerald-800 dark:text-emerald-200",
+      panel: "border-emerald-400 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-950/40 shadow-md",
     },
     {
-      rail: "border-amber-500",
-      label: "text-amber-800",
-      panel: "border-amber-400 bg-amber-50 shadow-md",
+      rail: "border-amber-500 dark:border-amber-400",
+      label: "text-amber-800 dark:text-amber-200",
+      panel: "border-amber-400 bg-amber-50 dark:border-amber-500 dark:bg-amber-950/40 shadow-md",
     },
     {
-      rail: "border-rose-500",
-      label: "text-rose-800",
-      panel: "border-rose-400 bg-rose-50 shadow-md",
+      rail: "border-rose-500 dark:border-rose-400",
+      label: "text-rose-800 dark:text-rose-200",
+      panel: "border-rose-400 bg-rose-50 dark:border-rose-500 dark:bg-rose-950/40 shadow-md",
     },
   ];
   return palette[depth % palette.length];
@@ -115,8 +115,8 @@ function DataNode({
   const isDeep = depth >= 3;
   const blockClass = isDeep
     ? "space-y-2"
-    : `rounded-xl border bg-white p-2.5 sm:p-3 shadow-sm ${
-        depth <= 2 ? style.panel : "border-slate-200"
+    : `rounded-xl border bg-white dark:bg-slate-900 p-2.5 sm:p-3 shadow-sm ${
+        depth <= 2 ? style.panel : "border-slate-200 dark:border-slate-700"
       }`;
 
   if (
@@ -130,7 +130,7 @@ function DataNode({
         >
           {label}
         </p>
-        <p className="mt-1 text-sm text-slate-700">
+        <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
           <PrimitiveValue value={value} />
         </p>
       </div>
@@ -152,7 +152,7 @@ function DataNode({
           >
             {label} ({value.length})
           </p>
-          <ul className="mt-2 space-y-2 text-sm text-slate-700">
+          <ul className="mt-2 space-y-2 text-sm text-slate-700 dark:text-slate-200">
             {value.map((item, index) => (
               <li
                 key={`${label}_${index}`}
@@ -213,7 +213,7 @@ function DataNode({
 
               return (
                 <div key={`${label}_${index}`} className={isDeep ? "" : "pl-2"}>
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     {index + 1}. {String(itemTitle)}
                   </p>
                   <div className="mt-2 space-y-2">
@@ -327,15 +327,15 @@ export default function RoadmapTrackerPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 px-3 py-6 sm:px-6 sm:py-12 lg:px-10">
+    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-3 py-6 sm:px-6 sm:py-12 lg:px-10">
       <div className="w-full">
         {!selectedChunk ? (
           <>
             <div className="mb-6 text-center sm:mb-8">
-              <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-3xl">
                 AI Engineer Roadmap
               </h1>
-              <p className="mt-2 text-sm text-slate-600">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                 Select a roadmap card to view complete details.
               </p>
             </div>
@@ -349,9 +349,9 @@ export default function RoadmapTrackerPage() {
                     setSelectedExportName(chunk.exportName);
                     setCompletedMap(loadDoneMap(chunk.exportName));
                   }}
-                  className="rounded-2xl border-2 border-cyan-400 bg-white p-3.5 text-left shadow-md transition hover:-translate-y-0.5 hover:bg-cyan-50 hover:shadow-lg sm:p-4"
+                  className="rounded-2xl border-2 border-cyan-400 dark:border-cyan-500 bg-white dark:bg-slate-900 p-3.5 text-left shadow-md transition hover:-translate-y-0.5 hover:bg-cyan-50 dark:hover:bg-slate-800 hover:shadow-lg sm:p-4"
                 >
-                  <p className="text-sm font-bold text-slate-900">
+                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
                     {chunk.data?.title || `Roadmap Card ${index + 1}`}
                   </p>
                 </button>
@@ -367,24 +367,24 @@ export default function RoadmapTrackerPage() {
                   setSelectedExportName("");
                   setCompletedMap(new Map());
                 }}
-                className="inline-flex w-full items-center justify-center rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-cyan-50 sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-lg border border-cyan-300 dark:border-cyan-500 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-cyan-50 dark:hover:bg-slate-800 sm:w-auto"
               >
                 Back to Cards
               </button>
               <Link
                 href="/"
-                className="inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-100 px-4 py-2 text-sm font-semibold text-white dark:text-slate-900 sm:w-auto"
               >
                 Back to Home
               </Link>
             </div>
 
-            <section className="rounded-2xl border-2 border-cyan-400 bg-white p-3.5 shadow-md sm:p-5">
-              <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+            <section className="rounded-2xl border-2 border-cyan-400 dark:border-cyan-500 bg-white dark:bg-slate-900 p-3.5 shadow-md sm:p-5">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">
                 {selectedChunk.data?.title || "Roadmap Details"}
               </h2>
               {selectedChunk.data?.description ? (
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                   {selectedChunk.data.description}
                 </p>
               ) : null}
