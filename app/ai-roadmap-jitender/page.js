@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import roadmapData from "@/lib/aiRoadmapJitender.json";
 
 const STORAGE_KEY = "ai-roadmap-jitender-done-v1";
@@ -167,6 +168,7 @@ function Specializations({ phaseId, items, doneMap, onToggle }) {
 
 export default function AIRoadmapJitenderPage() {
   const phases = asArray(roadmapData?.phases);
+  const [showChart, setShowChart] = useState(false);
   const [doneMap, setDoneMap] = useState(() => {
     if (typeof window === "undefined") return {};
     try {
@@ -184,6 +186,15 @@ export default function AIRoadmapJitenderPage() {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(doneMap));
     } catch {}
   }, [doneMap]);
+
+  useEffect(() => {
+    if (!showChart) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setShowChart(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [showChart]);
 
   const { total, done } = useMemo(() => {
     const phaseKeys = [
@@ -252,7 +263,47 @@ export default function AIRoadmapJitenderPage() {
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
             <div className="h-full rounded-full bg-linear-to-r from-cyan-500 to-emerald-500 transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => setShowChart(true)}
+              className="rounded-md bg-cyan-100 px-3 py-1.5 text-xs font-semibold text-cyan-800 hover:bg-cyan-200 dark:bg-cyan-900/40 dark:text-cyan-200 dark:hover:bg-cyan-900/60"
+            >
+              View Chart
+            </button>
+          </div>
         </header>
+        {showChart ? (
+          <div
+            className="fixed left-0 right-0 bottom-0 top-14 sm:top-16 z-[900] flex items-center justify-center bg-slate-900/70 p-4"
+            onClick={() => setShowChart(false)}
+          >
+            <div
+              className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-slate-900"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-end border-b border-slate-200 p-3 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setShowChart(false)}
+                  className="rounded-md bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="overflow-auto p-3">
+                <Image
+                  src="/assets/chartJitender.png"
+                  alt="Jitender roadmap chart"
+                  width={1400}
+                  height={700}
+                  priority
+                  className="h-auto w-full rounded-md"
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Overall Timeline</h2>
@@ -339,3 +390,5 @@ export default function AIRoadmapJitenderPage() {
     </main>
   );
 }
+
+

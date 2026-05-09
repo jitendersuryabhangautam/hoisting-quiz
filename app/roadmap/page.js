@@ -29,22 +29,26 @@ function depthStyles(depth) {
     {
       rail: "border-cyan-500 dark:border-cyan-400",
       label: "text-cyan-800 dark:text-cyan-200",
-      panel: "border-cyan-400 bg-cyan-50 dark:border-cyan-500 dark:bg-cyan-950/40 shadow-md",
+      panel:
+        "border-cyan-400 bg-cyan-50 dark:border-cyan-500 dark:bg-cyan-950/40 shadow-md",
     },
     {
       rail: "border-emerald-500 dark:border-emerald-400",
       label: "text-emerald-800 dark:text-emerald-200",
-      panel: "border-emerald-400 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-950/40 shadow-md",
+      panel:
+        "border-emerald-400 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-950/40 shadow-md",
     },
     {
       rail: "border-amber-500 dark:border-amber-400",
       label: "text-amber-800 dark:text-amber-200",
-      panel: "border-amber-400 bg-amber-50 dark:border-amber-500 dark:bg-amber-950/40 shadow-md",
+      panel:
+        "border-amber-400 bg-amber-50 dark:border-amber-500 dark:bg-amber-950/40 shadow-md",
     },
     {
       rail: "border-rose-500 dark:border-rose-400",
       label: "text-rose-800 dark:text-rose-200",
-      panel: "border-rose-400 bg-rose-50 dark:border-rose-500 dark:bg-rose-950/40 shadow-md",
+      panel:
+        "border-rose-400 bg-rose-50 dark:border-rose-500 dark:bg-rose-950/40 shadow-md",
     },
   ];
   return palette[depth % palette.length];
@@ -62,7 +66,7 @@ function PrimitiveValue({ value }) {
           href={href}
           target="_blank"
           rel="noreferrer noopener"
-          className="break-words text-sky-700 underline underline-offset-2 hover:text-sky-800"
+          className="wrap-break-word text-sky-700 underline underline-offset-2 hover:text-sky-800"
         >
           {text}
         </a>
@@ -82,7 +86,7 @@ function PrimitiveValue({ value }) {
       );
     }
 
-    return <span className="break-words">{value}</span>;
+    return <span className="wrap-break-word">{value}</span>;
   }
   if (typeof value === "number" || typeof value === "boolean") {
     return <span>{String(value)}</span>;
@@ -161,8 +165,8 @@ function DataNode({
                 <span
                   className={
                     isTrackable && completedMap?.get(`${path}__${index}`)
-                      ? "min-w-0 flex-1 break-words line-through text-slate-400"
-                      : "min-w-0 flex-1 break-words"
+                      ? "min-w-0 flex-1 wrap-break-word line-through text-slate-400"
+                      : "min-w-0 flex-1 wrap-break-word"
                   }
                 >
                   <span className="mr-2">{index + 1}.</span>
@@ -327,7 +331,7 @@ export default function RoadmapTrackerPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-0 py-6 sm:py-12">
+    <main className="min-h-screen bg-linear-to-br from-sky-100 via-cyan-50 to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-0 py-6 sm:py-12">
       <div className="w-full">
         {!selectedChunk ? (
           <>
