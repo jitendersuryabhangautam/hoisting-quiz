@@ -230,7 +230,7 @@ export default function AIRoadmapJitenderPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#ecfeff_0%,_#eef2ff_35%,_#f0fdf4_100%)] px-4 py-8 dark:bg-slate-950 sm:px-6">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ecfeff_0%,#eef2ff_35%,#f0fdf4_100%)] px-4 py-8 dark:bg-slate-950 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8 rounded-2xl border border-cyan-200/60 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">AI Roadmap for Jitender</h1>
@@ -250,7 +250,7 @@ export default function AIRoadmapJitenderPage() {
             </div>
           </div>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-            <div className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-full bg-linear-to-r from-cyan-500 to-emerald-500 transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </header>
 

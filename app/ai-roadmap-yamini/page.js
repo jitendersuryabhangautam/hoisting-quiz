@@ -31,7 +31,10 @@ function ResourceGroups({ resources }) {
       {Object.entries(resources).map(([group, entries]) => {
         if (!Array.isArray(entries) || entries.length === 0) return null;
         return (
-          <section key={group} className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/60">
+          <section
+            key={group}
+            className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/60"
+          >
             <h4 className="text-xs font-bold uppercase tracking-wide text-slate-600 dark:text-slate-300">
               {titleCase(group)}
             </h4>
@@ -58,7 +61,10 @@ function ResourceGroups({ resources }) {
 
 export default function AIRoadmapYaminiPage() {
   const phases = useMemo(() => asArray(roadmapData?.roadmap), []);
-  const copilotPlan = useMemo(() => asArray(roadmapData?.ai_developer_copilot), []);
+  const copilotPlan = useMemo(
+    () => asArray(roadmapData?.ai_developer_copilot),
+    []
+  );
 
   const [doneTopics, setDoneTopics] = useState(() => {
     if (typeof window === "undefined") return {};
@@ -89,19 +95,23 @@ export default function AIRoadmapYaminiPage() {
     };
   }, [doneTopics, phases]);
 
-  const completion = totalTopics > 0 ? Math.round((doneCount / totalTopics) * 100) : 0;
+  const completion =
+    totalTopics > 0 ? Math.round((doneCount / totalTopics) * 100) : 0;
 
   function toggleTopicDone(id) {
     setDoneTopics((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#ecfeff_0%,_#eef2ff_35%,_#f0fdf4_100%)] px-4 py-8 dark:bg-slate-950 sm:px-6">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ecfeff_0%,#eef2ff_35%,#f0fdf4_100%)] px-4 py-8 dark:bg-slate-950 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8 rounded-2xl border border-cyan-200/60 bg-white/85 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">AI Roadmap for Yamini</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+            AI Roadmap for Yamini
+          </h1>
           <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
-            Phase-wise roadmap with topic tracking, resources, projects, and AI Developer Copilot milestones.
+            Phase-wise roadmap with topic tracking, resources, projects, and AI
+            Developer Copilot milestones.
           </p>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -109,16 +119,18 @@ export default function AIRoadmapYaminiPage() {
               <span className="font-semibold">Phases:</span> {phases.length}
             </div>
             <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-100">
-              <span className="font-semibold">Copilot Milestones:</span> {copilotPlan.length}
+              <span className="font-semibold">Copilot Milestones:</span>{" "}
+              {copilotPlan.length}
             </div>
             <div className="rounded-lg bg-indigo-50 px-3 py-2 text-sm text-indigo-900 dark:bg-indigo-900/30 dark:text-indigo-100">
-              <span className="font-semibold">Progress:</span> {doneCount}/{totalTopics} ({completion}%)
+              <span className="font-semibold">Progress:</span> {doneCount}/
+              {totalTopics} ({completion}%)
             </div>
           </div>
 
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 transition-all duration-300"
+              className="h-full rounded-full bg-linear-to-r from-cyan-500 via-sky-500 to-emerald-500 transition-all duration-300"
               style={{ width: `${completion}%` }}
             />
           </div>
@@ -131,20 +143,26 @@ export default function AIRoadmapYaminiPage() {
               className="rounded-2xl border border-cyan-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{cleanText(phaseItem.phase)}</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                  {cleanText(phaseItem.phase)}
+                </h2>
                 <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-200">
                   {cleanText(phaseItem.duration)}
                 </span>
               </div>
 
               <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
-                <span className="font-semibold text-slate-900 dark:text-slate-100">Goal: </span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  Goal:{" "}
+                </span>
                 {phaseItem.goal}
               </p>
 
               {asArray(phaseItem.topics_to_learn).length > 0 ? (
                 <section className="mt-4">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Topics To Learn</h3>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    Topics To Learn
+                  </h3>
                   <ul className="mt-2 grid gap-2 sm:grid-cols-2">
                     {phaseItem.topics_to_learn.map((topic, topicIndex) => {
                       const id = topicId(phaseItem.phase, topic);
@@ -183,18 +201,27 @@ export default function AIRoadmapYaminiPage() {
               ) : null}
 
               <section className="mt-4">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Best Learning Resources</h3>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Best Learning Resources
+                </h3>
                 <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/70">
-                  <ResourceGroups resources={phaseItem.best_learning_resources} />
+                  <ResourceGroups
+                    resources={phaseItem.best_learning_resources}
+                  />
                 </div>
               </section>
 
               {asArray(phaseItem.build_projects).length > 0 ? (
                 <section className="mt-4">
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Build Projects</h3>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    Build Projects
+                  </h3>
                   <ul className="mt-2 flex flex-wrap gap-2 text-sm">
                     {phaseItem.build_projects.map((project, projectIndex) => (
-                      <li key={`${phaseItem.phase}_project_${projectIndex}`} className="rounded-full bg-sky-50 px-3 py-1 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200">
+                      <li
+                        key={`${phaseItem.phase}_project_${projectIndex}`}
+                        className="rounded-full bg-sky-50 px-3 py-1 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200"
+                      >
                         {project}
                       </li>
                     ))}
@@ -211,14 +238,21 @@ export default function AIRoadmapYaminiPage() {
         </div>
 
         <section className="mt-8 rounded-2xl border border-amber-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">AI Developer Copilot Build Track</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            AI Developer Copilot Build Track
+          </h2>
           <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
             Practical implementation milestones aligned with each roadmap phase.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {copilotPlan.map((item, idx) => (
-              <article key={`${item.phase}_${idx}`} className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{cleanText(item.phase)}</h3>
+              <article
+                key={`${item.phase}_${idx}`}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800"
+              >
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {cleanText(item.phase)}
+                </h3>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
                   {asArray(item.build_projects).map((project, pIdx) => (
                     <li key={`${item.phase}_copilot_${pIdx}`}>{project}</li>
