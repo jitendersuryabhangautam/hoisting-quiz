@@ -79,8 +79,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(34, 211, 238, 0.55) rgba(15, 23, 42, 0.45);
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
@@ -88,11 +86,14 @@ body {
 
 * {
   box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 *::-webkit-scrollbar-track {
@@ -142,7 +143,10 @@ html[data-theme="light"] ::selection {
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000 !important;
   overflow: visible !important;
 }
@@ -315,6 +319,10 @@ html[data-theme="light"] [class*="text-lime-300"] {
 }
 
 html[data-theme="light"] {
+  scrollbar-color: rgba(14, 165, 233, 0.58) rgba(226, 232, 240, 0.9);
+}
+
+html[data-theme="light"] * {
   scrollbar-color: rgba(14, 165, 233, 0.58) rgba(226, 232, 240, 0.9);
 }
 

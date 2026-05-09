@@ -98,7 +98,7 @@ export default function SiteHeader() {
   }, [menuOpen]);
 
   return (
-    <nav className="site-header sticky top-0 z-1000 overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+    <nav className="site-header fixed top-0 left-0 right-0 z-1000 overflow-visible border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div aria-hidden="true" className="nav-cartoon-track pointer-events-none">
         <span className="nav-cartoon-runner">
           <svg viewBox="0 0 48 28" className="h-7 w-12" fill="none">
