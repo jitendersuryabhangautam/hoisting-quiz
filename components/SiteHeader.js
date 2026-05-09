@@ -47,9 +47,21 @@ const NAV_GROUPS = [
     links: [{ href: "/go-output", label: "Go Output", icon: "GO" }],
   },
   {
-    label: "Career",
+    label: "AI",
     icon: "AI",
-    links: [{ href: "/roadmap", label: "AI Roadmap", icon: "AR" }],
+    links: [
+      { href: "/roadmap", label: "AI Roadmap", icon: "AR" },
+      {
+        href: "/ai-roadmap-yamini",
+        label: "AI Roadmap for Yamini",
+        icon: "AY",
+      },
+      {
+        href: "/ai-roadmap-jitender",
+        label: "AI Roadmap for Jitender",
+        icon: "AJ",
+      },
+    ],
   },
 ];
 

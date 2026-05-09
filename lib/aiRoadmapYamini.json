@@ -1,0 +1,376 @@
+{
+  "roadmap": [
+    {
+      "phase": "0. Foundation",
+      "duration": "2–3 weeks",
+      "goal": "Get comfortable with AI ecosystem",
+      "topics_to_learn": ["Python basics", "FastAPI", "async programming"],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "freeCodeCamp Python Course",
+            "url": "https://www.youtube.com/watch?v=rfscVS0vtbw&utm_source=chatgpt.com"
+          },
+          {
+            "name": "FastAPI Tutorial by CodeWithTeddy",
+            "url": "https://www.youtube.com/results?search_query=fastapi+tutorial&utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "FastAPI Docs",
+            "url": "https://fastapi.tiangolo.com?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["Simple Python REST APIs"],
+      "outcome": "Ready for AI development"
+    },
+    {
+      "phase": "1. LLM Fundamentals",
+      "duration": "1–1.5 months",
+      "goal": "Become LLM Engineer / AI App Engineer",
+      "topics_to_learn": [
+        "Prompting",
+        "LLM APIs",
+        "embeddings",
+        "streaming",
+        "structured outputs"
+      ],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "Andrej Karpathy Intro to LLMs",
+            "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g&utm_source=chatgpt.com"
+          }
+        ],
+        "courses": [
+          {
+            "name": "DeepLearning.AI Prompt Engineering Course",
+            "url": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/?utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "OpenAI Platform Docs",
+            "url": "https://platform.openai.com/docs?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["AI chatbot", "AI assistant", "Slack/Teams bot"],
+      "outcome": "Can build AI-powered applications"
+    },
+    {
+      "phase": "2. RAG & Enterprise AI",
+      "duration": "1–1.5 months",
+      "goal": "Learn enterprise AI architecture",
+      "topics_to_learn": [
+        "RAG",
+        "vector DBs",
+        "chunking",
+        "retrieval",
+        "memory"
+      ],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "LangChain Crash Course",
+            "url": "https://www.youtube.com/results?search_query=langchain+crash+course&utm_source=chatgpt.com"
+          },
+          {
+            "name": "LlamaIndex Tutorials",
+            "url": "https://www.youtube.com/results?search_query=llamaindex+tutorial&utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "LangChain Docs",
+            "url": "https://python.langchain.com?utm_source=chatgpt.com"
+          },
+          {
+            "name": "LlamaIndex Docs",
+            "url": "https://docs.llamaindex.ai?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["Internal docs chatbot", "Secure RAG assistant"],
+      "outcome": "Ready for enterprise AI roles"
+    },
+    {
+      "phase": "3. Agentic AI Systems",
+      "duration": "1 month",
+      "goal": "Build autonomous AI workflows",
+      "topics_to_learn": [
+        "Tool calling",
+        "agents",
+        "workflows",
+        "orchestration"
+      ],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "LangGraph Tutorials",
+            "url": "https://www.youtube.com/results?search_query=langgraph+tutorial&utm_source=chatgpt.com"
+          }
+        ],
+        "courses": [
+          {
+            "name": "AI Agents Course by Hugging Face",
+            "url": "https://huggingface.co/learn/agents-course?utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "LangGraph Docs",
+            "url": "https://www.langchain.com/langgraph?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["Infra assistant agent", "Workflow automation AI"],
+      "outcome": "Can build modern agentic AI systems"
+    },
+    {
+      "phase": "4. AI Backend Engineering",
+      "duration": "1.5–2 months",
+      "goal": "Scale AI systems",
+      "topics_to_learn": [
+        "Async systems",
+        "queues",
+        "Redis",
+        "Kafka",
+        "inference APIs"
+      ],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "Redis Crash Course",
+            "url": "https://www.youtube.com/results?search_query=redis+crash+course&utm_source=chatgpt.com"
+          },
+          {
+            "name": "Kafka Tutorial",
+            "url": "https://www.youtube.com/results?search_query=kafka+tutorial&utm_source=chatgpt.com"
+          },
+          {
+            "name": "vLLM Intro",
+            "url": "https://www.youtube.com/results?search_query=vllm+tutorial&utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["AI gateway service", "Scalable inference backend"],
+      "outcome": "Strong AI Backend Engineer profile"
+    },
+    {
+      "phase": "5. AI Infrastructure & Deployment",
+      "duration": "1–1.5 months",
+      "goal": "Production deployment",
+      "topics_to_learn": ["Docker", "Kubernetes", "serving", "autoscaling"],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "Docker Tutorial for Beginners",
+            "url": "https://www.youtube.com/results?search_query=docker+tutorial&utm_source=chatgpt.com"
+          },
+          {
+            "name": "Kubernetes Full Course",
+            "url": "https://www.youtube.com/results?search_query=kubernetes+full+course&utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "Kubernetes Docs",
+            "url": "https://kubernetes.io/docs?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["Deploy AI services on K8s"],
+      "outcome": "Production AI deployment skills"
+    },
+    {
+      "phase": "6. MLOps",
+      "duration": "1 month",
+      "goal": "AI lifecycle management",
+      "topics_to_learn": ["Monitoring", "MLflow", "CI/CD", "observability"],
+      "best_learning_resources": {
+        "videos": [
+          {
+            "name": "MLOps Full Course",
+            "url": "https://www.youtube.com/results?search_query=mlops+course&utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "MLflow Docs",
+            "url": "https://mlflow.org/docs/latest/index.html?utm_source=chatgpt.com"
+          },
+          {
+            "name": "Weights & Biases Docs",
+            "url": "https://docs.wandb.ai?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["AI deployment pipeline"],
+      "outcome": "MLOps capability"
+    },
+    {
+      "phase": "7. AI Security Specialization",
+      "duration": "1–1.5 months",
+      "goal": "Secure AI systems",
+      "topics_to_learn": [
+        "Prompt injection",
+        "secure RAG",
+        "AI governance",
+        "guardrails"
+      ],
+      "best_learning_resources": {
+        "articles": [
+          {
+            "name": "OWASP Top 10 for LLMs",
+            "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/?utm_source=chatgpt.com"
+          }
+        ],
+        "videos": [
+          {
+            "name": "LLM Security Talks",
+            "url": "https://www.youtube.com/results?search_query=llm+security&utm_source=chatgpt.com"
+          }
+        ],
+        "docs": [
+          {
+            "name": "Guardrails AI Docs",
+            "url": "https://www.guardrailsai.com/docs?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["Secure AI gateway", "access-control AI"],
+      "outcome": "AI Security Engineer niche"
+    },
+    {
+      "phase": "8. Advanced Production AI",
+      "duration": "Ongoing",
+      "goal": "Become senior AI systems engineer",
+      "topics_to_learn": [
+        "Distributed inference",
+        "cost optimization",
+        "evaluation systems"
+      ],
+      "best_learning_resources": {
+        "blogs": [
+          {
+            "name": "OpenAI Engineering Blog",
+            "url": "https://openai.com/news?utm_source=chatgpt.com"
+          },
+          {
+            "name": "Anthropic Engineering Blog",
+            "url": "https://www.anthropic.com/engineering?utm_source=chatgpt.com"
+          },
+          {
+            "name": "Netflix Tech Blog",
+            "url": "https://netflixtechblog.com?utm_source=chatgpt.com"
+          }
+        ]
+      },
+      "build_projects": ["End-to-end AI platform"],
+      "outcome": "Senior Production AI Systems profile"
+    }
+  ],
+  "ai_developer_copilot": [
+    {
+      "phase": "0. Foundation",
+      "build_projects": [
+        "Setup FastAPI project",
+        "Create /chat endpoint",
+        "Create /code endpoint",
+        "Implement async handling",
+        "Add logging and error handling",
+        "Test APIs"
+      ]
+    },
+    {
+      "phase": "1. LLM Fundamentals",
+      "build_projects": [
+        "Integrate LLM API",
+        "Create prompt templates",
+        "Add streaming responses",
+        "Implement structured outputs",
+        "Build code generator",
+        "Build bug fixer",
+        "Optional Slack/Teams bot"
+      ]
+    },
+    {
+      "phase": "2. RAG & Enterprise AI",
+      "build_projects": [
+        "Repo ingestion pipeline",
+        "Code chunking",
+        "Generate embeddings",
+        "Store in vector DB",
+        "Retrieval-based QA",
+        "Conversation memory",
+        "Secure RAG"
+      ]
+    },
+    {
+      "phase": "3. Agentic AI Systems",
+      "build_projects": [
+        "Tool calling system",
+        "File reader tool",
+        "Code execution tool",
+        "Debugging agent",
+        "Multi-step workflows",
+        "LangGraph integration"
+      ]
+    },
+    {
+      "phase": "4. AI Backend Engineering",
+      "build_projects": [
+        "Redis caching",
+        "Background job queue",
+        "Async repo indexing",
+        "AI Gateway service",
+        "Latency optimization",
+        "Concurrency handling"
+      ]
+    },
+    {
+      "phase": "5. AI Infrastructure & Deployment",
+      "build_projects": [
+        "Dockerize services",
+        "Setup docker-compose",
+        "Deploy on Kubernetes",
+        "Autoscaling setup",
+        "Load balancing"
+      ]
+    },
+    {
+      "phase": "6. MLOps",
+      "build_projects": [
+        "Logging system",
+        "Latency and cost tracking",
+        "MLflow integration",
+        "CI/CD pipeline",
+        "Monitoring dashboards"
+      ]
+    },
+    {
+      "phase": "7. AI Security Specialization",
+      "build_projects": [
+        "Prompt injection protection",
+        "Input/output validation",
+        "RBAC system",
+        "Data leakage prevention",
+        "Guardrails implementation"
+      ]
+    },
+    {
+      "phase": "8. Advanced Production AI",
+      "build_projects": [
+        "Distributed inference",
+        "Cost optimization",
+        "Evaluation pipeline",
+        "Multi-repo support",
+        "Feedback loop system",
+        "Platform dashboard"
+      ]
+    }
+  ]
+}

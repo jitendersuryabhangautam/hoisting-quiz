@@ -1,0 +1,617 @@
+{
+  "title": "1.5 Year AI Roadmap for Software Developer",
+  "version": "1.0.0",
+  "targetRoles": [
+    "LLM Engineer",
+    "Applied AI Engineer",
+    "AI Backend Engineer",
+    "RAG Engineer"
+  ],
+  "userBackground": {
+    "experience": "2.4 years",
+    "frontend": ["ReactJS", "NextJS", "HTML", "CSS", "JavaScript"],
+    "backend": ["Golang", "NodeJS"],
+    "databases": ["PostgreSQL", "MySQL"],
+    "languages": ["C", "C++", "JavaScript", "Go"]
+  },
+  "overallTimeline": [
+    {
+      "phase": "Phase 0",
+      "duration": "1 Week",
+      "focus": "Preparation & Setup"
+    },
+    {
+      "phase": "Phase 1",
+      "duration": "Month 1-2",
+      "focus": "Python + AI Foundations"
+    },
+    {
+      "phase": "Phase 2",
+      "duration": "Month 3-4",
+      "focus": "LLM Engineering"
+    },
+    {
+      "phase": "Phase 3",
+      "duration": "Month 5-6",
+      "focus": "RAG Systems"
+    },
+    {
+      "phase": "Phase 4",
+      "duration": "Month 7-9",
+      "focus": "Production AI Backend"
+    },
+    {
+      "phase": "Phase 5",
+      "duration": "Month 10-12",
+      "focus": "Advanced AI Engineering"
+    },
+    {
+      "phase": "Phase 6",
+      "duration": "Month 13-15",
+      "focus": "Specialization"
+    },
+    {
+      "phase": "Phase 7",
+      "duration": "Final Month",
+      "focus": "Portfolio + Interview Preparation"
+    }
+  ],
+  "phases": [
+    {
+      "id": 0,
+      "title": "Preparation & Setup",
+      "duration": "1 Week",
+      "goal": "Understand AI ecosystem and prepare development environment",
+      "topics": [
+        {
+          "name": "AI vs ML vs Deep Learning",
+          "resources": [
+            {
+              "title": "AI vs ML vs DL Explained",
+              "url": "https://www.ibm.com/topics/artificial-intelligence"
+            },
+            {
+              "title": "Intro to AI",
+              "url": "https://www.coursera.org/learn/ai-for-everyone"
+            }
+          ]
+        },
+        {
+          "name": "LLMs and Generative AI",
+          "resources": [
+            {
+              "title": "Generative AI for Developers",
+              "url": "https://www.deeplearning.ai/short-courses/"
+            },
+            {
+              "title": "HuggingFace LLM Course",
+              "url": "https://huggingface.co/learn/llm-course"
+            }
+          ]
+        }
+      ],
+      "tools": [
+        {
+          "name": "Python",
+          "url": "https://www.python.org/"
+        },
+        {
+          "name": "VSCode",
+          "url": "https://code.visualstudio.com/"
+        },
+        {
+          "name": "Jupyter Notebook",
+          "url": "https://jupyter.org/"
+        },
+        {
+          "name": "Docker",
+          "url": "https://www.docker.com/"
+        },
+        {
+          "name": "Ollama",
+          "url": "https://ollama.com/"
+        },
+        {
+          "name": "GitHub Copilot",
+          "url": "https://github.com/features/copilot"
+        }
+      ],
+      "accounts": [
+        {
+          "name": "OpenAI",
+          "url": "https://platform.openai.com/"
+        },
+        {
+          "name": "HuggingFace",
+          "url": "https://huggingface.co/"
+        },
+        {
+          "name": "LangChain",
+          "url": "https://www.langchain.com/"
+        },
+        {
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Python + AI Foundations",
+      "duration": "Month 1-2",
+      "goal": "Learn Python basics and AI fundamentals",
+      "pythonTopics": [
+        {
+          "name": "Python Basics",
+          "resources": [
+            {
+              "title": "Python Official Tutorial",
+              "url": "https://docs.python.org/3/tutorial/"
+            },
+            {
+              "title": "Python for Beginners",
+              "url": "https://www.freecodecamp.org/learn/scientific-computing-with-python/"
+            }
+          ]
+        },
+        {
+          "name": "Async Python",
+          "resources": [
+            {
+              "title": "AsyncIO Documentation",
+              "url": "https://docs.python.org/3/library/asyncio.html"
+            }
+          ]
+        }
+      ],
+      "libraries": [
+        {
+          "name": "NumPy",
+          "purpose": "Arrays and numerical computing",
+          "resources": [
+            {
+              "title": "NumPy Docs",
+              "url": "https://numpy.org/doc/"
+            }
+          ]
+        },
+        {
+          "name": "Pandas",
+          "purpose": "Data manipulation",
+          "resources": [
+            {
+              "title": "Pandas Docs",
+              "url": "https://pandas.pydata.org/docs/"
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib",
+          "purpose": "Visualization",
+          "resources": [
+            {
+              "title": "Matplotlib Docs",
+              "url": "https://matplotlib.org/stable/tutorials/index.html"
+            }
+          ]
+        },
+        {
+          "name": "FastAPI",
+          "purpose": "Backend APIs",
+          "resources": [
+            {
+              "title": "FastAPI Official Docs",
+              "url": "https://fastapi.tiangolo.com/"
+            }
+          ]
+        }
+      ],
+      "aiFundamentals": [
+        {
+          "name": "Machine Learning Basics",
+          "resources": [
+            {
+              "title": "Andrew Ng ML Course",
+              "url": "https://www.coursera.org/learn/machine-learning"
+            }
+          ]
+        },
+        {
+          "name": "Neural Networks",
+          "resources": [
+            {
+              "title": "3Blue1Brown Neural Networks",
+              "url": "https://www.youtube.com/watch?v=aircAruvnKk"
+            }
+          ]
+        },
+        {
+          "name": "Transformers",
+          "resources": [
+            {
+              "title": "Illustrated Transformer",
+              "url": "https://jalammar.github.io/illustrated-transformer/"
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "name": "AI Text Generator"
+        },
+        {
+          "name": "AI Summarizer"
+        },
+        {
+          "name": "AI Blog Generator"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "LLM Engineering",
+      "duration": "Month 3-4",
+      "goal": "Build applications using LLM APIs and frameworks",
+      "topics": [
+        {
+          "name": "Prompt Engineering",
+          "resources": [
+            {
+              "title": "Prompt Engineering Guide",
+              "url": "https://www.promptingguide.ai/"
+            }
+          ]
+        },
+        {
+          "name": "Function Calling",
+          "resources": [
+            {
+              "title": "OpenAI Function Calling",
+              "url": "https://platform.openai.com/docs/guides/function-calling"
+            }
+          ]
+        }
+      ],
+      "openaiTopics": [
+        {
+          "name": "Chat Completions API",
+          "url": "https://platform.openai.com/docs/api-reference/chat"
+        },
+        {
+          "name": "Embeddings API",
+          "url": "https://platform.openai.com/docs/guides/embeddings"
+        }
+      ],
+      "frameworks": [
+        {
+          "name": "LangChain",
+          "resources": [
+            {
+              "title": "LangChain Docs",
+              "url": "https://python.langchain.com/docs/introduction/"
+            }
+          ]
+        }
+      ],
+      "vectorDatabases": [
+        {
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/"
+        },
+        {
+          "name": "ChromaDB",
+          "url": "https://docs.trychroma.com/"
+        },
+        {
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/documentation/"
+        }
+      ],
+      "projects": [
+        {
+          "name": "ChatGPT Clone"
+        },
+        {
+          "name": "AI Support Chatbot"
+        },
+        {
+          "name": "AI Meeting Notes App"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "RAG Systems",
+      "duration": "Month 5-6",
+      "goal": "Learn enterprise-level Retrieval-Augmented Generation systems",
+      "topics": [
+        {
+          "name": "RAG Architecture",
+          "resources": [
+            {
+              "title": "RAG Explained",
+              "url": "https://www.pinecone.io/learn/retrieval-augmented-generation/"
+            }
+          ]
+        },
+        {
+          "name": "Embeddings",
+          "resources": [
+            {
+              "title": "OpenAI Embeddings Guide",
+              "url": "https://platform.openai.com/docs/guides/embeddings"
+            }
+          ]
+        }
+      ],
+      "frameworks": [
+        {
+          "name": "LlamaIndex",
+          "url": "https://docs.llamaindex.ai/"
+        },
+        {
+          "name": "Haystack",
+          "url": "https://haystack.deepset.ai/"
+        }
+      ],
+      "projects": [
+        {
+          "name": "PDF Chatbot"
+        },
+        {
+          "name": "Company Knowledge Assistant"
+        },
+        {
+          "name": "AI Documentation Search Engine"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Production AI Backend",
+      "duration": "Month 7-9",
+      "goal": "Build scalable AI systems for production",
+      "topics": [
+        {
+          "name": "Streaming Responses",
+          "resources": [
+            {
+              "title": "OpenAI Streaming",
+              "url": "https://platform.openai.com/docs/api-reference/streaming"
+            }
+          ]
+        },
+        {
+          "name": "Caching",
+          "resources": [
+            {
+              "title": "Redis Docs",
+              "url": "https://redis.io/docs/"
+            }
+          ]
+        }
+      ],
+      "servingTechnologies": [
+        {
+          "name": "vLLM",
+          "url": "https://docs.vllm.ai/"
+        },
+        {
+          "name": "llama.cpp",
+          "url": "https://github.com/ggerganov/llama.cpp"
+        }
+      ],
+      "infrastructure": [
+        {
+          "name": "Docker",
+          "url": "https://docs.docker.com/"
+        },
+        {
+          "name": "Kubernetes",
+          "url": "https://kubernetes.io/docs/home/"
+        },
+        {
+          "name": "Kafka",
+          "url": "https://kafka.apache.org/documentation/"
+        }
+      ],
+      "observability": [
+        {
+          "name": "LangSmith",
+          "url": "https://smith.langchain.com/"
+        }
+      ],
+      "projects": [
+        {
+          "name": "Scalable AI Chat Backend"
+        },
+        {
+          "name": "Streaming Chatbot"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Advanced AI Engineering",
+      "duration": "Month 10-12",
+      "goal": "Learn deep learning and fine-tuning",
+      "topics": [
+        {
+          "name": "PyTorch",
+          "resources": [
+            {
+              "title": "PyTorch Official",
+              "url": "https://pytorch.org/tutorials/"
+            }
+          ]
+        },
+        {
+          "name": "Fine-Tuning LLMs",
+          "resources": [
+            {
+              "title": "HuggingFace Fine-Tuning",
+              "url": "https://huggingface.co/docs/transformers/training"
+            }
+          ]
+        },
+        {
+          "name": "LoRA and QLoRA",
+          "resources": [
+            {
+              "title": "LoRA Paper",
+              "url": "https://arxiv.org/abs/2106.09685"
+            }
+          ]
+        }
+      ],
+      "evaluation": [
+        {
+          "name": "RAGAS",
+          "url": "https://docs.ragas.io/"
+        },
+        {
+          "name": "DeepEval",
+          "url": "https://docs.confident-ai.com/"
+        }
+      ],
+      "projects": [
+        {
+          "name": "Fine-tuned Chatbot"
+        },
+        {
+          "name": "AI Code Reviewer"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Specialization",
+      "duration": "Month 13-15",
+      "goal": "Choose a specialization path",
+      "specializations": [
+        {
+          "name": "Applied AI Engineer",
+          "tools": [
+            {
+              "name": "CrewAI",
+              "url": "https://docs.crewai.com/"
+            },
+            {
+              "name": "AutoGen",
+              "url": "https://microsoft.github.io/autogen/"
+            },
+            {
+              "name": "LangGraph",
+              "url": "https://langchain-ai.github.io/langgraph/"
+            }
+          ]
+        },
+        {
+          "name": "AI Backend / Infra Engineer",
+          "tools": [
+            {
+              "name": "TensorRT",
+              "url": "https://developer.nvidia.com/tensorrt"
+            },
+            {
+              "name": "Ray",
+              "url": "https://docs.ray.io/"
+            }
+          ]
+        },
+        {
+          "name": "ML Engineer",
+          "tools": [
+            {
+              "name": "Scikit-learn",
+              "url": "https://scikit-learn.org/stable/"
+            },
+            {
+              "name": "MLflow",
+              "url": "https://mlflow.org/docs/latest/index.html"
+            }
+          ]
+        },
+        {
+          "name": "Multi-modal AI Engineer",
+          "tools": [
+            {
+              "name": "Stable Diffusion",
+              "url": "https://stability.ai/"
+            },
+            {
+              "name": "Whisper",
+              "url": "https://github.com/openai/whisper"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Portfolio & Interview Preparation",
+      "duration": "Final Month",
+      "goal": "Prepare for AI job switch",
+      "portfolioRequirements": [
+        "4-6 Strong Projects",
+        "GitHub Repositories",
+        "Deployed Applications",
+        "Architecture Diagrams",
+        "Detailed README",
+        "Demo Videos"
+      ],
+      "interviewTopics": [
+        "RAG",
+        "Embeddings",
+        "Vector Databases",
+        "Prompt Engineering",
+        "Agents",
+        "AI System Design",
+        "Caching",
+        "Scaling",
+        "Model Serving"
+      ],
+      "resources": [
+        {
+          "title": "System Design Primer",
+          "url": "https://github.com/donnemartin/system-design-primer"
+        },
+        {
+          "title": "LeetCode",
+          "url": "https://leetcode.com/"
+        }
+      ]
+    }
+  ],
+  "weeklyCommitment": {
+    "minimum": "5 hours/week",
+    "recommended": "10-15 hours/week",
+    "aggressive": "20+ hours/week"
+  },
+  "bestProjects": [
+    {
+      "name": "ChatGPT Clone",
+      "difficulty": "Easy",
+      "resumeValue": "Medium"
+    },
+    {
+      "name": "PDF Chatbot",
+      "difficulty": "Medium",
+      "resumeValue": "High"
+    },
+    {
+      "name": "AI Code Reviewer",
+      "difficulty": "Medium",
+      "resumeValue": "Very High"
+    },
+    {
+      "name": "AI SaaS Platform",
+      "difficulty": "Hard",
+      "resumeValue": "Extremely High"
+    }
+  ],
+  "finalProfile": {
+    "title": "Full Stack AI Engineer",
+    "skillsCombination": ["Frontend", "Backend", "AI", "Product Thinking"]
+  }
+}

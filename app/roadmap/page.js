@@ -327,7 +327,7 @@ export default function RoadmapTrackerPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-3 py-6 sm:px-6 sm:py-12 lg:px-10">
+    <main className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-0 py-6 sm:py-12">
       <div className="w-full">
         {!selectedChunk ? (
           <>
